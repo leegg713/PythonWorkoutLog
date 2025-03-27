@@ -14,14 +14,18 @@
 #Error popup just means it has not been used, its for getting the time of the input
 #import pandas as pd for when we do graphs and stuff
 import time
+import csv
+import os
 
 
-print("Welcome to Python programming!")
-#This is comment that is used to test staging to my project      
-#Second stage testing
+print("Welcome to Lee's Workout Tracker!")
 
-#Need validation so that typos are not made, will need a list of exercises that can be entered (Not case sensitive)
-#This will also need a list of exercises that I can enter, pulling list from ChatGPT
+
+#This section is for adding a lift (Sets,Reps,Weight,etc) (Difficulty 1)
+#def is how you use python to write things (Functions)
+#For this function I need to get user input and have them type in the following information:
+#Exercise, Sets, Reps, and Weight (Starting simple)
+
 def get_exercise():
     # Predefined list of exercises
     exercises = [
@@ -54,10 +58,10 @@ def get_exercise():
     max_attempts_lift = 3
     attempts_lift = 0
     while attempts_lift < max_attempts_lift:
-        user_input = input("\nEnter the name of the exercise: ")
+        exercise_input = input("\nEnter the name of the exercise: ")
 
-        if user_input in exercises:
-            print(f"You've selected: {user_input}")
+        if exercise_input in exercises:
+            print(f"You've selected: {exercise_input}")
             break  # Exit the loop if the input is valid
         else:
             attempts_lift += 1
@@ -69,9 +73,9 @@ def get_exercise():
     attempts_sets = 0
     
     while attempts_sets < max_attempts_sets:
-        user_input = input("Enter the amount of sets done(Weight will be select once):")
-        if user_input.isdigit():
-            print("You entered a number. Good job!")
+        sets_input = input("Enter the amount of sets done(Weight will be select once):")
+        if sets_input.isdigit():
+            print(f"You said you did this many sets: {sets_input}")
             break
         else:
             attempts_sets += 1
@@ -83,9 +87,9 @@ def get_exercise():
     attempts_reps = 0
 
     while attempts_reps < max_attempts_reps:
-        user_input = input("Enter the number of reps done: ")
-        if user_input.isdigit():
-            print("You entered a valid number of reps. Good job!")
+        rep_input = input("Enter the number of reps done: ")
+        if rep_input.isdigit():
+            print(f"You said you did this many reps: {rep_input}")
             break
         else:
             attempts_reps += 1
@@ -98,9 +102,9 @@ def get_exercise():
     attempts_weight = 0
 
     while attempts_weight < max_attempts_weight:
-        user_input = input("Enter the amount of weight done: ")
-        if user_input.isdigit():
-            print("You entered a number. Good job weak lil boy!")
+        weight_input = input("Enter the amount of weight done(in pounds): ")
+        if weight_input.isdigit():
+            print(f"You said you did this much weight: {weight_input}")
             break
         else:
             attempts_weight += 1
@@ -108,24 +112,32 @@ def get_exercise():
 
     if attempts_weight == max_attempts_weight:
         print("You've exceeded the maximum number of attempts. Please try again later, idiot.")
+#Prints the user output to see what they entered
 
-#Runs the function
-get_exercise()
-#This section is for adding a lift (Sets,Reps,Weight,etc) (Difficulty 1)
-#def is how you use python to write things (Functions)
-#For this function I need to get user input and have them type in the following information:
-#Exercise, Sets, Reps, and Weight (Starting simple)
+    print(f"Exercise: {exercise_input} \nSets: {sets_input}  \nReps Completed: {rep_input} \nWeight Used: {weight_input}lbs ")
 
-
-
-
-
+#Runs the function, can comment this out when testing another section
+#get_exercise()
 
 #This section is for creating/getting the csv file (Headers just like in powershell) (Difficulty 2)
 #Log entry, file spot, file creation
 
+def add_entry_to_CSV():
+    print ("Test function to make sure we in right spot")
+    new_entry = ['Squat', '3', '5', '225'] #Add in data from above for this, hardcoded now for testing
+    #new_entry = [exercise_input, sets_input, rep_input, weight_input]
+    file_path = os.path.join('WorkoutLog.csv')
+        
+    with open(file_path, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        
+        # Write the new entry to the CSV file
+        writer.writerow(new_entry)
+        
+    print("New entry added to WorkoutLog.csv")
 
-
+# Call the function to test
+add_entry_to_CSV()
 
 
 #This section is for writing the data that was entered to the CSV file
@@ -138,18 +150,6 @@ get_exercise()
 #Display Menu (Difficulty 1)
 
 # Function to display the menu
-#Block comment for now, best practice to just comment using ###
-""""
-def display_menu():
-    print("\n--- Workout Log ---")
-    print("1. Add Workout Entry")
-    print("2. View Workout Logs")
-    print("3. Exit")
-"""
 
 #Main program loop (difficulty 1) (Else if statement to pick what other function to do)
 
-#def main():
-
-# Run the program
-# main()
