@@ -35,10 +35,82 @@ def get_exercise():
         "Deficit Deadlift",
         "Romanian Deadlift",
         "Overhead Press",
-        "Overhead DB Press",
+        "Overhead DB Press"
+
+
     ]
 
+    # Print the list of exercises
+    print("List of Exercises to choose from:")
+    #For loop to print each exercise to the console
+    for exercise in exercises:
+        print(exercise)
 
+   # user_input =  input("Enter an exercise from the list above: ")
+
+# Validate user input against the list of exercises
+
+# Set the maximum number of attempts
+    max_attempts_lift = 3
+    attempts_lift = 0
+    while attempts_lift < max_attempts_lift:
+        user_input = input("\nEnter the name of the exercise: ")
+
+        if user_input in exercises:
+            print(f"You've selected: {user_input}")
+            break  # Exit the loop if the input is valid
+        else:
+            attempts_lift += 1
+            print(f"Invalid exercise. You have {max_attempts_lift - attempts_lift} attempt(s) left to type it correctly.")
+
+    if attempts_lift == max_attempts_lift:
+        print("You've exceeded the maximum number of attempts. Please try again later idiot.")
+    max_attempts_sets = 3
+    attempts_sets = 0
+    
+    while attempts_sets < max_attempts_sets:
+        user_input = input("Enter the amount of sets done(Weight will be select once):")
+        if user_input.isdigit():
+            print("You entered a number. Good job!")
+            break
+        else:
+            attempts_sets += 1
+            print(f"You need to enter only digits. Try again. {max_attempts_sets - attempts_sets} tries left. ")
+    if attempts_sets == max_attempts_sets:
+        print("You've exceeded the maximum number of attempts. Please try again later idiot.")
+
+    max_attempts_reps = 3
+    attempts_reps = 0
+
+    while attempts_reps < max_attempts_reps:
+        user_input = input("Enter the number of reps done: ")
+        if user_input.isdigit():
+            print("You entered a valid number of reps. Good job!")
+            break
+        else:
+            attempts_reps += 1
+            print(f"You need to enter only digits. Try again. {max_attempts_reps - attempts_reps} tries left.")
+
+    if attempts_reps == max_attempts_reps:
+        print("You've exceeded the maximum number of attempts. Please try again later, idiot.")
+
+    max_attempts_weight = 3
+    attempts_weight = 0
+
+    while attempts_weight < max_attempts_weight:
+        user_input = input("Enter the amount of weight done: ")
+        if user_input.isdigit():
+            print("You entered a number. Good job weak lil boy!")
+            break
+        else:
+            attempts_weight += 1
+            print(f"You need to enter only digits. Try again. {max_attempts_weight - attempts_weight} tries left.")
+
+    if attempts_weight == max_attempts_weight:
+        print("You've exceeded the maximum number of attempts. Please try again later, idiot.")
+
+#Runs the function
+get_exercise()
 #This section is for adding a lift (Sets,Reps,Weight,etc) (Difficulty 1)
 #def is how you use python to write things (Functions)
 #For this function I need to get user input and have them type in the following information:
