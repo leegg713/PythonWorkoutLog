@@ -26,7 +26,7 @@ print("Welcome to Lee's Workout Tracker!")
 #For this function I need to get user input and have them type in the following information:
 #Exercise, Sets, Reps, and Weight (Starting simple)
 
-def get_exercise():
+def add_exercise():
     # Predefined list of exercises
     exercises = [
         "Squat",
@@ -116,16 +116,20 @@ def get_exercise():
 
     print(f"Exercise: {exercise_input} \nSets: {sets_input}  \nReps Completed: {rep_input} \nWeight Used: {weight_input}lbs ")
 
+    return exercise_input, sets_input, rep_input, weight_input
+
+
+
 #Runs the function, can comment this out when testing another section
-#get_exercise()
+#add_exercise()
 
-#This section is for creating/getting the csv file (Headers just like in powershell) (Difficulty 2)
-#Log entry, file spot, file creation
+#This section is for writing the data that was entered to the CSV file
+#Needs to get the user input and add it to the file (Diffculty: 3)
 
-def add_entry_to_CSV():
+def add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input):
     print ("Test function to make sure we in right spot")
-    new_entry = ['Squat', '3', '5', '225'] #Add in data from above for this, hardcoded now for testing
-    #new_entry = [exercise_input, sets_input, rep_input, weight_input]
+    #new_entry = ['Squat', '3', '5', '225'] #Add in data from above for this, hardcoded now for testing
+    new_entry = [exercise_input, sets_input, rep_input, weight_input]
     file_path = os.path.join('WorkoutLog.csv')
         
     with open(file_path, mode='a', newline='') as file:
@@ -137,11 +141,11 @@ def add_entry_to_CSV():
     print("New entry added to WorkoutLog.csv")
 
 # Call the function to test
-add_entry_to_CSV()
+#add_entry_to_CSV()
+
+#Average a lift - May eventually delete but it can prove useful for now for practice
 
 
-#This section is for writing the data that was entered to the CSV file
-#Needs to get the user input and add it to the file (Diffculty: 3)
 
 
 #Function to read workout logs that are already in CSV file Function above needs completion first (Diffculty: 4)
@@ -153,3 +157,14 @@ add_entry_to_CSV()
 
 #Main program loop (difficulty 1) (Else if statement to pick what other function to do)
 
+# Main function to execute the sequence
+
+#def main():
+    # Get the user inputs by calling add_exercise
+ #   exercise_input, sets_input, rep_input, weight_input = add_exercise()
+    # Pass the inputs to add_entry_to_CSV to save them in the CSV
+  #  add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input)
+    
+    # Call the main function
+#if __name__ == "__main__":
+ #   main()
