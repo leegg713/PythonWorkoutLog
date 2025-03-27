@@ -145,13 +145,93 @@ def add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input):
 
 #Average a lift - May eventually delete but it can prove useful for now for practice
 
+# Function to calculate the average weight lifted for a specific exercise
+#Gets average weight per rep
+def average_lift():
+    exercise_to_avg = input("Enter the exercise you want to calculate the average weight for: ")
+    file_path = 'WorkoutLog.csv'
+    
+    if not os.path.exists(file_path):
+        print(f"The file {file_path} does not exist.")
+        return
+    
+    total_weight = 0
+    total_reps = 0
+    
+    # Read the CSV file and calculate the total weight for the selected exercise
+    with open(file_path, mode='r') as file:
+        reader = csv.reader(file)
+        
+        # Skip the header row if there is one
+        next(reader, None)  # Skip the header row (if there is one)
+        
+        for row in reader:
+            exercise, sets, reps, weight = row
+            if exercise == exercise_to_avg:
+               # total_entries += 1
+                total_weight += float(weight) * int(reps) * int(sets)  # Assuming weight is in pounds
+    # Add the total number of reps (sets * reps) to total_reps
+                total_reps += int(reps) * int(sets)
+    # Calculate and display the average
+    if total_reps > 0:
+        avg_weight_per_rep = total_weight / total_reps
+        print(f"The average weight lifted per rep for {exercise_to_avg} is: {avg_weight_per_rep:.2f} lbs")
+    else:
+        print(f"No entries found for {exercise_to_avg}.")
 
-
-
+#Uncomment to test function if we need to add stuff
+#average_lift()
 #Function to read workout logs that are already in CSV file Function above needs completion first (Diffculty: 4)
 
 
 #Display Menu (Difficulty 1)
+
+# Function to display the menu and handle user selection
+#Will want to update this later to not have a million if else, works for now though
+def display_menu():
+    while True:
+        print("\n--- Workout Log Menu ---")
+        print("1. Add Exercise Entry")
+        print("2. Calculate Average Lift")
+        print("3. Exit")
+        
+        choice = input("Select an option (1, 2, or 3): ")
+        
+        if choice == '1':
+            # Call function to add exercise
+            exercise_input, sets_input, rep_input, weight_input = add_exercise()
+            add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input)
+        elif choice == 'Add':
+            # Call function to add exercise
+            exercise_input, sets_input, rep_input, weight_input = add_exercise()
+            add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input)
+        elif choice == 'add':
+            # Call function to add exercise
+            exercise_input, sets_input, rep_input, weight_input = add_exercise()
+            add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input)
+        elif choice == '2':
+            # Call function to calculate average lift
+            average_lift()
+        elif choice == 'Avg':
+            # Call function to calculate average lift
+            average_lift()
+        elif choice == 'Average':
+            # Call function to calculate average lift
+            average_lift()
+        elif choice == 'average':
+            # Call function to calculate average lift
+            average_lift()
+        elif choice == '3':
+            print("Exiting the program.")
+            break  # Exit the program
+        elif choice == 'Exit':
+            print("Exiting the program.")
+            break  # Exit the program
+        elif choice == 'exit':
+            print("Exiting the program.")
+            break  # Exit the program
+        else:
+            print("Invalid option. Please try again.")
 
 # Function to display the menu
 
@@ -159,12 +239,10 @@ def add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input):
 
 # Main function to execute the sequence
 
-#def main():
-    # Get the user inputs by calling add_exercise
- #   exercise_input, sets_input, rep_input, weight_input = add_exercise()
-    # Pass the inputs to add_entry_to_CSV to save them in the CSV
-  #  add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input)
-    
-    # Call the main function
-#if __name__ == "__main__":
- #   main()
+# Main function to execute the program
+def main():
+    display_menu()
+
+# Call the main function
+if __name__ == "__main__":
+    main()
