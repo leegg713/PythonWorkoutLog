@@ -13,10 +13,35 @@
 
 ####TO DO
 
-#Input validation everywhere
-#Track date and time of exercise entered
+#First have the file upload to Google Drive
+#Second add some actual real data to work with
+#Third clean up all comments and make this mess easier to Read
+#Along with updating the readme
 #Have the file in Google Drive so I always have it
+#Input validation everywhere
 
+
+
+#How to Update FILE PATH
+'''
+import gdown
+
+# Step 1: Define the Google Drive file ID
+file_id = 'YOUR_GOOGLE_DRIVE_FILE_ID'  # Replace with your file ID
+
+# Step 2: Generate the download URL using the file ID
+url = f'https://drive.google.com/uc?export=download&id={file_id}'
+
+# Step 3: Download the file to the local environment
+output = 'WorkoutLog.csv'  # You can name the downloaded file here
+gdown.download(url, output, quiet=False)
+
+# Step 4: Now you can use this file just like a local file
+file_path = 'WorkoutLog.csv'
+
+# Your code can now continue working with the file
+
+'''
 
 #Difficult/Future Tense
 #Allow the script to be run from my phone to enter data there
@@ -27,9 +52,14 @@
 import time
 import csv
 import os
+import pandas as pd
+import matplotlib.pyplot as plt
+from datetime import datetime
 
 
 print("Welcome to Lee's Workout Tracker!")
+
+file_path = 'WorkoutLog.csv'
 
 
 #This section is for adding a lift (Sets,Reps,Weight,etc) (Difficulty 1)
@@ -200,6 +230,81 @@ def average_lift():
 #average_lift()
 #Function to read workout logs that are already in CSV file Function above needs completion first (Diffculty: 4)
 
+def plot_exercise_data(file_path):
+    """
+    Reads exercise data from a CSV file and plots a line graph showing the weight lifted per set
+    for each exercise, over time.
+
+    Args:
+    - csv_file (str): The path to the CSV file containing the exercise data.
+    """
+    # Step 1: Read the data from the CSV file
+    exercises = {}  # To store data for each exercise
+
+    with open(file_path, newline='', encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        
+        # Step 2: Process each row
+        for row in reader:
+            
+            # Check if the Date field is not empty
+            date_str = row['Date']
+            if date_str:  # Only process if the Date is not empty
+                try:
+                    # Parse the date from the MM/DD/YY format
+                    date = datetime.strptime(date_str, '%m/%d/%y')
+                except ValueError:
+                    print(f"Warning: Invalid date format in row: {row}")
+                    continue  # Skip this row if the date is invalid
+            else:
+                print(f"Warning: Empty date in row: {row}")
+                continue  # Skip this row if the date is empty
+            
+            
+            exercise = row['Exercise']
+            weight = float(row['Weight'])
+            reps = int(row['Reps'])  # Number of reps for the set
+            set_number = int(row['Sets'])  # Track each set number individually
+            
+            # Initialize a list for the exercise if it doesn't exist
+            if exercise not in exercises:
+                exercises[exercise] = {'dates': [], 'weights': [], 'reps': [], 'set_numbers': []}
+            
+            # Append the data for this set
+            exercises[exercise]['dates'].append(date)
+            exercises[exercise]['weights'].append(weight)
+            exercises[exercise]['reps'].append(reps)
+            exercises[exercise]['set_numbers'].append(set_number)
+
+    # Step 3: Plot a line graph for each exercise
+    plt.figure(figsize=(10, 6))  # Optional: Set the figure size
+
+    for exercise, data in exercises.items():
+        # Plot each set individually
+        plt.plot(data['dates'], data['weights'], marker='o', label=f"{exercise} (Set)")
+
+
+# Add annotations for the number of reps on each set
+    for i, date in enumerate(data['dates']):
+            plt.annotate(f"{data['reps'][i]} reps", 
+                        (data['dates'][i], data['weights'][i]),
+                        textcoords="offset points",
+                        xytext=(0, 5),  # Offset the text slightly to avoid overlap
+                        ha='center')
+    # Adding title and labels
+    plt.title("Weight Lifted Per Set Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Weight (kg)")
+    plt.xticks(rotation=45)  # Rotate date labels for readability
+    plt.legend(title="Exercise")
+
+    # Display the plot
+    plt.tight_layout()  # Optional: Adjust the layout to prevent overlap
+    plt.show()
+
+# Example usage:
+# plot_exercise_data('exercise_log.csv')  # Call this function with your CSV file
+
 
 #Display Menu (Difficulty 1)
 
@@ -210,7 +315,8 @@ def display_menu():
         print("\n--- Workout Log Menu ---")
         print("1. Add Exercise Entry")
         print("2. Calculate Average Lift")
-        print("3. Exit")
+        print("3. Graph it!")
+        print("4. Exit")
         
         choice = input("Select an option (1, 2, or 3): ")
         
@@ -239,6 +345,10 @@ def display_menu():
             # Call function to calculate average lift
             average_lift()
         elif choice == '3':
+            plot_exercise_data(file_path)
+        elif choice == 'Graph':
+            plot_exercise_data(file_path)
+        elif choice == '4':
             print("Exiting the program.")
             break  # Exit the program
         elif choice == 'Exit':
