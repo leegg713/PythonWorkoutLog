@@ -10,6 +10,17 @@
 #6th - Think of how to have other users use it (Marty)
 #7th - Any other ideas for it?
 
+
+####TO DO
+
+#Input validation everywhere
+#Track date and time of exercise entered
+#Have the file in Google Drive so I always have it
+
+
+#Difficult/Future Tense
+#Allow the script to be run from my phone to enter data there
+
 #Import Statements
 #Error popup just means it has not been used, its for getting the time of the input
 #import pandas as pd for when we do graphs and stuff
@@ -114,9 +125,15 @@ def add_exercise():
         print("You've exceeded the maximum number of attempts. Please try again later, idiot.")
 #Prints the user output to see what they entered
 
-    print(f"Exercise: {exercise_input} \nSets: {sets_input}  \nReps Completed: {rep_input} \nWeight Used: {weight_input}lbs ")
 
-    return exercise_input, sets_input, rep_input, weight_input
+    date_input = input("Enter the date of this lift(MM/DD/YY): ")
+    
+    
+    print(f"The date {date_input} is invalid.")
+    
+    print(f"Exercise: {exercise_input} \nSets: {sets_input}  \nReps Completed: {rep_input} \nWeight Used: {weight_input}lbs Date Entered: {date_input} ")
+
+    return exercise_input, sets_input, rep_input, weight_input, date_input
 
 
 
@@ -126,10 +143,10 @@ def add_exercise():
 #This section is for writing the data that was entered to the CSV file
 #Needs to get the user input and add it to the file (Diffculty: 3)
 
-def add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input):
+def add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input, date_input):
     print ("Test function to make sure we in right spot")
     #new_entry = ['Squat', '3', '5', '225'] #Add in data from above for this, hardcoded now for testing
-    new_entry = [exercise_input, sets_input, rep_input, weight_input]
+    new_entry = [exercise_input, sets_input, rep_input, weight_input, date_input]
     file_path = os.path.join('WorkoutLog.csv')
         
     with open(file_path, mode='a', newline='') as file:
@@ -199,16 +216,16 @@ def display_menu():
         
         if choice == '1':
             # Call function to add exercise
-            exercise_input, sets_input, rep_input, weight_input = add_exercise()
-            add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input)
+            exercise_input, sets_input, rep_input, weight_input, date_input = add_exercise()
+            add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input,date_input)
         elif choice == 'Add':
             # Call function to add exercise
-            exercise_input, sets_input, rep_input, weight_input = add_exercise()
-            add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input)
+            exercise_input, sets_input, rep_input, weight_input, date_input = add_exercise()
+            add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input, date_input)
         elif choice == 'add':
             # Call function to add exercise
-            exercise_input, sets_input, rep_input, weight_input = add_exercise()
-            add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input)
+            exercise_input, sets_input, rep_input, weight_input, date_input = add_exercise()
+            add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input, date_input)
         elif choice == '2':
             # Call function to calculate average lift
             average_lift()
