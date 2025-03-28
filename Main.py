@@ -1,74 +1,35 @@
-#Difficulty Level so I know what order to go 1,2,3,4,5  (5 being hardest)
-
-#Steps for Project
-#1st - Get the project to work so I can manually type in the data and it saves to the CSV
-#2nd - script works so that I can select different things to view from the command line and not just the CSV
-#2b - Save the file in two spots in case of any issues with modifying the file(Do that in the script)
-#3rd - Make the sheet be able to be sorted or filtered so it can be a graph (Multiple sheets)?
-#4th - Make the graph look pretty so it can be easily read
-#5th - Think of some sort of authentication step to build into it(Just for me to authenticate)
-#6th - Think of how to have other users use it (Marty)
-#7th - Any other ideas for it?
-
-
 ####TO DO
 
-#First have the file upload to Google Drive
-#Second add some actual real data to work with
-#Third clean up all comments and make this mess easier to Read
-#Along with updating the readme
-#Have the file in Google Drive so I always have it
+#Clean up all comments and make this mess easier to Read - Almost done - Need to comment graph section better
+#Create a test section at the bottom - So like if you want to just run add exercise or just run the graph to test it
+#Add some actual real data to work with from previous weeks
+#Update ReadMe
 #Input validation everywhere
-
-
-
-#How to Update FILE PATH
-'''
-import gdown
-
-# Step 1: Define the Google Drive file ID
-file_id = 'YOUR_GOOGLE_DRIVE_FILE_ID'  # Replace with your file ID
-
-# Step 2: Generate the download URL using the file ID
-url = f'https://drive.google.com/uc?export=download&id={file_id}'
-
-# Step 3: Download the file to the local environment
-output = 'WorkoutLog.csv'  # You can name the downloaded file here
-gdown.download(url, output, quiet=False)
-
-# Step 4: Now you can use this file just like a local file
-file_path = 'WorkoutLog.csv'
-
-# Your code can now continue working with the file
-
-'''
+#Set up classes so it can be used in other scripts??
 
 #Difficult/Future Tense
 #Allow the script to be run from my phone to enter data there
+#Use the script in Google Sheets etc, not just locally
+#Authentication to be able to run the script - Can comment it out after it works to save me time daily, but will be a nice feature to have
 
 #Import Statements
-#Error popup just means it has not been used, its for getting the time of the input
-#import pandas as pd for when we do graphs and stuff
 import time
-import csv
-import os
-import pandas as pd
-import matplotlib.pyplot as plt
-from datetime import datetime
+import csv #Used to import the CSV
+import os #Used to import the file path for the CSV
+import pandas as pd #Not currently used
+import matplotlib.pyplot as plt #Used to plot the graph
+from datetime import datetime #Used to 
 
 
-print("Welcome to Lee's Workout Tracker!")
+print("Welcome to Lee's Workout Tracker!") 
 
+#Global variables - Not going to change
 file_path = 'WorkoutLog.csv'
 
 
-#This section is for adding a lift (Sets,Reps,Weight,etc) (Difficulty 1)
-#def is how you use python to write things (Functions)
-#For this function I need to get user input and have them type in the following information:
-#Exercise, Sets, Reps, and Weight (Starting simple)
 
-def add_exercise():
-    # Predefined list of exercises
+def add_exercise(): #Add exercise to CSV - Input of Exercise, Sets, Reps, Weight, Date
+    # Predefined list of exercises, can add to this list as needed
     exercises = [
         "Squat",
         "Pause Squat",
@@ -91,11 +52,10 @@ def add_exercise():
     for exercise in exercises:
         print(exercise)
 
-   # user_input =  input("Enter an exercise from the list above: ")
 
-# Validate user input against the list of exercises
+# Set the maximum number of attempts to enter the name of an exercise
 
-# Set the maximum number of attempts
+#Asking for user input for which exercise
     max_attempts_lift = 3
     attempts_lift = 0
     while attempts_lift < max_attempts_lift:
@@ -113,6 +73,8 @@ def add_exercise():
     max_attempts_sets = 3
     attempts_sets = 0
     
+#Asking for user input for the amount of sets done
+    
     while attempts_sets < max_attempts_sets:
         sets_input = input("Enter the amount of sets done(Weight will be select once):")
         if sets_input.isdigit():
@@ -124,6 +86,7 @@ def add_exercise():
     if attempts_sets == max_attempts_sets:
         print("You've exceeded the maximum number of attempts. Please try again later idiot.")
 
+#Asking for user input for the amount of reps done
     max_attempts_reps = 3
     attempts_reps = 0
 
@@ -141,11 +104,13 @@ def add_exercise():
 
     max_attempts_weight = 3
     attempts_weight = 0
+    
+#Asking for user input for the amount of weight done
 
     while attempts_weight < max_attempts_weight:
         weight_input = input("Enter the amount of weight done(in pounds): ")
         if weight_input.isdigit():
-            print(f"You said you did this much weight: {weight_input}")
+            print(f"You said you did this much weight in lbs: {weight_input}")
             break
         else:
             attempts_weight += 1
@@ -153,7 +118,8 @@ def add_exercise():
 
     if attempts_weight == max_attempts_weight:
         print("You've exceeded the maximum number of attempts. Please try again later, idiot.")
-#Prints the user output to see what they entered
+
+#Asks the user for a date - Must be in the specific date format
 
 
     date_input = input("Enter the date of this lift(MM/DD/YY): ")
@@ -161,43 +127,37 @@ def add_exercise():
     
     print(f"The date {date_input} is invalid.")
     
+    #Can maybe delete the line below - Just a print to the console to check it
     print(f"Exercise: {exercise_input} \nSets: {sets_input}  \nReps Completed: {rep_input} \nWeight Used: {weight_input}lbs Date Entered: {date_input} ")
 
+    #Returns the inputs to use in the add_entry_to_CSV function
     return exercise_input, sets_input, rep_input, weight_input, date_input
 
 
-
-#Runs the function, can comment this out when testing another section
-#add_exercise()
-
-#This section is for writing the data that was entered to the CSV file
-#Needs to get the user input and add it to the file (Diffculty: 3)
+#Function to add the entry to the CSV 
 
 def add_entry_to_CSV(exercise_input, sets_input, rep_input, weight_input, date_input):
-    print ("Test function to make sure we in right spot")
-    #new_entry = ['Squat', '3', '5', '225'] #Add in data from above for this, hardcoded now for testing
+
+    #Takes the user input from add_exercise and creates a variable (List)
     new_entry = [exercise_input, sets_input, rep_input, weight_input, date_input]
-    file_path = os.path.join('WorkoutLog.csv')
         
+    #This function opens the file specified by file_path.​
+    #mode='a': Opens the file in append mode, meaning new data will be added to the end of the file without altering existing content. ​
+    #newline='': Ensures that newline characters are handled consistently across different operating systems, preventing extra blank lines in the CSV file. ​
+    #with: Utilizes a context manager to handle the file, ensuring it is properly closed after the indented block is executed, even if errors occur.
     with open(file_path, mode='a', newline='') as file:
         writer = csv.writer(file)
         
         # Write the new entry to the CSV file
         writer.writerow(new_entry)
         
-    print("New entry added to WorkoutLog.csv")
+    print("New entry added to WorkoutLog.csv") #Can delete this after further testing, just used to tell you it worked with no errors
 
-# Call the function to test
-#add_entry_to_CSV()
 
-#Average a lift - May eventually delete but it can prove useful for now for practice
-
-# Function to calculate the average weight lifted for a specific exercise
-#Gets average weight per rep
+#Function to get the average weight lifted per rep
 def average_lift():
     exercise_to_avg = input("Enter the exercise you want to calculate the average weight for: ")
     file_path = 'WorkoutLog.csv'
-    
     if not os.path.exists(file_path):
         print(f"The file {file_path} does not exist.")
         return
@@ -213,9 +173,8 @@ def average_lift():
         next(reader, None)  # Skip the header row (if there is one)
         
         for row in reader:
-            exercise, sets, reps, weight = row
-            if exercise == exercise_to_avg:
-               # total_entries += 1
+            exercise, sets, reps, weight, *extra_columns = row #Extra_columns needed otherwise it won't work due to an error saying its missing a row (Date)
+            if exercise == exercise_to_avg: #Check to see if user input matches an exercise in the CSV
                 total_weight += float(weight) * int(reps) * int(sets)  # Assuming weight is in pounds
     # Add the total number of reps (sets * reps) to total_reps
                 total_reps += int(reps) * int(sets)
@@ -226,10 +185,8 @@ def average_lift():
     else:
         print(f"No entries found for {exercise_to_avg}.")
 
-#Uncomment to test function if we need to add stuff
-#average_lift()
-#Function to read workout logs that are already in CSV file Function above needs completion first (Diffculty: 4)
 
+#Function to create a graph to see trends for lifts
 def plot_exercise_data(file_path):
     """
     Reads exercise data from a CSV file and plots a line graph showing the weight lifted per set
@@ -302,14 +259,7 @@ def plot_exercise_data(file_path):
     plt.tight_layout()  # Optional: Adjust the layout to prevent overlap
     plt.show()
 
-# Example usage:
-# plot_exercise_data('exercise_log.csv')  # Call this function with your CSV file
-
-
-#Display Menu (Difficulty 1)
-
-# Function to display the menu and handle user selection
-#Will want to update this later to not have a million if else, works for now though
+#Function to a display menu that a user will see first
 def display_menu():
     while True:
         print("\n--- Workout Log Menu ---")
@@ -359,12 +309,6 @@ def display_menu():
             break  # Exit the program
         else:
             print("Invalid option. Please try again.")
-
-# Function to display the menu
-
-#Main program loop (difficulty 1) (Else if statement to pick what other function to do)
-
-# Main function to execute the sequence
 
 # Main function to execute the program
 def main():
