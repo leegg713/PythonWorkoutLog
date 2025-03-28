@@ -1,8 +1,8 @@
 ####TO DO
 
-#Clean up all comments and make this mess easier to Read - Almost done - Need to comment graph section better
-#Create a test section at the bottom - So like if you want to just run add exercise or just run the graph to test it
-#Add some actual real data to work with from previous weeks
+#Clean up all comments and make this mess easier to Read - Almost done - Need to comment graph section better - Completed
+#Create a test section at the bottom - So like if you want to just run add exercise or just run the graph to test it - Section there but not completed
+#Add some actual real data to work with from previous weeks 
 #Update ReadMe
 #Input validation everywhere
 #Set up classes so it can be used in other scripts??
@@ -197,6 +197,8 @@ def plot_exercise_data(file_path):
     """
     # Step 1: Read the data from the CSV file
     exercises = {}  # To store data for each exercise
+    
+    #This opens the file and reads it file_path is define above in the script as WorkoutLog.csv
 
     with open(file_path, newline='', encoding='utf-8') as file:
         reader = csv.DictReader(file)
@@ -211,21 +213,21 @@ def plot_exercise_data(file_path):
                     # Parse the date from the MM/DD/YY format
                     date = datetime.strptime(date_str, '%m/%d/%y')
                 except ValueError:
-                    print(f"Warning: Invalid date format in row: {row}")
+                    print(f"Warning: Invalid date format in row: {row}") #Outputs an error the console if a date is not valid... should not occur as date input is validate
                     continue  # Skip this row if the date is invalid
             else:
-                print(f"Warning: Empty date in row: {row}")
+                print(f"Warning: Empty date in row: {row}") #Prints an error to the console if the date is empty... should not occur with new data
                 continue  # Skip this row if the date is empty
             
             
-            exercise = row['Exercise']
-            weight = float(row['Weight'])
+            exercise = row['Exercise'] #Variable for that row exercise
+            weight = float(row['Weight']) #Variable for the weight for that row
             reps = int(row['Reps'])  # Number of reps for the set
             set_number = int(row['Sets'])  # Track each set number individually
             
-            # Initialize a list for the exercise if it doesn't exist
-            if exercise not in exercises:
-                exercises[exercise] = {'dates': [], 'weights': [], 'reps': [], 'set_numbers': []}
+            # Initialize a list for the exercise if it doesn't exist - Not needed as we validate the list before we can enter it
+            # if exercise not in exercises:
+            #    exercises[exercise] = {'dates': [], 'weights': [], 'reps': [], 'set_numbers': []}
             
             # Append the data for this set
             exercises[exercise]['dates'].append(date)
@@ -234,14 +236,14 @@ def plot_exercise_data(file_path):
             exercises[exercise]['set_numbers'].append(set_number)
 
     # Step 3: Plot a line graph for each exercise
-    plt.figure(figsize=(10, 6))  # Optional: Set the figure size
+    plt.figure(figsize=(10, 6))  # Optional: Set the figure size - Not sure exactly what this modifys - Look into it later
 
     for exercise, data in exercises.items():
         # Plot each set individually
         plt.plot(data['dates'], data['weights'], marker='o', label=f"{exercise} (Set)")
 
 
-# Add annotations for the number of reps on each set
+# Add annotations for the number of reps on each set = Says how many reps was done for each set
     for i, date in enumerate(data['dates']):
             plt.annotate(f"{data['reps'][i]} reps", 
                         (data['dates'][i], data['weights'][i]),
@@ -251,12 +253,12 @@ def plot_exercise_data(file_path):
     # Adding title and labels
     plt.title("Weight Lifted Per Set Over Time")
     plt.xlabel("Date")
-    plt.ylabel("Weight (kg)")
+    plt.ylabel("Weight (lbs)")
     plt.xticks(rotation=45)  # Rotate date labels for readability
     plt.legend(title="Exercise")
 
     # Display the plot
-    plt.tight_layout()  # Optional: Adjust the layout to prevent overlap
+    plt.tight_layout()  # Optional: Adjust the layout to prevent overlap - Is this needed or better or worse?/ - Look into later
     plt.show()
 
 #Function to a display menu that a user will see first
@@ -268,7 +270,7 @@ def display_menu():
         print("3. Graph it!")
         print("4. Exit")
         
-        choice = input("Select an option (1, 2, or 3): ")
+        choice = input("Select an option (1, 2, 3, or 4): ")
         
         if choice == '1':
             # Call function to add exercise
@@ -298,6 +300,8 @@ def display_menu():
             plot_exercise_data(file_path)
         elif choice == 'Graph':
             plot_exercise_data(file_path)
+        elif choice == 'graph':
+            plot_exercise_data(file_path)
         elif choice == '4':
             print("Exiting the program.")
             break  # Exit the program
@@ -317,3 +321,5 @@ def main():
 # Call the main function
 if __name__ == "__main__":
     main()
+    
+#Add section here to be able to test one function without having to go through the whole program??
