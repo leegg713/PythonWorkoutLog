@@ -1,8 +1,10 @@
 ####TO DO
 
-#Clean up all comments and make this mess easier to Read - Almost done - Need to comment graph section better - Completed
-#Create a test section at the bottom - So like if you want to just run add exercise or just run the graph to test it - Section there but not completed
-#Add some actual real data to work with from previous weeks 
+#Add Deadlift Data
+#Fix graph so that it outputs more useful information - May need to rework that whole function now that we have real data
+
+
+
 #Update ReadMe
 #Input validation everywhere
 #Set up classes so it can be used in other scripts??
@@ -122,7 +124,7 @@ def add_exercise(): #Add exercise to CSV - Input of Exercise, Sets, Reps, Weight
 #Asks the user for a date - Must be in the specific date format
 
 
-    date_input = input("Enter the date of this lift(MM/DD/YY): ")
+    date_input = input("Enter the date of this lift (MM/DD/YY), or press Enter to use the previous date: ")
     
     
     print(f"The date {date_input} is invalid.")
@@ -205,7 +207,7 @@ def plot_exercise_data(file_path):
         
         # Step 2: Process each row
         for row in reader:
-            
+            '''
             # Check if the Date field is not empty
             date_str = row['Date']
             if date_str:  # Only process if the Date is not empty
@@ -218,16 +220,16 @@ def plot_exercise_data(file_path):
             else:
                 print(f"Warning: Empty date in row: {row}") #Prints an error to the console if the date is empty... should not occur with new data
                 continue  # Skip this row if the date is empty
-            
-            
+            '''
+            date = row['Date']
             exercise = row['Exercise'] #Variable for that row exercise
             weight = float(row['Weight']) #Variable for the weight for that row
             reps = int(row['Reps'])  # Number of reps for the set
             set_number = int(row['Sets'])  # Track each set number individually
             
-            # Initialize a list for the exercise if it doesn't exist - Not needed as we validate the list before we can enter it
-            # if exercise not in exercises:
-            #    exercises[exercise] = {'dates': [], 'weights': [], 'reps': [], 'set_numbers': []}
+            # Initialize a list for the exercise if it doesn't exist
+            if exercise not in exercises:
+                exercises[exercise] = {'dates': [], 'weights': [], 'reps': [], 'set_numbers': []}
             
             # Append the data for this set
             exercises[exercise]['dates'].append(date)
@@ -240,8 +242,8 @@ def plot_exercise_data(file_path):
 
     for exercise, data in exercises.items():
         # Plot each set individually
-        plt.plot(data['dates'], data['weights'], marker='o', label=f"{exercise} (Set)")
-
+       # plt.plot(data['dates'], data['weights'], marker='o', label=f"{exercise} (Set)")
+        plt.plot(data['dates'], data['weights'], label=exercise, marker='o')
 
 # Add annotations for the number of reps on each set = Says how many reps was done for each set
     for i, date in enumerate(data['dates']):
