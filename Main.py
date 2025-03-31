@@ -1,7 +1,9 @@
 ####TO DO
 
-#Add Deadlift Data
+#Add Deadlift Data - Completed on 3/31
 #Fix graph so that it outputs more useful information - May need to rework that whole function now that we have real data
+
+
 
 
 
