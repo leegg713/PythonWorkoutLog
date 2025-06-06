@@ -88,25 +88,29 @@ def add_exercise():
     for exercise in exercises:
         print(exercise)
 
-    # Input exercise with attempts
     max_attempts_lift = 3
     attempts_lift = 0
     exercise_input = None
+
     while attempts_lift < max_attempts_lift:
         user_input = input("\nEnter the name of the exercise: ").strip().replace(" ", "")
         for exercise in exercises:
-            if exercise.lower().replace(" ", "") == user_input:
+            if exercise.lower().replace(" ", "") == user_input.lower():
                 print(f"You've selected: {exercise}")
                 time.sleep(0.5)
                 os.system("clear")
-                exercise_input = exercise
+                exercise_input = exercise  # Store the correctly formatted name
                 break
         else:
             attempts_lift += 1
             print(f"Invalid exercise. {max_attempts_lift - attempts_lift} attempt(s) left.")
+
+        if exercise_input:
+            break  # Exit loop after successful selection
+
     if exercise_input is None:
         print("You've exceeded the maximum number of attempts. Please try again later.")
-        return  # Exit the function early
+        return
 
     # Get sets, reps, weight
     sets_input = get_valid_number_input("Sets > ", field_name="Sets", max_attempts=3, clear_screen=True)
