@@ -3,14 +3,12 @@
 #Add Deadlift Data - Completed on 3/31
 #Update Exercise list entry to always be capitilized with no spaces for user input and in the list itself as well??? -- Just no spaces would be best actually -- Completed
 #Date validation for entering dates - Completed
-#Graph section next
-#Clear function -- To clear a certain lift that you entered --- Can make it so it only clears the last one entered if you have a typo
+#Graph section next - Completed for now
+#Clear function -- To clear a certain lift that you entered --- Completed -- Just clears last one
 #Edit function to edit a certain entry -- Would need to have date, lift, sets, reps to make it specific enough to edit
-#Fix graph so that it outputs more useful information - May need to rework that whole function now that we have real data
 
 #Update ReadMe
-#Input validation everywhere
-#Set up classes so it can be used in other scripts??
+#Create requirements.txt file to use
 
 #Difficult/Future Tense
 #Allow the script to be run from my phone to enter data there -- Works in Replit currently
@@ -20,9 +18,8 @@
 import time  #Used for adding delays to the script if needed
 import csv  #Used to import the CSV
 import os  #Used to import the file path for the CSV and other useful functions
-#import pandas as pd #Not currently used
+import pandas as pd #Used to get a dataframe for the graph
 import matplotlib.pyplot as plt  #Used to plot the graph
-from datetime import datetime  #Used to
 
 print("Welcome to Lee's Workout Tracker!")
 
@@ -61,6 +58,25 @@ def get_valid_number_input(prompt, field_name, max_attempts=3, clear_screen=Fals
     print("You've exceeded the maximum number of attempts. Please try again later.")
     return None
 
+
+def clear_last_entry():
+    #Read all lines from the file
+    with open(file_path, "r") as file:
+        lines = file.readlines()
+
+    #Remove the last line
+    if lines:
+        lines = lines[:-1]  # All lines except the last
+
+        # Step 3: Write the remaining lines back to the file -- This will overwrite the whole file with the old data minus the last line
+        with open(file_path, "w") as file:
+            file.writelines(lines)
+
+        print("Last entry removed.")
+    else:
+        print("CSV is empty — nothing to remove.")
+
+
 def add_exercise():
     exercises = [
         "Squat", "PauseSquat", "GobletSquat", "PauseBench",
@@ -78,13 +94,13 @@ def add_exercise():
     exercise_input = None
     while attempts_lift < max_attempts_lift:
         user_input = input("\nEnter the name of the exercise: ").strip().replace(" ", "")
-        match = next((ex for ex in exercises if ex.lower() == user_input.lower()), None)
-        if match:
-            exercise_input = match
-            print(f"You've selected: {match}")
-            time.sleep(0.5)
-            os.system("clear")
-            break
+        for exercise in exercises:
+            if exercise.lower().replace(" ", "") == user_input:
+                print(f"You've selected: {exercise}")
+                time.sleep(0.5)
+                os.system("clear")
+                exercise_input = exercise
+                break
         else:
             attempts_lift += 1
             print(f"Invalid exercise. {max_attempts_lift - attempts_lift} attempt(s) left.")
@@ -127,6 +143,8 @@ def add_exercise():
 
 #Function to get the average weight lifted per rep
 def average_lift():
+    time.sleep(0.5)
+    os.system("clear")
     exercise_to_avg = input("Enter the exercise you want to calculate the average weight for: ")
     file_path = 'WorkoutLog.csv'
     if not os.path.exists(file_path):
@@ -152,29 +170,50 @@ def average_lift():
     if total_reps > 0:
         avg_weight_per_rep = total_weight / total_reps
         print(f"The average weight lifted per rep for {exercise_to_avg} is: {avg_weight_per_rep:.2f} lbs")
+        time.sleep(5)
+        os.system("clear")
     else:
         print(f"No entries found for {exercise_to_avg}.")
+        time.sleep(5)
+        os.system("clear")
 
 #Function to create a graph to see trends for lifts
-def plot_exercise_data(file_path):
-    """
-    Reads exercise data from a CSV file and plots a line graph showing the weight lifted per set
-    for each exercise, over time.
+def plot_exercise_data():
+    df = pd.read_csv(file_path) #Dataframe using pandas to read the csv
+    #print(df.head()) #Prints First 5 rows to test it out to make sure it imported correct
 
-    Args:
-    - csv_file (str): The path to the CSV file containing the exercise data.
-    """
-    # Step 1: Read the data from the CSV file
-    exercises = {}  # To store data for each exercise
+    lift_name = input("\nEnter the name of the exercise to get a graph for: ").strip().replace(" ", "")
+    lift_data = df[df["Exercise"] == lift_name]
 
-    #This opens the file and reads it file_path is define above in the script as WorkoutLog.csv
-'''
-    with open(file_path, newline='', encoding='utf-8') as file:
-        reader = csv.DictReader(file)
+    plt.plot(lift_data["Date"], lift_data["Weight"], marker="o")
+    plt.title(f"{lift_name} Weight Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Weight")
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
 
-        # Step 2: Process each row
-        for row in reader:
-'''
+    '''
+    plt.figure(figsize=(10, 6))
+    for weight in lift_data["Weight"].unique():
+        weight_data = lift_data[lift_data["Weight"] == weight]
+        plt.plot(weight_data["Date"], weight_data["Reps"], marker="o", label=f"{weight} lbs")
+
+    plt.title(f"{lift_name} — Reps Over Time (Grouped by Weight)")
+    plt.xlabel("Date")
+    plt.ylabel("Reps")
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.legend(title="Weight")
+    plt.tight_layout()
+    plt.show()
+
+    '''
+
+
+
+
 #Function to a display menu that a user will see first
 def display_menu():
     while True:
@@ -182,9 +221,10 @@ def display_menu():
         print("1. Add Exercise Entry")
         print("2. Calculate Average Lift")
         print("3. Graph it!")
-        print("4. Exit")
+        print("4. Clear last entry")
+        print("5. Exit")
 
-        choice = input("Select an option (1, 2, 3, or 4): ")
+        choice = input("Select an option (1, 2, 3, 4, or 5): ")
 
         if choice == '1' or choice == 'add' or choice == 'Add':
             # Call function to add exercise
@@ -196,8 +236,11 @@ def display_menu():
             # Call function to calculate average lift
             average_lift()
         elif choice == '3' or choice == 'Graph' or choice == 'graph':
-            plot_exercise_data(file_path)
-        elif choice == '4' or choice == 'Exit' or choice == 'exit':
+            plot_exercise_data()
+
+        elif choice == '4' or choice == 'clear' or choice == 'remove' or choice == "Clear" or choice == "Remove":
+            clear_last_entry()
+        elif choice == '5' or choice == 'Exit' or choice == 'exit':
             print("Exiting the program.")
             break  # Exit the program
         else:
