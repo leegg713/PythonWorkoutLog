@@ -168,13 +168,13 @@ def plot_exercise_data(file_path):
     exercises = {}  # To store data for each exercise
 
     #This opens the file and reads it file_path is define above in the script as WorkoutLog.csv
-
+'''
     with open(file_path, newline='', encoding='utf-8') as file:
         reader = csv.DictReader(file)
 
         # Step 2: Process each row
         for row in reader:
-
+'''
 #Function to a display menu that a user will see first
 def display_menu():
     while True:
