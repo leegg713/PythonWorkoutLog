@@ -1,9 +1,10 @@
 ####TO DO
 
 #Update function for adding exercise entry to be able to use enter to use the last entry - Completed
-#WILKS Calculator Function
-#DOTS Calculator Function
-#1RM Max calculator Function
+#Should just be a few if statements for those
+#WILKS Calculator Function - Update so user can use kg or lbs
+#DOTS Calculator Function - Update so user can use kg or lbs
+#1RM Max calculator Function - Update so user can use kg or lbs
 #
 
 #Difficult/Future Tense
@@ -180,6 +181,78 @@ def average_lift():
         time.sleep(5)
         os.system("clear")
 
+
+def wilks():
+    
+    os.system("clear")
+    print("Wilks Calculator for Men")
+    weight_lbs = float(input("Enter your body weight in pounds: "))
+    total_lbs = float(input("Enter your total for the big 3 lifts in pounds(squat,bench,deadlift) "))
+    #Variables for wilks equation
+    #Convert pounds to KG for equation to work
+    total = total_lbs * 0.45359237
+    weight = weight_lbs * 0.45359237
+    a = -216.0475144
+    b = 16.2606339
+    c = -0.002388645
+    d = -0.00113732
+    e = 7.01863E-06 # equivalent to 7.01863 x 10^-6
+    f = -1.291E-08 # equivalent to -1.291 × 10^-8
+    coefficient =  500 / (a + b*(weight) + c*(weight**2) + d*(weight**3) +  e*(weight**4) + f*(weight**5))
+    wilks = round(total * coefficient, 2)
+    print(f"Your Wilks score is {wilks} with a body weight of {weight_lbs} and a total of {total_lbs}")
+    time.sleep(5)
+    os.system("clear")
+
+def dots():
+    print("Dots Calculator")
+    weight_lbs = float(input("Enter your body weight in pounds: "))
+    total_lbs = float(input("Enter your total for the big 3 lifts in pounds(squat,bench,deadlift) "))
+    #Variables for wilks equation
+    #Convert pounds to KG for equation to work
+    total = total_lbs * 0.45359237
+    weight = weight_lbs * 0.45359237
+    a = -307.75076
+    b = 24.0900756
+    c = -0.1918759221
+    d = 0.0007391293
+    e = -0.000001093
+    coefficient = (a + b*(weight) + c*(weight**2) + d*(weight**3) +  e*(weight**4))
+    dots_score = (500 / coefficient) * total
+    print(f"Your DOTS score is {dots_score} with a body weight of {weight_lbs} and a total of {total_lbs}")
+    time.sleep(5)
+    os.system("clear")
+
+def one_rep_max():
+    print("1 rep max calculator")
+    weight = float(input("Enter the weight used: "))
+    reps = float(input("Enter the reps completed: "))
+    max = round(weight * reps**0.1, 2)
+    print(f"Your estimated 1 rep max is {max}")
+    time.sleep(5)
+    os.system("clear")
+
+
+
+def calculator():
+    os.system("clear")
+    print("Calculator Page")
+    print("Options are average for a lift, WILKS, DOTS, 1RM, ")
+    calc = input("What would you like to calculate? ").strip().lower()
+    if calc == "average":
+        average_lift()
+    elif calc == "wilks":
+        wilks()
+    elif calc == "dots":
+        dots()
+    elif calc == "1rm":
+        #print("1RM calculator")
+        one_rep_max()
+    else:
+        print("Nothing valid selected... clearing page and returning to main menu")
+        time.sleep(3)
+        os.system("clear")
+
 #Function to create a graph to see trends for lifts
 def plot_exercise_data():
     df = pd.read_csv(file_path) #Dataframe using pandas to read the csv
@@ -222,7 +295,7 @@ def display_menu():
     while True:
         print("\n--- Workout Log Menu ---")
         print("1. Add Exercise Entry")
-        print("2. Calculate Average Lift")
+        print("2. Calculator")
         print("3. Graph it!")
         print("4. Clear last entry")
         print("5. Exit")
@@ -235,9 +308,9 @@ def display_menu():
             #exercise_input, sets_input, rep_input, weight_input, date_input = add_exercise()
             #add_entry_to_CSV(exercise_input, sets_input, rep_input,weight_input, date_input)
         
-        elif choice == '2' or choice == 'Avg' or choice == 'Average' or choice == 'average' or choice == 'avg':
+        elif choice == '2' or choice == 'Avg' or choice == 'Average' or choice == 'average' or choice == 'avg' or choice == "Calculator" or choice == "Calc" or choice == "calculator":
             # Call function to calculate average lift
-            average_lift()
+            calculator()
         elif choice == '3' or choice == 'Graph' or choice == 'graph':
             plot_exercise_data()
 
