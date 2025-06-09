@@ -2,10 +2,13 @@
 
 #Update function for adding exercise entry to be able to use enter to use the last entry - Completed
 #Should just be a few if statements for those
-#WILKS Calculator Function - Update so user can use kg or lbs
-#DOTS Calculator Function - Update so user can use kg or lbs
-#1RM Max calculator Function - Update so user can use kg or lbs
-#
+#WILKS Calculator Function - Update so user can use kg or lbs -- Completed
+#DOTS Calculator Function - Update so user can use kg or lbs -- Completed
+#1RM Max calculator Function - Update so user can use kg or lbs -- Only works in lbs right now
+
+#Add an exercise to the list of exercises?
+
+#Make a function for asking the user for kg or lbs --- Just for readability -- Completed
 
 #Difficult/Future Tense
 #Allow the script to be run from my phone to enter data there -- Works in Replit currently
@@ -72,6 +75,23 @@ def clear_last_entry():
         print("Last entry removed.")
     else:
         print("CSV is empty — nothing to remove.")
+
+#Function to get weight and total in kgs and lbs
+
+def get_weight_total():
+    type = input("Enter lbs or kgs: ").strip().lower()
+    if type == "lbs":
+        weight_lbs = float(input("Enter your body weight in pounds: "))
+        total_lbs = float(input("Enter your total for the big 3 lifts in pounds(squat,bench,deadlift) "))
+        total_kg = total_lbs * 0.45359237
+        weight_kg = weight_lbs * 0.45359237
+    else:
+        weight_kg = float(input("Enter your body weight in kilograms: "))
+        total_kg = float(input("Enter your total for the big 3 lifts in kilograms (squat, bench, deadlift): "))
+        weight_lbs = weight_kg / 0.45359237
+        total_lbs = total_kg / 0.45359237
+
+    return weight_kg, total_kg, weight_lbs, total_lbs
 
 
 def add_exercise():
@@ -181,47 +201,74 @@ def average_lift():
         time.sleep(5)
         os.system("clear")
 
-
+#Get WILKS Score Function
 def wilks():
     
     os.system("clear")
     print("Wilks Calculator for Men")
-    weight_lbs = float(input("Enter your body weight in pounds: "))
-    total_lbs = float(input("Enter your total for the big 3 lifts in pounds(squat,bench,deadlift) "))
+    #get_weight_total()
+    result = get_weight_total()
+    if not result:
+        return  # If invalid input, exit function
+
+    weight_kg, total_kg, weight_lbs, total_lbs = result # The order the values are returned in from the function and this unpacks the variables vs setting it equal to result
+
+    '''
+    type = input("Enter lbs or kgs: ").strip().lower()
+    if type == "lbs":
+        weight_lbs = float(input("Enter your body weight in pounds: "))
+        total_lbs = float(input("Enter your total for the big 3 lifts in pounds(squat,bench,deadlift) "))
+        total_kg = total_lbs * 0.45359237
+        weight_kg = weight_lbs * 0.45359237
+    else:
+        weight_kg = float(input("Enter your body weight in kilograms: "))
+        total_kg = float(input("Enter your total for the big 3 lifts in kilograms (squat, bench, deadlift): "))
+        weight_lbs = weight_kg / 0.45359237
+        total_lbs = total_kg / 0.45359237
+
+        '''
+    #weight_lbs = float(input("Enter your body weight in pounds: "))
+    #total_lbs = float(input("Enter your total for the big 3 lifts in pounds(squat,bench,deadlift) "))
     #Variables for wilks equation
     #Convert pounds to KG for equation to work
-    total = total_lbs * 0.45359237
-    weight = weight_lbs * 0.45359237
+    #total = total_lbs * 0.45359237
+    #weight = weight_lbs * 0.45359237
     a = -216.0475144
     b = 16.2606339
     c = -0.002388645
     d = -0.00113732
     e = 7.01863E-06 # equivalent to 7.01863 x 10^-6
     f = -1.291E-08 # equivalent to -1.291 × 10^-8
-    coefficient =  500 / (a + b*(weight) + c*(weight**2) + d*(weight**3) +  e*(weight**4) + f*(weight**5))
-    wilks = round(total * coefficient, 2)
-    print(f"Your Wilks score is {wilks} with a body weight of {weight_lbs} and a total of {total_lbs}")
-    time.sleep(5)
+    coefficient =  500 / (a + b*(weight_kg) + c*(weight_kg**2) + d*(weight_kg**3) +  e*(weight_kg**4) + f*(weight_kg**5))
+    wilks = round(total_kg * coefficient, 2)
+    print(f"\nYour Wilks score is {round(wilks,2)}")
+    print(f"Body weight: {round(weight_kg, 2)} kg ({round(weight_lbs, 2)} lbs)")
+    print(f"Total lift: {round(total_kg, 2)} kg ({round(total_lbs, 2)} lbs)")
+    time.sleep(10)
     os.system("clear")
 
+#Get DOTS Score Function
 def dots():
     print("Dots Calculator")
-    weight_lbs = float(input("Enter your body weight in pounds: "))
-    total_lbs = float(input("Enter your total for the big 3 lifts in pounds(squat,bench,deadlift) "))
-    #Variables for wilks equation
-    #Convert pounds to KG for equation to work
-    total = total_lbs * 0.45359237
-    weight = weight_lbs * 0.45359237
+    #get_weight_total()
+    result = get_weight_total()
+    if not result:
+        return  # If invalid input, exit function
+
+    weight_kg, total_kg, weight_lbs, total_lbs = result # The order the values are returned in from the function and this unpacks the variables vs setting it equal to result
     a = -307.75076
     b = 24.0900756
     c = -0.1918759221
     d = 0.0007391293
     e = -0.000001093
-    coefficient = (a + b*(weight) + c*(weight**2) + d*(weight**3) +  e*(weight**4))
-    dots_score = (500 / coefficient) * total
-    print(f"Your DOTS score is {dots_score} with a body weight of {weight_lbs} and a total of {total_lbs}")
-    time.sleep(5)
+    coefficient = (a + b*(weight_kg) + c*(weight_kg**2) + d*(weight_kg**3) +  e*(weight_kg**4))
+    dots_score = (500 / coefficient) * total_kg
+    print(f"\nYour DOTS score is {round(dots_score, 2)}")
+    print(f"Body weight: {round(weight_kg, 2)} kg ({round(weight_lbs, 2)} lbs)")
+    print(f"Total lift: {round(total_kg, 2)} kg ({round(total_lbs, 2)} lbs)")
+    time.sleep(10)
     os.system("clear")
+
 
 def one_rep_max():
     print("1 rep max calculator")
