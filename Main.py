@@ -1,14 +1,10 @@
 ####TO DO
 
-#Add Deadlift Data - Completed on 3/31
-#Update Exercise list entry to always be capitilized with no spaces for user input and in the list itself as well??? -- Just no spaces would be best actually -- Completed
-#Date validation for entering dates - Completed
-#Graph section next - Completed for now
-#Clear function -- To clear a certain lift that you entered --- Completed -- Just clears last one
-#Edit function to edit a certain entry -- Would need to have date, lift, sets, reps to make it specific enough to edit
-
-#Update ReadMe
-#Create requirements.txt file to use
+#Update function for adding exercise entry to be able to use enter to use the last entry - Completed
+#WILKS Calculator Function
+#DOTS Calculator Function
+#1RM Max calculator Function
+#
 
 #Difficult/Future Tense
 #Allow the script to be run from my phone to enter data there -- Works in Replit currently
@@ -87,30 +83,33 @@ def add_exercise():
     print("List of Exercises to choose from:")
     for exercise in exercises:
         print(exercise)
+        
+    #exercise_input = None
 
-    max_attempts_lift = 3
-    attempts_lift = 0
-    exercise_input = None
+    exercise_input = input("\nEnter the name of the exercise (or press Enter to use previous): ").strip().replace(" ", "")
 
-    while attempts_lift < max_attempts_lift:
-        user_input = input("\nEnter the name of the exercise: ").strip().replace(" ", "")
+    if exercise_input == "":
+        # User wants to reuse last exercise
+        try:
+            with open(file_path, "r") as file:
+                last_line = list(csv.reader(file))[-1]
+                exercise_input = last_line[0]  # Assumes the first column is the exercise name
+                print(f"Using previous exercise: {exercise_input}")
+        except Exception:
+            print("No previous exercise found. Please enter the exercise manually next time.")
+            return
+    else:
+        # User typed something — validate it
         for exercise in exercises:
-            if exercise.lower().replace(" ", "") == user_input.lower():
+            if exercise.lower().replace(" ", "") == exercise_input.lower():
                 print(f"You've selected: {exercise}")
                 time.sleep(0.5)
                 os.system("clear")
-                exercise_input = exercise  # Store the correctly formatted name
+                exercise_input = exercise
                 break
         else:
-            attempts_lift += 1
-            print(f"Invalid exercise. {max_attempts_lift - attempts_lift} attempt(s) left.")
-
-        if exercise_input:
-            break  # Exit loop after successful selection
-
-    if exercise_input is None:
-        print("You've exceeded the maximum number of attempts. Please try again later.")
-        return
+            print("Invalid exercise entered and no fallback option used.")
+            return
 
     # Get sets, reps, weight
     sets_input = get_valid_number_input("Sets > ", field_name="Sets", max_attempts=3, clear_screen=True)
