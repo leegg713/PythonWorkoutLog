@@ -1,7 +1,21 @@
 ####TO DO### 
 
-#Plate/Weight Guesser -- You want 135 on the bar... what weights are needed in either kg or lbs
+#Plate Calculator -- You want 135 on the bar... what weights are needed in either kg or lbs
 #Exercise Frequency - How often a week you train each exercise
+'''
+Now you can access the exercise frequency analysis by:
+
+Going to the Calculator menu (option 2)
+Typing "frequency" when prompted
+The analysis will show you:
+
+Total sets performed for each exercise
+Days trained for each exercise
+Frequency per week for each exercise
+Training insights including most/least trained exercises
+Recent activity showing what you've trained in the last 2 weeks
+
+'''
 #Date format validation - Ensure consistent date entry
 
 #Rest timer - Built-in countdown timer between sets -- Can be used on the app directly eventually
