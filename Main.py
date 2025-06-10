@@ -296,32 +296,13 @@ def plot_exercise_data():
     plt.grid(True)
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.show()
+    #plt.show()
+    #Needed for script to continue after plotting
+    plt.show(block=False)
+    plt.pause(0.001)
     
-    time.sleep(10)
+    time.sleep(3)
     os.system("clear")
-
-    plt.close()
-
-    '''
-    plt.figure(figsize=(10, 6))
-    for weight in lift_data["Weight"].unique():
-        weight_data = lift_data[lift_data["Weight"] == weight]
-        plt.plot(weight_data["Date"], weight_data["Reps"], marker="o", label=f"{weight} lbs")
-
-    plt.title(f"{lift_name} — Reps Over Time (Grouped by Weight)")
-    plt.xlabel("Date")
-    plt.ylabel("Reps")
-    plt.grid(True)
-    plt.xticks(rotation=45)
-    plt.legend(title="Weight")
-    plt.tight_layout()
-    plt.show()
-
-    '''
-
-
-
 
 #Function to a display menu that a user will see first
 def display_menu():
