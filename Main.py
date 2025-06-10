@@ -2,7 +2,8 @@
 
 #Plate/Weight Guesser -- You want 135 on the bar... what weights are needed in either kg or lbs
 #Exercise Frequency - How often a week you train each exercise
-#
+#Bulk entry mode - Add multiple sets of the same exercise quickly?? 
+
 
 #Import Statements
 import time  #Used for adding delays to the script if needed
