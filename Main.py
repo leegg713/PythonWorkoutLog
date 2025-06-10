@@ -2,8 +2,16 @@
 
 #Plate/Weight Guesser -- You want 135 on the bar... what weights are needed in either kg or lbs
 #Exercise Frequency - How often a week you train each exercise
-#Bulk entry mode - Add multiple sets of the same exercise quickly?? 
+#Date format validation - Ensure consistent date entry
 
+#Rest timer - Built-in countdown timer between sets -- Can be used on the app directly eventually
+
+#Better Visualizations --- More difficult - Do after 100 days Python completed
+#May want to not use matplotlib and may want something else???
+#Multiple exercise comparison - Graph multiple lifts on same chart
+#Volume vs strength trends - Compare total volume against max weights
+#Weekly/monthly summaries - Aggregate data views
+#Exercise distribution pie charts - See training balance
 
 #Import Statements
 import time  #Used for adding delays to the script if needed
