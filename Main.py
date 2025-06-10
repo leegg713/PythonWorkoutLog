@@ -1,6 +1,8 @@
 ####TO DO### 
 
 #Plate Calculator -- You want 135 on the bar... what weights are needed in either kg or lbs
+#Test function first
+#After it works, add to display menu section
 #Exercise Frequency - How often a week you train each exercise
 '''
 Now you can access the exercise frequency analysis by:
