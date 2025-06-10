@@ -1,18 +1,8 @@
-####TO DO
+####TO DO### 
 
-#Update function for adding exercise entry to be able to use enter to use the last entry - Completed
-#Should just be a few if statements for those
-#WILKS Calculator Function - Update so user can use kg or lbs -- Completed
-#DOTS Calculator Function - Update so user can use kg or lbs -- Completed
-#1RM Max calculator Function - Update so user can use kg or lbs -- Only works in lbs right now
-
-#Add an exercise to the list of exercises?
-
-#Make a function for asking the user for kg or lbs --- Just for readability -- Completed
-
-#Difficult/Future Tense
-#Allow the script to be run from my phone to enter data there -- Works in Replit currently
-#Use the script in Google Sheets etc, not just locally -- Works if someone uses the GitHub repo
+#Plate/Weight Guesser -- You want 135 on the bar... what weights are needed in either kg or lbs
+#Exercise Frequency - How often a week you train each exercise
+#
 
 #Import Statements
 import time  #Used for adding delays to the script if needed
