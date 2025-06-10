@@ -1,0 +1,42 @@
+modules = ["python-3.12"]
+run = "python main.py"
+
+[nix]
+channel = "stable-24_05"
+packages = ["cairo", "ffmpeg-full", "freetype", "ghostscript", "gobject-introspection", "gtk3", "pkg-config", "qhull", "tcl", "tk"]
+
+[deployment]
+run = ["sh", "-c", "python main.py"]
+
+[workflows]
+runButton = "Run Python Script"
+
+[[workflows.workflow]]
+name = "Run Python Script"
+mode = "sequential"
+author = 22919837
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python Main.py"
+
+[[workflows.workflow]]
+name = "Push to Git"
+mode = "sequential"
+author = 22919837
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git config --global user.email \"leemerigold7@gmail.com\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git config --global user.name \"leegg713\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git add WorkoutLog.csv"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git commit -m \"Update made to WorkoutLog.csv\""

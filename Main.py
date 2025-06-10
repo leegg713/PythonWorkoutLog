@@ -58,7 +58,7 @@ def get_valid_number_input(prompt, field_name, max_attempts=3, clear_screen=Fals
     print("You've exceeded the maximum number of attempts. Please try again later.")
     return None
 
-
+#Clears the last workout entry entered in case of a typo/etc
 def clear_last_entry():
     #Read all lines from the file
     with open(file_path, "r") as file:
@@ -76,7 +76,7 @@ def clear_last_entry():
     else:
         print("CSV is empty — nothing to remove.")
 
-#Function to get weight and total in kgs and lbs
+#Function to get weight and total in kgs and lbs -- Used for calculator functions
 
 def get_weight_total():
     type = input("Enter lbs or kgs: ").strip().lower()
@@ -93,8 +93,10 @@ def get_weight_total():
 
     return weight_kg, total_kg, weight_lbs, total_lbs
 
-
+#Function to add lift to the CSV
 def add_exercise():
+    time.sleep(0.5)
+    os.system("clear")
     exercises = [
         "Squat", "PauseSquat", "GobletSquat", "PauseBench",
         "TouchNGoBench", "InclineDBBench", "Deadlift", "DeficitDeadlift",
@@ -132,7 +134,7 @@ def add_exercise():
             print("Invalid exercise entered and no fallback option used.")
             return
 
-    # Get sets, reps, weight
+    # Get sets, reps, weight by using the get_valid_number_input function
     sets_input = get_valid_number_input("Sets > ", field_name="Sets", max_attempts=3, clear_screen=True)
     rep_input = get_valid_number_input("Reps > ", field_name="Reps", max_attempts=3, clear_screen=True)
     weight_input = get_valid_number_input("Weight > ", field_name="Lbs", max_attempts=3, clear_screen=True)
@@ -155,7 +157,7 @@ def add_exercise():
 
     print(f"Exercise: {exercise_input}\nSets: {sets_input}\nReps: {rep_input}\nWeight: {weight_input} lbs\nDate: {date_input}")
 
-    # Append to CSV
+    # Adds the entry to the CSV (Appends == 'a')
     new_entry = [exercise_input, sets_input, rep_input, weight_input, date_input]
     with open(file_path, mode='a', newline='') as file:
         writer = csv.writer(file)
@@ -212,27 +214,6 @@ def wilks():
         return  # If invalid input, exit function
 
     weight_kg, total_kg, weight_lbs, total_lbs = result # The order the values are returned in from the function and this unpacks the variables vs setting it equal to result
-
-    '''
-    type = input("Enter lbs or kgs: ").strip().lower()
-    if type == "lbs":
-        weight_lbs = float(input("Enter your body weight in pounds: "))
-        total_lbs = float(input("Enter your total for the big 3 lifts in pounds(squat,bench,deadlift) "))
-        total_kg = total_lbs * 0.45359237
-        weight_kg = weight_lbs * 0.45359237
-    else:
-        weight_kg = float(input("Enter your body weight in kilograms: "))
-        total_kg = float(input("Enter your total for the big 3 lifts in kilograms (squat, bench, deadlift): "))
-        weight_lbs = weight_kg / 0.45359237
-        total_lbs = total_kg / 0.45359237
-
-        '''
-    #weight_lbs = float(input("Enter your body weight in pounds: "))
-    #total_lbs = float(input("Enter your total for the big 3 lifts in pounds(squat,bench,deadlift) "))
-    #Variables for wilks equation
-    #Convert pounds to KG for equation to work
-    #total = total_lbs * 0.45359237
-    #weight = weight_lbs * 0.45359237
     a = -216.0475144
     b = 16.2606339
     c = -0.002388645
@@ -240,7 +221,7 @@ def wilks():
     e = 7.01863E-06 # equivalent to 7.01863 x 10^-6
     f = -1.291E-08 # equivalent to -1.291 × 10^-8
     coefficient =  500 / (a + b*(weight_kg) + c*(weight_kg**2) + d*(weight_kg**3) +  e*(weight_kg**4) + f*(weight_kg**5))
-    wilks = round(total_kg * coefficient, 2)
+    wilks = round(total_kg * coefficient, 2) #Rounds the score to 2 decimal points
     print(f"\nYour Wilks score is {round(wilks,2)}")
     print(f"Body weight: {round(weight_kg, 2)} kg ({round(weight_lbs, 2)} lbs)")
     print(f"Total lift: {round(total_kg, 2)} kg ({round(total_lbs, 2)} lbs)")
@@ -263,7 +244,7 @@ def dots():
     e = -0.000001093
     coefficient = (a + b*(weight_kg) + c*(weight_kg**2) + d*(weight_kg**3) +  e*(weight_kg**4))
     dots_score = (500 / coefficient) * total_kg
-    print(f"\nYour DOTS score is {round(dots_score, 2)}")
+    print(f"\nYour DOTS score is {round(dots_score, 2)}") #Rounds to 2 decimal points
     print(f"Body weight: {round(weight_kg, 2)} kg ({round(weight_lbs, 2)} lbs)")
     print(f"Total lift: {round(total_kg, 2)} kg ({round(total_lbs, 2)} lbs)")
     time.sleep(10)
@@ -274,17 +255,17 @@ def one_rep_max():
     print("1 rep max calculator")
     weight = float(input("Enter the weight used: "))
     reps = float(input("Enter the reps completed: "))
-    max = round(weight * reps**0.1, 2)
+    max = round(weight * reps**0.1, 2) #Rounds to 2 decimal points
     print(f"Your estimated 1 rep max is {max}")
     time.sleep(5)
     os.system("clear")
 
 
-
+#Function to use different calculators
 def calculator():
     os.system("clear")
     print("Calculator Page")
-    print("Options are average for a lift, WILKS, DOTS, 1RM, ")
+    print("Options are Average, WILKS, DOTS, 1RM, ")
     calc = input("What would you like to calculate? ").strip().lower()
     if calc == "average":
         average_lift()
@@ -316,6 +297,11 @@ def plot_exercise_data():
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.show()
+    
+    time.sleep(10)
+    os.system("clear")
+
+    plt.close()
 
     '''
     plt.figure(figsize=(10, 6))
