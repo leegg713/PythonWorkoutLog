@@ -316,25 +316,23 @@ def display_menu():
 
         choice = input("Select an option (1, 2, 3, 4, or 5): ")
 
-        if choice == '1' or choice == 'add' or choice == 'Add':
-            # Call function to add exercise
+        choice_lower = choice.lower() #Sets the selection to lower if the user enters a word instead of 1,2,3,4,5
+
+        if choice == '1' or choice_lower == 'add':
             add_exercise()
-            #exercise_input, sets_input, rep_input, weight_input, date_input = add_exercise()
-            #add_entry_to_CSV(exercise_input, sets_input, rep_input,weight_input, date_input)
-        
-        elif choice == '2' or choice == 'Avg' or choice == 'Average' or choice == 'average' or choice == 'avg' or choice == "Calculator" or choice == "Calc" or choice == "calculator":
-            # Call function to calculate average lift
+
+        elif choice == '2' or choice_lower in ['avg', 'average', 'calculator', 'calc']:
             calculator()
-        elif choice == '3' or choice == 'Graph' or choice == 'graph':
+
+        elif choice == '3' or choice_lower == 'graph':
             plot_exercise_data()
 
-        elif choice == '4' or choice == 'clear' or choice == 'remove' or choice == "Clear" or choice == "Remove":
+        elif choice == '4' or choice_lower in ['clear', 'remove']:
             clear_last_entry()
-        elif choice == '5' or choice == 'Exit' or choice == 'exit':
+
+        elif choice == '5' or choice_lower == 'exit':
             print("Exiting the program.")
-            break  # Exit the program
-        else:
-            print("Invalid option selected. Please try again.")
+            break
 
 
 # Main function to execute the program
@@ -346,4 +344,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-#Add section here to be able to test one function without having to go through the whole program??
