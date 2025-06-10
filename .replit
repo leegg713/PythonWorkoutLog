@@ -9,10 +9,10 @@ packages = ["cairo", "ffmpeg-full", "freetype", "ghostscript", "gobject-introspe
 run = ["sh", "-c", "python main.py"]
 
 [workflows]
-runButton = "Run Python Script"
+runButton = "Run Test Function Script"
 
 [[workflows.workflow]]
-name = "Run Python Script"
+name = "Run Main Python Script"
 mode = "sequential"
 author = 22919837
 
@@ -40,3 +40,12 @@ args = "git add WorkoutLog.csv"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "git commit -m \"Update made to WorkoutLog.csv\""
+
+[[workflows.workflow]]
+name = "Run Test Function Script"
+mode = "sequential"
+author = 22919837
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python test_function.py"

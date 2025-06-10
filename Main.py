@@ -22,6 +22,8 @@ Recent activity showing what you've trained in the last 2 weeks
 
 #Rest timer - Built-in countdown timer between sets -- Can be used on the app directly eventually
 
+#Function page and main page seperated?? When we make this an app for real probably need to do that
+
 #Better Visualizations --- More difficult - Do after 100 days Python completed
 #May want to not use matplotlib and may want something else???
 #Multiple exercise comparison - Graph multiple lifts on same chart
@@ -35,8 +37,6 @@ import csv  #Used to import the CSV
 import os  #Used to import the file path for the CSV and other useful functions
 import pandas as pd #Used to get a dataframe for the graph
 import matplotlib.pyplot as plt  #Used to plot the graph
-
-print("Welcome to Lee's Workout Tracker!")
 
 #Global variables - Not going to change
 file_path = 'WorkoutLog.csv'
@@ -265,7 +265,7 @@ def dots():
     time.sleep(10)
     os.system("clear")
 
-
+#One Rep Max Estimate Function
 def one_rep_max():
     print("1 rep max calculator")
     weight = float(input("Enter the weight used: "))
@@ -275,12 +275,34 @@ def one_rep_max():
     time.sleep(5)
     os.system("clear")
 
+#Plate Calculator Function
+def plate_calculator():
+    print("Using a standard 20KG/45LB barbell... get the plates needed to get your desired weight")
+    weight_type = input("LBs or Kilos? ").strip().lower()
+    #bar_weight = int(input("Enter the weight of the bar: "))
+    desired_weight = float(input("Enter the weight you want to lift: ")) #Float for 2.5 plate calculations to work
+    if weight_type in ['lbs', 'lb', 'pounds', 'pound']:
+        print("Do this for lbs")
+        fourty_five_plates = desired_weight / 45
+        #thirty_five_plates = 
+        twenty_five_plates = desired_weight / 25
+        ten_plates = desired_weight / 10
+        five_plates = desired_weight / 5
+        two_and_half_plates =desired_weight / 2.5
+        print(f"You will need {fourty_five_plates} 45 pound plates, {twenty_five_plates} 25 pound plates, {ten_plates} 10 pound plates, {five_plates} 5 pound plates and     {two_and_half_plates} 2.5 lb plates")
+    elif weight_type in ['kgs', 'kg', 'kilos', 'kilo', 'kilogram', 'kilograms']:
+        print("Do this for kgs")
+    else:
+        print("Invalid input selected... returning to main menu")
+        return
+
 
 #Function to use different calculators
 def calculator():
     os.system("clear")
     print("Calculator Page")
-    print("Options are Average, WILKS, DOTS, 1RM, ")
+    print("Options are Average, WILKS, DOTS, 1RM, Plate Calculator ")
+    #Make this a 1,2,3,4,5 option set up like the display menu one
     calc = input("What would you like to calculate? ").strip().lower()
     if calc == "average":
         average_lift()
@@ -291,6 +313,9 @@ def calculator():
     elif calc == "1rm":
         #print("1RM calculator")
         one_rep_max()
+    elif calc == "platecalculator":
+    #print("1RM calculator")
+        plate_calculator()
     else:
         print("Nothing valid selected... clearing page and returning to main menu")
         time.sleep(3)
@@ -321,6 +346,7 @@ def plot_exercise_data():
 
 #Function to a display menu that a user will see first
 def display_menu():
+    print("Welcome to Lee's Workout Tracker!")
     while True:
         print("\n--- Workout Log Menu ---")
         print("1. Add Exercise Entry")
