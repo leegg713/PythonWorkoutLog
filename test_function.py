@@ -20,6 +20,7 @@ from Main import * #Imports all functions in main
 # one_rep_max()
 # calculator()
 # plot_exercise_data()
-plate_calculator()
+#plate_calculator()
+exercise_frequency()
 
 #print("Edit this file and uncomment the function you want to test, then run: python test_function.py")
