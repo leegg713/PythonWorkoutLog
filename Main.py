@@ -165,24 +165,24 @@ def add_exercise():
     rep_input = get_valid_number_input("Reps > ", field_name="Reps", max_attempts=3, clear_screen=True)
     weight_input = get_valid_number_input("Weight > ", field_name="Lbs", max_attempts=3, clear_screen=True)
 
-    # Date input (keep last used date if user just presses Enter)
-    date_input = input("Enter the date of this lift (MM/DD/YY), or press Enter to use the previous date: ").strip()
-    if not date_input:
+    while True:
+        date_input = input("Enter the date of this lift (MM/DD/YY), or press Enter to use the previous date: ").strip()
+        if not date_input:
+            try:
+                #Trys to read the last line of the file
+                with open(file_path, "r") as file:
+                    last_line = list(csv.reader(file))[-1] #Gets the last line of the CSV in the date column
+                    date_input = last_line[-1] #Uses the last item in the row to get the date
+                    print(f"Using previous date: {date_input}")
+            except Exception:
+                print("No previous date found. Please enter the date manually next time.")
+                return
         try:
-            #Trys to read the last line of the file
-            with open(file_path, "r") as file:
-                last_line = list(csv.reader(file))[-1] #Gets the last line of the CSV in the date column
-                date_input = last_line[-1] #Uses the last item in the row to get the date
-                print(f"Using previous date: {date_input}")
-        except Exception:
-            print("No previous date found. Please enter the date manually next time.")
-            return
-    try:
-        # Try to parse input date to validate format
-        datetime.datetime.strptime(date_input, "%m/%d/%y")
+            # Try to parse input date to validate format --Makes the date have to be MM/DD/YY
+            datetime.datetime.strptime(date_input, "%m/%d/%y")
             break  # valid format, exit loop
-    except ValueError:
-        print("Invalid date format. Please enter date as MM/DD/YY.")
+        except ValueError:
+            print("Invalid date format. Please enter date as MM/DD/YY.")
     time.sleep(1)
     os.system("clear")
 
