@@ -2,7 +2,7 @@
 
 # app.py
 from flask import Flask, render_template, request
-from main import display_menu  # import your logic
+from main import * # import your logic
 
 app = Flask(__name__)
 
