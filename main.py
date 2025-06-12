@@ -83,6 +83,11 @@ def get_valid_number_input(prompt, field_name, max_attempts=3, clear_screen=Fals
 
     print("You've exceeded the maximum number of attempts. Please try again later.")
     return None
+###### CONVERT TIME FUNCTION ######## 
+#### CONVERTS 2025-06-12 to 06/12/25 like how we want for CSV ########
+def convert_iso_to_mmddyy(iso_date_str):
+    date_obj = datetime.datetime.strptime(iso_date_str, "%Y/%m/%d")
+    return date_obj.strftime("%m-%d-%y")
 
 ############### Clears the last workout entry entered in case of a typo/etc ###################
 def clear_last_entry():
@@ -121,6 +126,9 @@ def get_weight_total():
     return weight_kg, total_kg, weight_lbs, total_lbs
 
 ############# Function to add lift to the CSV ###################
+
+##### EDITING THIS FOR FLASK VERSION
+'''
 def add_exercise():
     time.sleep(0.5)
     os.system("clear")
@@ -198,6 +206,65 @@ def add_exercise():
     print(f"New Lift added to {file_path}")
     time.sleep(2)
     os.system("clear")
+
+
+    '''
+#### ADD EXERCISE FLASK VERSION ######
+
+def add_exercise(form_data):
+    # Predefined exercise list
+    valid_exercises = [
+        "Squat", "PauseSquat", "GobletSquat", "PauseBench",
+        "TouchNGoBench", "InclineDBBench", "Deadlift", "DeficitDeadlift",
+        "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench"
+    ]
+
+    # Extract form data
+    exercise_input = form_data.get('exercise', '').strip().replace(" ", "")
+    sets_input = form_data.get('sets', '')
+    rep_input = form_data.get('reps', '')
+    weight_input = form_data.get('weight', '')
+    date_input = form_data.get('date', '')
+
+    # Validate and resolve exercise input
+    if exercise_input == "":
+        try:
+            with open(file_path, "r") as file:
+                last_line = list(csv.reader(file))[-1]
+                exercise_input = last_line[0]
+        except Exception:
+            raise ValueError("No previous exercise found.")
+    else:
+        match_found = False
+        for exercise in valid_exercises:
+            if exercise.lower().replace(" ", "") == exercise_input.lower():
+                exercise_input = exercise
+                match_found = True
+                break
+        if not match_found:
+            raise ValueError("Invalid exercise name.")
+
+    # Use last date if none entered
+    if date_input.strip() == "":
+        try:
+            with open(file_path, "r") as file:
+                last_line = list(csv.reader(file))[-1]
+                date_input = last_line[-1]
+        except Exception:
+            raise ValueError("No previous date found.")
+    else:
+    # Validate date format
+        try:
+            date_input = convert_iso_to_mmddyy(date_input)
+        except ValueError:
+            raise ValueError("Invalid date format. Please use MM/DD/YY.")
+
+    # Write the validated data to CSV
+    new_entry = [exercise_input, sets_input, rep_input, weight_input, date_input]
+    with open(file_path, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(new_entry)
+
 
 ############# Lift Average ###########
 def average_lift():
@@ -540,6 +607,9 @@ def plot_exercise_data():
     os.system("clear")
 
 ########## MENU FUNCTION ########
+
+###NOT NEEDED FOR FLASK APP #####
+'''
 def display_menu():
     print("Welcome to Lee's Workout Tracker!")
     while True:
@@ -570,6 +640,7 @@ def display_menu():
             print("Exiting the program.")
             break
 
+'''
 
 # Main function to execute the program
 def main():
