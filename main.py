@@ -225,15 +225,26 @@ def average_lift():
                 total_weight += float(weight) * int(reps) * int(sets)  # Gets weight in lbs
                 total_reps += int(reps) * int(sets)# Add the total number of reps (sets * reps) to total_reps
     # Calculate and display the average
+
+    
     if total_reps > 0:
         avg_weight_per_rep = total_weight / total_reps
         print(f"The average weight lifted per rep for {exercise_to_avg} is: {avg_weight_per_rep:.2f} lbs")
         time.sleep(5)
         os.system("clear")
+        return {
+        "exercise": exercise_to_avg,
+        "average": round(avg_weight_per_rep, 2),
+        "total_reps": total_reps
+        }
     else:
         print(f"No entries found for {exercise_to_avg}.")
+        #print(f"No avg weight per rep found: {avg_weight_per_rep}")
         time.sleep(5)
         os.system("clear")
+        return {"error": f"No entries found for {exercise_to_avg}"}
+
+
 
 ########### Get WILKS Score Function ###############
 def wilks():
