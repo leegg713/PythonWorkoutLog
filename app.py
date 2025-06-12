@@ -22,6 +22,14 @@ def add():
         return redirect(url_for('home'))
     return render_template('add.html')
 
+@app.route('/calc', methods=['GET', 'POST']) #Calculator page
+def calc():
+    if request.method == 'POST':
+        #form_data = request.form
+        #add_exercise(form_data)  # pass form data to the function
+        return redirect(url_for('home'))
+    return render_template('calc.html')
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
