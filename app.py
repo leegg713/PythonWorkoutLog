@@ -2,15 +2,17 @@
 
 # app.py
 from flask import Flask, render_template, request
-from main import * # import your logic
+from main import display_menu, calculator
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    #name = request.args.get("name", "World")  # default to "World" if no query param
-    menu = display_menu()
-    return render_template("index.html", menu = menu)
+  #First page stuff
+  menu = display_menu()
+  calculator = calculator()
+  return render_template("index.html", menu = menu, calculator = calculator)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
