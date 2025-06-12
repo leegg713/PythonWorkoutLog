@@ -1,15 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lee Workout App Add Exercise Page</title>
-    <link rel="stylesheet" href="static/styles.css">
+    <title>Add Exercise Entry</title>
 </head>
 <body>
+    <h1>Add New Exercise</h1>
+    <form method="POST" action="{{ url_for('add') }}">
+        <label for="exercise">Exercise Name:</label><br>
+        <input type="text" id="exercise" name="exercise" required><br><br>
 
-    <h1>ADD Exercise Page</h1>
-    <p>Opens a new page for adding a lift in. </p>
+        <label for="sets">Sets:</label><br>
+        <input type="number" id="sets" name="sets" required><br><br>
 
+        <label for="reps">Reps:</label><br>
+        <input type="number" id="reps" name="reps" required><br><br>
+
+        <label for="weight">Weight (lbs):</label><br>
+        <input type="number" step="0.1" id="weight" name="weight" required><br><br>
+
+        <label for="date">Date (MM-DD-YY):</label><br>
+        <input type="date" id="date" name="date"><br><br>
+
+        <input type="submit" value="Add Entry">
+    </form>
+    <br>
+    <a href="{{ url_for('home') }}">Back to Menu</a>
 </body>
 </html>
+
