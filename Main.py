@@ -6,6 +6,7 @@
 #After it works, add to display menu section
 #Exercise Frequency - How often a week you train each exercise
 #Date format validation - Ensure consistent date entry
+#Create new branch
 '''
 Now you can access the exercise frequency analysis by:
 
