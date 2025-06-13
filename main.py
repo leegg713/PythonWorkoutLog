@@ -548,6 +548,8 @@ def exercise_frequency():
 '''
 
 ########### Menu to use different calculators ##############
+
+'''
 def calculator():
     os.system("clear")
     print("Calculator Page")
@@ -582,6 +584,10 @@ def calculator():
         print("Nothing valid selected... clearing page and returning to main menu")
         time.sleep(3)
         os.system("clear")
+
+        '''
+        ########### Calculator Menu Flask Version NOT NEEDED ##########
+
 
 ########## GRAPH Function #########
 def plot_exercise_data():
