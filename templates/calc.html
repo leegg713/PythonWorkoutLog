@@ -7,27 +7,40 @@
 <body>
 
     <h1>Welcome to Lee's Calculator</h1>
-    <p>Select an option below:</p>
+    <p>Select a calculator below:</p>
 
-    <form action="{{ url_for('calc') }}" method="POST">
-        <select name="choice">
-            <option value="1">Average</option>
-            <option value="2">WILKS</option>
-            <option value="3">DOTS</option>
-            <option value="4">1RM</option>
-            <option value="5">Plate Calculator</option>
-            <option value="6">Exercise Frequency</option>
-        </select>
-        <button type="submit">Submit</button>
-    </form>
+<form action="{{ url_for('calc') }}" method="POST">
+    <label for="choice">Choose Option:</label>
+    <select name="choice" id="choice">
+        <option value="1" {% if request.form.get('choice') == '1' %}selected{% endif %}>Average</option>
+        <option value="2" {% if request.form.get('choice') == '2' %}selected{% endif %}>WILKS</option>
+        <option value="3" {% if request.form.get('choice') == '3' %}selected{% endif %}>DOTS</option>
+        <option value="4" {% if request.form.get('choice') == '4' %}selected{% endif %}>1RM</option>
+        <option value="5" {% if request.form.get('choice') == '5' %}selected{% endif %}>Plate Calculator</option>
+        <option value="6" {% if request.form.get('choice') == '6' %}selected{% endif %}>Exercise Frequency</option>
+    </select>
+{% if request.form.get('choice') == '1' %}
+    <div style="margin-top:10px;">
+        <label for="exercise_to_avg">Exercise Name:</label>
+        <input type="text" name="exercise_to_avg" id="exercise_to_avg" placeholder="EX: Bench"
+               value="{{ request.form.get('exercise_to_avg', '') }}">
+    </div>
 
     {% if result %}
-        <hr>
-        <h2>Result:</h2>
-        <p>{{ result }}</p>
+        {% if result.error %}
+            <p>{{ result.error }}</p>
+        {% else %}
+            <p>Exercise: {{ result.exercise }}</p>
+            <p>Average weight per rep: {{ result.average }} lbs</p>
+            <p>Total reps counted: {{ result.total_reps }}</p>
+        {% endif %}
     {% endif %}
+{% endif %}
+
+    <button type="submit">Submit</button>
+</form>
+
 
 </body>
 </html>
-
 

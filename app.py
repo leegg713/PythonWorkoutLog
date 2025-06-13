@@ -24,24 +24,33 @@ def add():
 
 @app.route('/calc', methods=['GET', 'POST'])
 def calc():
-    result = None
+    result = None  # Default, no result shown on GET
+
     if request.method == 'POST':
-        choice = request.form['choice']
-        if choice == "1":
-            result = average_lift()
-        elif choice == "2":
+        choice = request.form.get('choice', '')
+        
+        if choice == '1':
+            exercise_to_avg = request.form.get('exercise_to_avg', '').strip()
+            if exercise_to_avg:
+                result = average_lift(exercise_to_avg)
+            else:
+                result = {"error": "Please enter a valid exercise name."} #Shows no matter what --- Will need to fix that to display properly only when bad input
+        elif choice == '2':
             result = wilks()
-        elif choice == "3":
+        elif choice == '3':
             result = dots()
-        elif choice == "4":
+        elif choice == '4':
             result = one_rep_max()
-        elif choice == "5":
+        elif choice == '5':
             result = plate_calculator()
-        elif choice == "6":
+        elif choice == '6':
             result = exercise_frequency()
         else:
             result = "Invalid selection."
-    return render_template("calc.html", result=result)
+
+    return render_template('calc.html', result=result)
+    
+
 
 
 if __name__ == "__main__":

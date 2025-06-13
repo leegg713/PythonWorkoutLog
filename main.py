@@ -267,6 +267,8 @@ def add_exercise(form_data):
 
 
 ############# Lift Average ###########
+
+'''
 def average_lift():
     time.sleep(0.5)
     os.system("clear")
@@ -311,7 +313,56 @@ def average_lift():
         os.system("clear")
         return {"error": f"No entries found for {exercise_to_avg}"}
 
+        '''
+###### LIFT AVERAGE FLASK VERSION #########
 
+def average_lift(exercise_to_avg):
+    #time.sleep(0.5)
+    #os.system("clear")
+    #exercise_to_avg = input("Enter the exercise you want to calculate the average weight for: ")
+    #exercise_to_avg = form_data.get('exercise', '').strip().replace(" ", "")
+    exercise_to_avg = exercise_to_avg.strip().replace(" ", "").lower()  # normalize input for capitals only at start of word
+    #file_path = 'WorkoutLog.csv'
+    #May not be needed
+    '''
+    if not os.path.exists(file_path):
+        print(f"The file {file_path} does not exist.")
+        return
+    '''
+    total_weight = 0
+    total_reps = 0
+
+    # Read the CSV file and calculate the total weight for the selected exercise
+    with open(file_path, mode='r') as file:
+        reader = csv.reader(file)
+
+        # Skip the header row if there is one
+        next(reader, None)  # Skip the header row (if there is one)
+        #Reads the file to get the total weight done and reps done
+        for row in reader:
+            exercise, sets, reps, weight, *extra_columns = row  #Extra_columns needed otherwise it won't work due to an error saying its missing a row (Date)
+            if exercise.lower() == exercise_to_avg:  #Check to see if user input matches an exercise in the CSV
+                total_weight += float(weight) * int(reps) * int(sets)  # Gets weight in lbs
+                total_reps += int(reps) * int(sets)# Add the total number of reps (sets * reps) to total_reps
+    # Calculate and display the average
+
+    
+    if total_reps > 0:
+        avg_weight_per_rep = total_weight / total_reps
+        #print(f"The average weight lifted per rep for {exercise_to_avg} is: {avg_weight_per_rep:.2f} lbs")
+        #time.sleep(5)
+        #os.system("clear")
+        return {
+        "exercise": exercise_to_avg,
+        "average": round(avg_weight_per_rep, 2),
+        "total_reps": total_reps
+        }
+    else:
+        #print(f"No entries found for {exercise_to_avg}.")
+        #print(f"No avg weight per rep found: {avg_weight_per_rep}")
+        #time.sleep(5)
+        #os.system("clear")
+        return {"error": f"No entries found for {exercise_to_avg}"}
 
 ########### Get WILKS Score Function ###############
 def wilks():
