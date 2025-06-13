@@ -109,6 +109,9 @@ def clear_last_entry():
 
 ################# Function to get weight and total in kgs and lbs ###################
 #Used for calculator functions
+#Not using for FLASK WEB APP
+
+'''
 
 def get_weight_total():
     type = input("Enter lbs or kgs: ").strip().lower()
@@ -124,6 +127,7 @@ def get_weight_total():
         total_lbs = total_kg / 0.45359237
 
     return weight_kg, total_kg, weight_lbs, total_lbs
+'''
 
 ############# Function to add lift to the CSV ###################
 
@@ -317,18 +321,7 @@ def average_lift():
 ###### LIFT AVERAGE FLASK VERSION #########
 
 def average_lift(exercise_to_avg):
-    #time.sleep(0.5)
-    #os.system("clear")
-    #exercise_to_avg = input("Enter the exercise you want to calculate the average weight for: ")
-    #exercise_to_avg = form_data.get('exercise', '').strip().replace(" ", "")
-    exercise_to_avg = exercise_to_avg.strip().replace(" ", "").lower()  # normalize input for capitals only at start of word
-    #file_path = 'WorkoutLog.csv'
-    #May not be needed
-    '''
-    if not os.path.exists(file_path):
-        print(f"The file {file_path} does not exist.")
-        return
-    '''
+    exercise_to_avg = exercise_to_avg.strip().replace(" ", "").lower()  # normalize input to lower to check the CSV
     total_weight = 0
     total_reps = 0
 
@@ -341,7 +334,7 @@ def average_lift(exercise_to_avg):
         #Reads the file to get the total weight done and reps done
         for row in reader:
             exercise, sets, reps, weight, *extra_columns = row  #Extra_columns needed otherwise it won't work due to an error saying its missing a row (Date)
-            if exercise.lower() == exercise_to_avg:  #Check to see if user input matches an exercise in the CSV
+            if exercise.lower() == exercise_to_avg:  #Check to see if user input matches an exercise in the CSV -- Sets to lower to match exercise_to_avg form submission
                 total_weight += float(weight) * int(reps) * int(sets)  # Gets weight in lbs
                 total_reps += int(reps) * int(sets)# Add the total number of reps (sets * reps) to total_reps
     # Calculate and display the average
@@ -349,22 +342,17 @@ def average_lift(exercise_to_avg):
     
     if total_reps > 0:
         avg_weight_per_rep = total_weight / total_reps
-        #print(f"The average weight lifted per rep for {exercise_to_avg} is: {avg_weight_per_rep:.2f} lbs")
-        #time.sleep(5)
-        #os.system("clear")
         return {
         "exercise": exercise_to_avg,
         "average": round(avg_weight_per_rep, 2),
         "total_reps": total_reps
         }
     else:
-        #print(f"No entries found for {exercise_to_avg}.")
-        #print(f"No avg weight per rep found: {avg_weight_per_rep}")
-        #time.sleep(5)
-        #os.system("clear")
         return {"error": f"No entries found for {exercise_to_avg}"}
 
 ########### Get WILKS Score Function ###############
+
+'''
 def wilks():
     
     os.system("clear")
@@ -389,7 +377,32 @@ def wilks():
     time.sleep(10)
     os.system("clear")
 
+    '''
+
+##### WILKS CALCULATOR FLASK VERSION ########
+
+def wilks(bodyweight_lbs, total_lift_lbs):
+    # Convert pounds to kilograms
+    weight_kg = bodyweight_lbs * 0.453592
+    total_kg = total_lift_lbs * 0.453592
+
+    # Wilks formula coefficients (for men)
+    a = -216.0475144
+    b = 16.2606339
+    c = -0.002388645
+    d = -0.00113732
+    e = 7.01863E-06
+    f = -1.291E-08
+
+    coefficient = 500 / (a + b*weight_kg + c*(weight_kg**2) +
+                         d*(weight_kg**3) + e*(weight_kg**4) + f*(weight_kg**5))
+    wilks_score = round(total_kg * coefficient, 2)
+    return wilks_score
+
+
 ####### Get DOTS Score Function ######
+
+'''
 def dots():
     print("Dots Calculator")
     #get_weight_total()
@@ -410,8 +423,26 @@ def dots():
     print(f"Total lift: {round(total_kg, 2)} kg ({round(total_lbs, 2)} lbs)")
     time.sleep(10)
     os.system("clear")
+'''
+
+##### GET DOTS SCORE FLASK VERSION ##### 
+def dots(bodyweight_lbs, total_lift_lbs): #Passes these 2 parameters 
+    # Convert pounds to kilograms
+    weight_kg = bodyweight_lbs * 0.453592
+    total_kg = total_lift_lbs * 0.453592
+    a = -307.75076
+    b = 24.0900756
+    c = -0.1918759221
+    d = 0.0007391293
+    e = -0.000001093
+    coefficient = (a + b*(weight_kg) + c*(weight_kg**2) + d*(weight_kg**3) +  e*(weight_kg**4))
+    dots_score = (500 / coefficient) * total_kg
+    dots_score = round(dots_score,2)
+    return dots_score #Returns this to use in app.py as results.rm
+
 
 ########### One Rep Max Estimate Function ###################
+'''
 def one_rep_max():
     print("1 rep max calculator")
     weight = float(input("Enter the weight used: "))
@@ -420,6 +451,25 @@ def one_rep_max():
     print(f"Your estimated 1 rep max is {max}")
     time.sleep(5)
     os.system("clear")
+'''
+
+
+
+
+    ########### One Rep Max Estimate Function FLASK VERSION ###################
+def one_rep_max(weight, reps):
+    #print("1 rep max calculator")
+    #weight = float(input("Enter the weight used: "))
+    #reps = float(input("Enter the reps completed: "))
+    max = round(weight * reps**0.1, 2) #Rounds to 2 decimal points
+    #print(f"Your estimated 1 rep max is {max}")
+    #time.sleep(5)
+    #os.system("clear")
+    return max
+
+
+
+
 
 ########### Plate Calculator Function #######################
 def plate_calculator():
