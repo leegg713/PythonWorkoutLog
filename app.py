@@ -3,7 +3,7 @@
 
 # app.py
 from flask import Flask, render_template, request, redirect, url_for #Imports flask, render_template function and requests function
-from main import  add_exercise, average_lift, wilks, one_rep_max, exercise_frequency, dots, plate_calculator
+from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator
 
 app = Flask(__name__)
 
