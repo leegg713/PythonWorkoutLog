@@ -16,7 +16,6 @@
         <option value="3" {% if request.form.get('choice') == '3' %}selected{% endif %}>DOTS</option>
         <option value="4" {% if request.form.get('choice') == '4' %}selected{% endif %}>1RM</option>
         <option value="5" {% if request.form.get('choice') == '5' %}selected{% endif %}>Plate Calculator</option>
-        <option value="6" {% if request.form.get('choice') == '6' %}selected{% endif %}>Exercise Frequency</option>
     </select>
     <!-- Below is for Average or Choice 1 -->
 {% if request.form.get('choice') == '1' %} 

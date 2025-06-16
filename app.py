@@ -75,8 +75,6 @@ def calc():
                 results['plate'] = "Please enter a valid number for the weight."
             #LB Plate Calculator
            
-        elif choice == '6':
-            results['freq'] = exercise_frequency()
         else:
             results['error'] = "Invalid selection."
 
