@@ -472,6 +472,8 @@ def one_rep_max(weight, reps):
 
 
 ########### Plate Calculator Function #######################
+
+'''
 def plate_calculator():
     print("Using a standard 20KG/45LB barbell... get the plates needed to get your desired weight")
     weight_type = input("LBs or Kilos? ").strip().lower()
@@ -544,6 +546,50 @@ def plate_calculator():
     else:
         print("Invalid input selected... returning to main menu")
         return
+'''
+
+
+##### PLATE CALCULATOR FLASK VERSION LBS ONLY ########
+
+def plate_calculator(weight):
+    #print("Using a standard 20KG/45LB barbell... get the plates needed to get your desired weight")
+    #weight_type = input("LBs or Kilos? ").strip().lower()
+    #LBS SECTION
+    #if weight_type in ['lbs', 'lb', 'pounds', 'pound']:
+        #print("Do this for lbs")
+
+        weight_for_plates = weight - 45      #Subtracts bar weight of 45
+
+        if weight_for_plates < 0:
+            #print("Weight is less than the barbell weight!")
+            return Error
+
+        # Weight per side (divide by 2 since plates go on both sides)
+        weight_per_side = weight_for_plates / 2
+        remaining_weight = weight_per_side
+        # Calculate plates needed per side (only whole numbers)
+        forty_five_plates = int(weight_per_side // 45)
+        remaining_weight = weight_per_side % 45
+        #print(f"Weight left per side: {remaining_weight}") #For testing
+        twenty_five_plates = int(remaining_weight // 25)
+        remaining_weight = remaining_weight % 25
+        #print(f"Weight left per side after 25s: {remaining_weight}") #For testing
+        ten_plates = int(remaining_weight // 10)
+        remaining_weight = remaining_weight % 10
+        five_plates = int(remaining_weight // 5)
+        remaining_weight = remaining_weight % 5
+        two_and_half_plates = int(remaining_weight // 2.5)
+        
+        #print(f"You will need {fourty_five_plates} 45(s),{twenty_five_plates} 25(s), {ten_plates} 10(s), {five_plates} 5(s) and {two_and_half_plates} 2.5(s) per side")
+        return {
+        "45s": forty_five_plates,
+        "25s": twenty_five_plates,
+        "10s": ten_plates,
+        "5s": five_plates,
+        "2.5s": two_and_half_plates
+    }
+    #Returns a dictionary
+    
 
 ############## Exercise Frequency Function ##################
 def exercise_frequency():

@@ -61,7 +61,20 @@ def calc():
                 results['rm'] = "Please enter valid numbers for bodyweight and total lifted."
             #result = one_rep_max()
         elif choice == '5':
-            results['plate'] = plate_calculator()
+            try:
+                weight = float(request.form.get('weight', '').strip())
+                plate_counts = plate_calculator(weight)
+                if isinstance(plate_counts, str):
+                    results['plate'] = plate_counts
+                else:
+                    results['plate'] = (
+                    f"Plates per side: 45s: {plate_counts['45s']}, "
+                    f"25s: {plate_counts['25s']}, 10s: {plate_counts['10s']}, "
+                    f"5s: {plate_counts['5s']}, 2.5s: {plate_counts['2.5s']}")
+            except (TypeError, ValueError):
+                results['plate'] = "Please enter a valid number for the weight."
+            #LB Plate Calculator
+           
         elif choice == '6':
             results['freq'] = exercise_frequency()
         else:
