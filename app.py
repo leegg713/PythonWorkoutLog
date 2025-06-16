@@ -22,6 +22,11 @@ def add():
         return redirect(url_for('home'))
     return render_template('add.html')
 
+
+@app.route('/timer', methods=['GET', 'POST']) #Timer Page
+def timer():
+    return render_template('timer.html')  # This will render timer.html page
+
 @app.route('/calc', methods=['GET', 'POST'])
 def calc():
     #result = None  # Default, no result shown on GET

@@ -112,5 +112,47 @@
       padding: 0.7rem;
     }
   }
+
+
+
+/* Timer display */
+#timer {
+  font-family: 'Arial', sans-serif;
+  font-size: 4rem;
+  font-weight: 700;
+  color: #ff4b4b; /* match your bright red */
+  text-align: center;
+  margin: 2rem 0;
+  user-select: none;
+  letter-spacing: 6px;
+}
+
+/* Timer Page JS/HTML Styling */
+/* Timer buttons */
+#startBtn, #stopBtn, #resetBtn {
+  background-color: #ff1a1a; /* your bright red button color */
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 0.5rem 1rem 0.5rem;
+  transition: background-color 0.2s ease;
+  min-width: 100px;
+}
+
+#startBtn:hover:not(:disabled),
+#stopBtn:hover:not(:disabled),
+#resetBtn:hover:not(:disabled) {
+  background-color: #b30000; /* darker red on hover */
+}
+
+#startBtn:disabled {
+  background-color: #660000;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 </style>
 ``
