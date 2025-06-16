@@ -25,7 +25,7 @@ Recent activity showing what you've trained in the last 2 weeks
 #One Rep Max to work in KILOS or LBS
 #Date format validation - Ensure consistent date entry
 
-#Rest timer - Built-in countdown timer between sets -- Can be used on the app directly eventually
+#Rest timer - Built-in countdown timer between sets -- Can be used on the app directly eventually -- Build this next
 
 #Function page and main page seperated?? When we make this an app for real probably need to do that
 
@@ -109,6 +109,9 @@ def clear_last_entry():
 
 ################# Function to get weight and total in kgs and lbs ###################
 #Used for calculator functions
+#Not using for FLASK WEB APP
+
+'''
 
 def get_weight_total():
     type = input("Enter lbs or kgs: ").strip().lower()
@@ -124,6 +127,7 @@ def get_weight_total():
         total_lbs = total_kg / 0.45359237
 
     return weight_kg, total_kg, weight_lbs, total_lbs
+'''
 
 ############# Function to add lift to the CSV ###################
 
@@ -317,18 +321,7 @@ def average_lift():
 ###### LIFT AVERAGE FLASK VERSION #########
 
 def average_lift(exercise_to_avg):
-    #time.sleep(0.5)
-    #os.system("clear")
-    #exercise_to_avg = input("Enter the exercise you want to calculate the average weight for: ")
-    #exercise_to_avg = form_data.get('exercise', '').strip().replace(" ", "")
-    exercise_to_avg = exercise_to_avg.strip().replace(" ", "").lower()  # normalize input for capitals only at start of word
-    #file_path = 'WorkoutLog.csv'
-    #May not be needed
-    '''
-    if not os.path.exists(file_path):
-        print(f"The file {file_path} does not exist.")
-        return
-    '''
+    exercise_to_avg = exercise_to_avg.strip().replace(" ", "").lower()  # normalize input to lower to check the CSV
     total_weight = 0
     total_reps = 0
 
@@ -341,7 +334,7 @@ def average_lift(exercise_to_avg):
         #Reads the file to get the total weight done and reps done
         for row in reader:
             exercise, sets, reps, weight, *extra_columns = row  #Extra_columns needed otherwise it won't work due to an error saying its missing a row (Date)
-            if exercise.lower() == exercise_to_avg:  #Check to see if user input matches an exercise in the CSV
+            if exercise.lower() == exercise_to_avg:  #Check to see if user input matches an exercise in the CSV -- Sets to lower to match exercise_to_avg form submission
                 total_weight += float(weight) * int(reps) * int(sets)  # Gets weight in lbs
                 total_reps += int(reps) * int(sets)# Add the total number of reps (sets * reps) to total_reps
     # Calculate and display the average
@@ -349,22 +342,17 @@ def average_lift(exercise_to_avg):
     
     if total_reps > 0:
         avg_weight_per_rep = total_weight / total_reps
-        #print(f"The average weight lifted per rep for {exercise_to_avg} is: {avg_weight_per_rep:.2f} lbs")
-        #time.sleep(5)
-        #os.system("clear")
         return {
         "exercise": exercise_to_avg,
         "average": round(avg_weight_per_rep, 2),
         "total_reps": total_reps
         }
     else:
-        #print(f"No entries found for {exercise_to_avg}.")
-        #print(f"No avg weight per rep found: {avg_weight_per_rep}")
-        #time.sleep(5)
-        #os.system("clear")
         return {"error": f"No entries found for {exercise_to_avg}"}
 
 ########### Get WILKS Score Function ###############
+
+'''
 def wilks():
     
     os.system("clear")
@@ -389,7 +377,32 @@ def wilks():
     time.sleep(10)
     os.system("clear")
 
+    '''
+
+##### WILKS CALCULATOR FLASK VERSION ########
+
+def wilks(bodyweight_lbs, total_lift_lbs):
+    # Convert pounds to kilograms
+    weight_kg = bodyweight_lbs * 0.453592
+    total_kg = total_lift_lbs * 0.453592
+
+    # Wilks formula coefficients (for men)
+    a = -216.0475144
+    b = 16.2606339
+    c = -0.002388645
+    d = -0.00113732
+    e = 7.01863E-06
+    f = -1.291E-08
+
+    coefficient = 500 / (a + b*weight_kg + c*(weight_kg**2) +
+                         d*(weight_kg**3) + e*(weight_kg**4) + f*(weight_kg**5))
+    wilks_score = round(total_kg * coefficient, 2)
+    return wilks_score
+
+
 ####### Get DOTS Score Function ######
+
+'''
 def dots():
     print("Dots Calculator")
     #get_weight_total()
@@ -410,8 +423,26 @@ def dots():
     print(f"Total lift: {round(total_kg, 2)} kg ({round(total_lbs, 2)} lbs)")
     time.sleep(10)
     os.system("clear")
+'''
+
+##### GET DOTS SCORE FLASK VERSION ##### 
+def dots(bodyweight_lbs, total_lift_lbs): #Passes these 2 parameters 
+    # Convert pounds to kilograms
+    weight_kg = bodyweight_lbs * 0.453592
+    total_kg = total_lift_lbs * 0.453592
+    a = -307.75076
+    b = 24.0900756
+    c = -0.1918759221
+    d = 0.0007391293
+    e = -0.000001093
+    coefficient = (a + b*(weight_kg) + c*(weight_kg**2) + d*(weight_kg**3) +  e*(weight_kg**4))
+    dots_score = (500 / coefficient) * total_kg
+    dots_score = round(dots_score,2)
+    return dots_score #Returns this to use in app.py as results.rm
+
 
 ########### One Rep Max Estimate Function ###################
+'''
 def one_rep_max():
     print("1 rep max calculator")
     weight = float(input("Enter the weight used: "))
@@ -420,8 +451,29 @@ def one_rep_max():
     print(f"Your estimated 1 rep max is {max}")
     time.sleep(5)
     os.system("clear")
+'''
+
+
+
+
+    ########### One Rep Max Estimate Function FLASK VERSION ###################
+def one_rep_max(weight, reps):
+    #print("1 rep max calculator")
+    #weight = float(input("Enter the weight used: "))
+    #reps = float(input("Enter the reps completed: "))
+    max = round(weight * reps**0.1, 2) #Rounds to 2 decimal points
+    #print(f"Your estimated 1 rep max is {max}")
+    #time.sleep(5)
+    #os.system("clear")
+    return max
+
+
+
+
 
 ########### Plate Calculator Function #######################
+
+'''
 def plate_calculator():
     print("Using a standard 20KG/45LB barbell... get the plates needed to get your desired weight")
     weight_type = input("LBs or Kilos? ").strip().lower()
@@ -494,110 +546,50 @@ def plate_calculator():
     else:
         print("Invalid input selected... returning to main menu")
         return
-
-############## Exercise Frequency Function ##################
-def exercise_frequency():
-
-    '''
-    Total sets performed for each exercise - Completed
-    Total reps performed for each exercise - Completed
-    Days trained for each exercise - Completed
-    Frequency per week for each exercise -- WIP
-    Training insights including most/least trained exercises -- WIP
-    Recent activity showing what you've trained in the last 2 weeks -- WIP
-
-    '''
-    # Read the CSV into a DataFrame
-    df = pd.read_csv(file_path)
-
-    # Normalize the 'Exercise' column to lowercase for consistent comparison
-    df['Exercise'] = df['Exercise'].str.strip().str.lower()
-
-    # Ask the user for a lift
-    lift = input("Enter the lift to get frequency for: ").strip().lower()
-
-    # Filter rows matching the lift
-    lift_df = df[df['Exercise'] == lift].copy() #Need the copy for no error
-
-    # Check if anything matched
-    if lift_df.empty:
-        print(f"'{lift}' not found in {file_path}")
-    else:
-        # Total sets Instead of index you can use the name of the column
-        total_sets = lift_df['Sets'].astype(int).sum()
-
-        # Total reps (sets × reps per row, then sum)
-        lift_df['Reps'] = lift_df['Reps'].astype(int)
-        lift_df['Sets'] = lift_df['Sets'].astype(int)
-        lift_df['TotalReps'] = lift_df['Sets'] * lift_df['Reps']
-        total_reps = lift_df['TotalReps'].sum()
-
-        # Print dates where lift was done
-        date_count = 0
-        print("Dates this lift was performed:")
-        for date in lift_df['Date']:
-            unique_dates = set(lift_df['Date'])
-            date_count = len(unique_dates)
-            #print(f"Total Unique Days for {lift.capitalize()}: {date_count}")
-
-        # Final output
-        print(f"\nTotal Sets for {lift.capitalize()}: {total_sets}")
-        print(f"Total Reps for {lift.capitalize()}: {total_reps}")
-        print(f"Total Different Days for {lift.capitalize()}: {date_count}")
-
-
-    
-    '''
-    CSV READER VERSION OUTDATED GOING TO USE PANDAS TO LEARN IT
-    #User select a lift
-    #Get the info based on the lift
-    #Output the info
-    lift = input("Enter the lift you want to get frequency for: ").strip().lower() # Will have to see if this actually pulls the right data
-    # Read the CSV file and calculate the total weight for the selected exercise
-    found = False  # Track if we find a match
-    total_sets = 0
-    total_reps = 0
-    df =pd.read_csv('MYDATA.csv') #Reads CSV for 
-    with open(file_path, mode='r') as file:
-        reader = csv.reader(file)
-        # convert strings to datetimes
-        reader['recvd_dttm'] = pd.to_datetime(df['recvd_dttm'])
-
-        # get first and last datetime for final week of data
-        range_max = df['recvd_dttm'].max()
-        range_min = range_max - dt.timedelta(days=7)
-
-        # take slice with final week of data
-        sliced_df = df[(df['recvd_dttm'] >= range_min) & 
-                       (df['recvd_dttm'] <= range_max)]
-        
-        # Skip the header row if there is one
-        next(reader, None)  # Skip the header row (if there is one)
-        #Reads the file to get the data needed
-        for row in reader:
-            exercise = row[0].strip().lower()
-            if lift == exercise:
-                #print(row) #Test output for whole row #Prints whole row
-                #print(f"Lift: {row[0]}") #For just first index in row #Prints just Squat
-                #print(f"Sets: {row[1]}") #Sets 
-                set = int(row[1])
-                total_sets += set
-                #print(f"Reps: {row[2]}") #Reps
-                rep = int(row[2])
-                total_reps += rep*set
-                #print(f"Weight: {row[3]}") #Weight used
-                date = row[4]
-                print(date)
-                found = True
-            # After loop ends, check if nothing was found
-    if not found:
-        print(f"'{lift}' not found in {file_path}")
-    elif found:
-        print(f"Total Sets for {lift.capitalize()}: {total_sets}")
-        print(f"Total Reps for {lift.capitalize()}: {total_reps}")
-
 '''
 
+
+##### PLATE CALCULATOR FLASK VERSION LBS ONLY ########
+
+def plate_calculator(weight):
+    #print("Using a standard 20KG/45LB barbell... get the plates needed to get your desired weight")
+    #weight_type = input("LBs or Kilos? ").strip().lower()
+    #LBS SECTION
+    #if weight_type in ['lbs', 'lb', 'pounds', 'pound']:
+        #print("Do this for lbs")
+
+        weight_for_plates = weight - 45      #Subtracts bar weight of 45
+
+        if weight_for_plates < 0:
+            #print("Weight is less than the barbell weight!")
+            return Error
+
+        # Weight per side (divide by 2 since plates go on both sides)
+        weight_per_side = weight_for_plates / 2
+        remaining_weight = weight_per_side
+        # Calculate plates needed per side (only whole numbers)
+        forty_five_plates = int(weight_per_side // 45)
+        remaining_weight = weight_per_side % 45
+        #print(f"Weight left per side: {remaining_weight}") #For testing
+        twenty_five_plates = int(remaining_weight // 25)
+        remaining_weight = remaining_weight % 25
+        #print(f"Weight left per side after 25s: {remaining_weight}") #For testing
+        ten_plates = int(remaining_weight // 10)
+        remaining_weight = remaining_weight % 10
+        five_plates = int(remaining_weight // 5)
+        remaining_weight = remaining_weight % 5
+        two_and_half_plates = int(remaining_weight // 2.5)
+        
+        #print(f"You will need {fourty_five_plates} 45(s),{twenty_five_plates} 25(s), {ten_plates} 10(s), {five_plates} 5(s) and {two_and_half_plates} 2.5(s) per side")
+        return {
+        "45s": forty_five_plates,
+        "25s": twenty_five_plates,
+        "10s": ten_plates,
+        "5s": five_plates,
+        "2.5s": two_and_half_plates
+    }
+    #Returns a dictionary
+    
 ########### Menu to use different calculators ##############
 
 '''

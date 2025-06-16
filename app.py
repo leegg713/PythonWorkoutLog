@@ -3,7 +3,7 @@
 
 # app.py
 from flask import Flask, render_template, request, redirect, url_for #Imports flask, render_template function and requests function
-from main import  add_exercise, average_lift, wilks, one_rep_max, exercise_frequency, dots, plate_calculator
+from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator
 
 app = Flask(__name__)
 
@@ -24,31 +24,61 @@ def add():
 
 @app.route('/calc', methods=['GET', 'POST'])
 def calc():
-    result = None  # Default, no result shown on GET
-
+    #result = None  # Default, no result shown on GET
+    results = {} # Stores differnet results variables per calculator function
     if request.method == 'POST':
         choice = request.form.get('choice', '')
         
         if choice == '1':
-            exercise_to_avg = request.form.get('exercise_to_avg', '').strip()
+            exercise_to_avg = request.form.get('exercise_to_avg', '').strip() #Sets exercise_to_avg equal to what the user inputs on the page
             if exercise_to_avg:
-                result = average_lift(exercise_to_avg)
+                results['average'] = average_lift(exercise_to_avg) # If exercise_to_avg matches the checks it will run the python function from main.py to get output, exercise, average, and total reps
             else:
-                result = {"error": "Please enter a valid exercise name."} #Shows no matter what --- Will need to fix that to display properly only when bad input
+                results['average'] = {"error": "Please enter a valid exercise name."} #Shows no matter what --- Will need to fix that to display properly only when bad input
         elif choice == '2':
-            result = wilks()
-        elif choice == '3':
-            result = dots()
-        elif choice == '4':
-            result = one_rep_max()
-        elif choice == '5':
-            result = plate_calculator()
-        elif choice == '6':
-            result = exercise_frequency()
-        else:
-            result = "Invalid selection."
+            try:
+                bodyweight = float(request.form.get('bodyweight', '').strip())
+                total_lift = float(request.form.get('total_lift', '').strip())
+                results['wilks'] = f"WILKS Score: {wilks(bodyweight, total_lift)}"
+            except (TypeError, ValueError):
+                results['wilks'] = "Please enter valid numbers for bodyweight and total lifted." #Shows the error prior to entering input -- Need to fix
 
-    return render_template('calc.html', result=result)
+            #result = wilks()
+        elif choice == '3':
+            try:
+                bodyweight = float(request.form.get('bodyweight', '').strip())
+                total_lift = float(request.form.get('total_lift', '').strip())
+                results['dots'] = f"DOTS Score: {dots(bodyweight, total_lift)}"
+            except (TypeError, ValueError):
+                results['dots'] = "Please enter valid numbers for bodyweight and total lifted."
+            #result = dots()
+        elif choice == '4':
+            try:
+                weight = float(request.form.get('weight', '').strip())
+                reps = float(request.form.get('reps', '').strip())
+                results['rm'] = f"Estimated One Rep Max: {one_rep_max(weight, reps)}"
+            except (TypeError, ValueError):
+                results['rm'] = "Please enter valid numbers for bodyweight and total lifted."
+            #result = one_rep_max()
+        elif choice == '5':
+            try:
+                weight = float(request.form.get('weight', '').strip())
+                plate_counts = plate_calculator(weight)
+                if isinstance(plate_counts, str):
+                    results['plate'] = plate_counts
+                else:
+                    results['plate'] = (
+                    f"Plates per side: 45s: {plate_counts['45s']}, "
+                    f"25s: {plate_counts['25s']}, 10s: {plate_counts['10s']}, "
+                    f"5s: {plate_counts['5s']}, 2.5s: {plate_counts['2.5s']}")
+            except (TypeError, ValueError):
+                results['plate'] = "Please enter a valid number for the weight."
+            #LB Plate Calculator
+           
+        else:
+            results['error'] = "Invalid selection."
+
+    return render_template('calc.html', results=results)
     
 
 

@@ -1,0 +1,116 @@
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    background-color: #111; /* Dark background */
+    color: #f0f0f0; /* Light text */
+  }
+
+  h1 {
+    text-align: center;
+    color: #ff4b4b; /* Bright red title */
+  }
+
+  form {
+    background: #1a1a1a; /* Darker form background */
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.2); /* Subtle red shadow */
+  }
+
+  label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #ff9999; /* Lighter red */
+  }
+
+  input[type="text"],
+  select {
+    width: 100%;
+    
+    border: 1px solid #444;
+    background-color: #222;
+    color: #fff;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1rem;
+  }
+
+  button[type="submit"] {
+    
+    background-color: #ff1a1a;
+    border: none;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    font-size: 1.1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 100%;
+  }
+
+  button[type="submit"]:hover {
+    background-color: #b30000;
+  }
+
+  p {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background-color: #2c2c2c;
+    border-left: 4px solid #ff4b4b;
+    color: #f5f5f5;
+  }
+
+  p.error {
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  background-color: #4d0000;
+  border-left: 4px solid #ff1a1a;
+  color: #ffcccc;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+
+  a {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #ff4b4b;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 400px) {
+    body {
+      margin: 1rem;
+      padding: 0 0.5rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+    }
+
+    input[type="text"],
+    select {
+      font-size: 0.9rem;
+      padding: 0.5rem;
+    }
+
+    button[type="submit"] {
+      font-size: 1rem;
+      padding: 0.7rem;
+    }
+  }
+</style>
+``
