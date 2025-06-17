@@ -67,9 +67,21 @@ def clear_last_entry():
 
 #### MARK A PR FUNCTION #####
 
-def mark_pr():
-    print("test")
-
+#### NEED TO FIX THIS STILL ####
+def mark_pr(exercise, new_weight):
+    max_weight = 0 
+    # Needs to check what exercise and then see the max weight done for that exercise
+    with open(file_path, mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['Exercise'].lower() == exercise.lower():
+                try:
+                    weight = float(row['Weight'])
+                    if weight > max_weight:
+                        max_weight = weight
+                except ValueError:
+                    continue
+    return new_weight > max_weight
 
 #### ADD EXERCISE FLASK VERSION ######
 
@@ -121,6 +133,13 @@ def add_exercise(form_data):
         except ValueError:
             raise ValueError("Invalid date format. Please use MM/DD/YY.")
 
+
+### NEED TO FIX THIS STILL #######
+    if mark_pr(exercise, weight):
+        print(f"🎉 Congrats! New PR for {exercise} at {weight} lbs!")
+        pr_status = "Yes"
+    else:
+        pr_status = "No"
     # Write the validated data to CSV
     new_entry = [exercise_input, sets_input, rep_input, weight_input, date_input]
     with open(file_path, mode='a', newline='') as file:
