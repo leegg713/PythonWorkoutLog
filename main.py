@@ -1,29 +1,34 @@
-####TO DO### 
+### TO DO #####
+#MARK A PR FUNCTION
+# -- Checks the highest weight for that lift and then outputs a message to the screen -- Can make it in only python first before flask version
+'''
+Data Storage
+You’re currently using CSV — that can work initially but consider migrating to a database like SQLite or PostgreSQL for:
 
-#Plate Calculator -- You want 135 on the bar... what weights are needed in either kg or lbs -- Completed
-#Eventually make it so that when its a visual app you can use either plate
-#Test function first
-#After it works, add to display menu section
-#Exercise Frequency - How often a week you train each exercise
-#Date format validation - Ensure consistent date entry
-#Create new branch
+Multi-user support
 
-#Date format validation - Ensure consistent date entry
-#One Rep Max to work in KILOS or LBS
-#Date format validation - Ensure consistent date entry
+Concurrent access
 
-#Rest timer - Built-in countdown timer between sets -- Can be used on the app directly eventually -- Build this next
+Easier queries and edits
+'''
 
-#Function page and main page seperated?? When we make this an app for real probably need to do that
+'''
+5. User Accounts & Authentication
+Add user login/signup so different people can keep their own logs.
 
-#Edit function to change an old entry --- Would need date, lift, sets, reps, weight to do it --- Can be a point and click maybe????
+Flask-Login or Django’s built-in auth make this easier.'''
 
-#Better Visualizations --- More difficult - Do after 100 days Python completed
-#May want to not use matplotlib and may want something else???
-#Multiple exercise comparison - Graph multiple lifts on same chart
-#Volume vs strength trends - Compare total volume against max weights
-#Weekly/monthly summaries - Aggregate data views
-#Exercise distribution pie charts - See training balance
+'''
+ Hosting
+Deploy on cloud platforms like:
+
+Heroku (easy Flask/Django deploy)
+
+Render, AWS, DigitalOcean, or Google Cloud
+
+Make sure file paths and persistent storage are handled properly.
+
+'''
 
 #Import Statements
 import time  #Used for adding delays to the script if needed

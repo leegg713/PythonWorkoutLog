@@ -4,7 +4,8 @@
 Simple function tester - Just import and call any function from Main.py
 """
 
-from Main import * #Imports all functions in main
+#from main import * #Imports all functions in main
+from helpers import * #Imports all functions in helpers
 
 # Example usage:
 # test_function.py
@@ -21,6 +22,7 @@ from Main import * #Imports all functions in main
 # calculator()
 # plot_exercise_data()
 #plate_calculator()
-exercise_frequency()
+#exercise_frequency()
+mark_pr()
 
 #print("Edit this file and uncomment the function you want to test, then run: python test_function.py")

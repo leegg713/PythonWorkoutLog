@@ -65,6 +65,12 @@ def clear_last_entry():
         print("CSV is empty — nothing to remove.")
 
 
+#### MARK A PR FUNCTION #####
+
+def mark_pr():
+    print("test")
+
+
 #### ADD EXERCISE FLASK VERSION ######
 
 def add_exercise(form_data):
