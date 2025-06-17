@@ -13,7 +13,7 @@ from Main import * #Imports all functions in main
 
 # get_valid_number_input("Enter a number: ", "Test")
 # clear_last_entry()
-# add_exercise()
+add_exercise()
 # average_lift()
 # wilks()
 # dots()
@@ -21,6 +21,7 @@ from Main import * #Imports all functions in main
 # calculator()
 # plot_exercise_data()
 #plate_calculator()
-exercise_frequency()
+#exercise_frequency()
+#mark_pr()
 
 #print("Edit this file and uncomment the function you want to test, then run: python test_function.py")
