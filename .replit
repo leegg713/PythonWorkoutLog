@@ -3,22 +3,22 @@ run = "python main.py"
 
 [nix]
 channel = "stable-24_05"
-packages = ["cairo", "ffmpeg-full", "freetype", "ghostscript", "gobject-introspection", "gtk3", "pkg-config", "qhull", "tcl", "tk"]
+packages = ["cairo", "ffmpeg-full", "freetype", "ghostscript", "glibcLocales", "gobject-introspection", "gtk3", "pkg-config", "qhull", "tcl", "tk"]
 
 [deployment]
 run = ["sh", "-c", "python main.py"]
 
 [workflows]
-runButton = "Run Test Function Script"
+runButton = "Run Web App Python "
 
 [[workflows.workflow]]
-name = "Run Main Python Script"
+name = "Run Main Python Script For Logging"
 mode = "sequential"
 author = 22919837
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python Main.py"
+args = "python main.py"
 
 [[workflows.workflow]]
 name = "Push to Git"
@@ -49,3 +49,16 @@ author = 22919837
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python test_function.py"
+
+[[workflows.workflow]]
+name = "Run Web App Python "
+mode = "sequential"
+author = 22919837
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python app.py"
+
+[[ports]]
+localPort = 5000
+externalPort = 80

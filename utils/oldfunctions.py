@@ -1,123 +1,4 @@
-####TO DO### 
-
-#Plate Calculator -- You want 135 on the bar... what weights are needed in either kg or lbs -- Completed
-#Eventually make it so that when its a visual app you can use either plate
-#Test function first
-#After it works, add to display menu section
-#Exercise Frequency - How often a week you train each exercise
-#Date format validation - Ensure consistent date entry
-'''
-Now you can access the exercise frequency analysis by:
-
-Going to the Calculator menu (option 2)
-Typing "frequency" when prompted
-The analysis will show you:
-
-Total sets performed for each exercise
-Days trained for each exercise
-Frequency per week for each exercise
-Training insights including most/least trained exercises
-Recent activity showing what you've trained in the last 2 weeks
-
-'''
-#Date format validation - Ensure consistent date entry
-#One Rep Max to work in KILOS or LBS
-#Date format validation - Ensure consistent date entry
-
-#Rest timer - Built-in countdown timer between sets -- Can be used on the app directly eventually
-
-#Function page and main page seperated?? When we make this an app for real probably need to do that
-
-#Edit function to change an old entry --- Would need date, lift, sets, reps, weight to do it --- Can be a point and click maybe????
-
-#Better Visualizations --- More difficult - Do after 100 days Python completed
-#May want to not use matplotlib and may want something else???
-#Multiple exercise comparison - Graph multiple lifts on same chart
-#Volume vs strength trends - Compare total volume against max weights
-#Weekly/monthly summaries - Aggregate data views
-#Exercise distribution pie charts - See training balance
-
-#Import Statements
-import time  #Used for adding delays to the script if needed
-import csv  #Used to import the CSV
-import os  #Used to import the file path for the CSV and other useful functions
-import pandas as pd #Used to get a dataframe for the graph
-import matplotlib.pyplot as plt  #Used to plot the graph
-import datetime as datetime
-
-
-
-#Global variables - Not going to change
-file_path = 'WorkoutLog.csv'
-
-###### Function to get valid inputs #########
-def get_valid_number_input(prompt, field_name, max_attempts=3, clear_screen=False):
-    """
-    Prompts the user to enter a numeric value with limited attempts.
-
-    Parameters:
-        prompt (str): The input prompt to display.
-        field_name (str): What the number represents (e.g., Sets, Reps).
-        max_attempts (int): How many times the user can try.
-        clear_screen (bool): Whether to clear the screen after valid input.
-
-    Returns:
-        int or None: The validated integer, or None if attempts are exceeded.
-    """
-    attempts = 0
-
-    while attempts < max_attempts:
-        user_input = input(prompt).strip()
-
-        if user_input.isdigit():
-            num = int(user_input)
-            print(f"{field_name} entered: {num}")
-            time.sleep(1)
-            if clear_screen:
-                os.system("clear")  # Use "cls" on Windows
-            return num
-        else:
-            attempts += 1
-            print(f"Invalid input. Only digits allowed. {max_attempts - attempts} attempt(s) left.")
-
-    print("You've exceeded the maximum number of attempts. Please try again later.")
-    return None
-
-############### Clears the last workout entry entered in case of a typo/etc ###################
-def clear_last_entry():
-    #Read all lines from the file
-    with open(file_path, "r") as file:
-        lines = file.readlines()
-
-    #Remove the last line
-    if lines:
-        lines = lines[:-1]  # All lines except the last
-
-        # Step 3: Write the remaining lines back to the file -- This will overwrite the whole file with the old data minus the last line
-        with open(file_path, "w") as file:
-            file.writelines(lines)
-
-        print("Last entry removed.")
-    else:
-        print("CSV is empty — nothing to remove.")
-
-################# Function to get weight and total in kgs and lbs ###################
-#Used for calculator functions
-
-def get_weight_total():
-    type = input("Enter lbs or kgs: ").strip().lower()
-    if type == "lbs":
-        weight_lbs = float(input("Enter your body weight in pounds: "))
-        total_lbs = float(input("Enter your total for the big 3 lifts in pounds(squat,bench,deadlift) "))
-        total_kg = total_lbs * 0.45359237
-        weight_kg = weight_lbs * 0.45359237
-    else:
-        weight_kg = float(input("Enter your body weight in kilograms: "))
-        total_kg = float(input("Enter your total for the big 3 lifts in kilograms (squat, bench, deadlift): "))
-        weight_lbs = weight_kg / 0.45359237
-        total_lbs = total_kg / 0.45359237
-
-    return weight_kg, total_kg, weight_lbs, total_lbs
+#These functions are not needed for flask app but I want to keep the code in case I need it for something
 
 
 def mark_pr(exercise_input):
@@ -155,7 +36,25 @@ def mark_pr(exercise_input):
         print(f"Error checking PR: {e}")
 
 
-############# Function to add lift to the CSV ###################
+'''
+
+def get_weight_total():
+    type = input("Enter lbs or kgs: ").strip().lower()
+    if type == "lbs":
+        weight_lbs = float(input("Enter your body weight in pounds: "))
+        total_lbs = float(input("Enter your total for the big 3 lifts in pounds(squat,bench,deadlift) "))
+        total_kg = total_lbs * 0.45359237
+        weight_kg = weight_lbs * 0.45359237
+    else:
+        weight_kg = float(input("Enter your body weight in kilograms: "))
+        total_kg = float(input("Enter your total for the big 3 lifts in kilograms (squat, bench, deadlift): "))
+        weight_lbs = weight_kg / 0.45359237
+        total_lbs = total_kg / 0.45359237
+
+    return weight_kg, total_kg, weight_lbs, total_lbs
+'''
+
+'''
 def add_exercise():
     time.sleep(0.5)
     os.system("clear")
@@ -196,7 +95,6 @@ def add_exercise():
             print("Invalid exercise entered and no fallback option used.")
             return
 
-
     # Get sets, reps, weight by using the get_valid_number_input function
     sets_input = get_valid_number_input("Sets > ", field_name="Sets", max_attempts=3, clear_screen=True)
     rep_input = get_valid_number_input("Reps > ", field_name="Reps", max_attempts=3, clear_screen=True)
@@ -232,11 +130,13 @@ def add_exercise():
         writer.writerow(new_entry)
 
     print(f"New Lift added to {file_path}")
-    mark_pr(exercise_input)
-    time.sleep(3)
+    time.sleep(2)
     os.system("clear")
 
-############# Lift Average ###########
+
+    '''
+
+    '''
 def average_lift():
     time.sleep(0.5)
     os.system("clear")
@@ -262,17 +162,28 @@ def average_lift():
                 total_weight += float(weight) * int(reps) * int(sets)  # Gets weight in lbs
                 total_reps += int(reps) * int(sets)# Add the total number of reps (sets * reps) to total_reps
     # Calculate and display the average
+
+    
     if total_reps > 0:
         avg_weight_per_rep = total_weight / total_reps
         print(f"The average weight lifted per rep for {exercise_to_avg} is: {avg_weight_per_rep:.2f} lbs")
         time.sleep(5)
         os.system("clear")
+        return {
+        "exercise": exercise_to_avg,
+        "average": round(avg_weight_per_rep, 2),
+        "total_reps": total_reps
+        }
     else:
         print(f"No entries found for {exercise_to_avg}.")
+        #print(f"No avg weight per rep found: {avg_weight_per_rep}")
         time.sleep(5)
         os.system("clear")
+        return {"error": f"No entries found for {exercise_to_avg}"}
 
-########### Get WILKS Score Function ###############
+        '''
+
+    '''
 def wilks():
     
     os.system("clear")
@@ -297,7 +208,9 @@ def wilks():
     time.sleep(10)
     os.system("clear")
 
-####### Get DOTS Score Function ######
+    '''   
+
+    '''
 def dots():
     print("Dots Calculator")
     #get_weight_total()
@@ -318,8 +231,9 @@ def dots():
     print(f"Total lift: {round(total_kg, 2)} kg ({round(total_lbs, 2)} lbs)")
     time.sleep(10)
     os.system("clear")
+'''
 
-########### One Rep Max Estimate Function ###################
+'''
 def one_rep_max():
     print("1 rep max calculator")
     weight = float(input("Enter the weight used: "))
@@ -328,8 +242,9 @@ def one_rep_max():
     print(f"Your estimated 1 rep max is {max}")
     time.sleep(5)
     os.system("clear")
+'''
 
-########### Plate Calculator Function #######################
+'''
 def plate_calculator():
     print("Using a standard 20KG/45LB barbell... get the plates needed to get your desired weight")
     weight_type = input("LBs or Kilos? ").strip().lower()
@@ -402,111 +317,9 @@ def plate_calculator():
     else:
         print("Invalid input selected... returning to main menu")
         return
-
-############## Exercise Frequency Function ##################
-def exercise_frequency():
-
-    '''
-    Total sets performed for each exercise - Completed
-    Total reps performed for each exercise - Completed
-    Days trained for each exercise - Completed
-    Frequency per week for each exercise -- WIP
-    Training insights including most/least trained exercises -- WIP
-    Recent activity showing what you've trained in the last 2 weeks -- WIP
-
-    '''
-    # Read the CSV into a DataFrame
-    df = pd.read_csv(file_path)
-
-    # Normalize the 'Exercise' column to lowercase for consistent comparison
-    df['Exercise'] = df['Exercise'].str.strip().str.lower()
-
-    # Ask the user for a lift
-    lift = input("Enter the lift to get frequency for: ").strip().lower()
-
-    # Filter rows matching the lift
-    lift_df = df[df['Exercise'] == lift].copy() #Need the copy for no error
-
-    # Check if anything matched
-    if lift_df.empty:
-        print(f"'{lift}' not found in {file_path}")
-    else:
-        # Total sets Instead of index you can use the name of the column
-        total_sets = lift_df['Sets'].astype(int).sum()
-
-        # Total reps (sets × reps per row, then sum)
-        lift_df['Reps'] = lift_df['Reps'].astype(int)
-        lift_df['Sets'] = lift_df['Sets'].astype(int)
-        lift_df['TotalReps'] = lift_df['Sets'] * lift_df['Reps']
-        total_reps = lift_df['TotalReps'].sum()
-
-        # Print dates where lift was done
-        date_count = 0
-        print("Dates this lift was performed:")
-        for date in lift_df['Date']:
-            unique_dates = set(lift_df['Date'])
-            date_count = len(unique_dates)
-            #print(f"Total Unique Days for {lift.capitalize()}: {date_count}")
-
-        # Final output
-        print(f"\nTotal Sets for {lift.capitalize()}: {total_sets}")
-        print(f"Total Reps for {lift.capitalize()}: {total_reps}")
-        print(f"Total Different Days for {lift.capitalize()}: {date_count}")
-
-
-    
-    '''
-    CSV READER VERSION OUTDATED GOING TO USE PANDAS TO LEARN IT
-    #User select a lift
-    #Get the info based on the lift
-    #Output the info
-    lift = input("Enter the lift you want to get frequency for: ").strip().lower() # Will have to see if this actually pulls the right data
-    # Read the CSV file and calculate the total weight for the selected exercise
-    found = False  # Track if we find a match
-    total_sets = 0
-    total_reps = 0
-    df =pd.read_csv('MYDATA.csv') #Reads CSV for 
-    with open(file_path, mode='r') as file:
-        reader = csv.reader(file)
-        # convert strings to datetimes
-        reader['recvd_dttm'] = pd.to_datetime(df['recvd_dttm'])
-
-        # get first and last datetime for final week of data
-        range_max = df['recvd_dttm'].max()
-        range_min = range_max - dt.timedelta(days=7)
-
-        # take slice with final week of data
-        sliced_df = df[(df['recvd_dttm'] >= range_min) & 
-                       (df['recvd_dttm'] <= range_max)]
-        
-        # Skip the header row if there is one
-        next(reader, None)  # Skip the header row (if there is one)
-        #Reads the file to get the data needed
-        for row in reader:
-            exercise = row[0].strip().lower()
-            if lift == exercise:
-                #print(row) #Test output for whole row #Prints whole row
-                #print(f"Lift: {row[0]}") #For just first index in row #Prints just Squat
-                #print(f"Sets: {row[1]}") #Sets 
-                set = int(row[1])
-                total_sets += set
-                #print(f"Reps: {row[2]}") #Reps
-                rep = int(row[2])
-                total_reps += rep*set
-                #print(f"Weight: {row[3]}") #Weight used
-                date = row[4]
-                print(date)
-                found = True
-            # After loop ends, check if nothing was found
-    if not found:
-        print(f"'{lift}' not found in {file_path}")
-    elif found:
-        print(f"Total Sets for {lift.capitalize()}: {total_sets}")
-        print(f"Total Reps for {lift.capitalize()}: {total_reps}")
-
 '''
 
-########### Menu to use different calculators ##############
+'''
 def calculator():
     os.system("clear")
     print("Calculator Page")
@@ -542,30 +355,8 @@ def calculator():
         time.sleep(3)
         os.system("clear")
 
-########## GRAPH Function #########
-def plot_exercise_data():
-    df = pd.read_csv(file_path) #Dataframe using pandas to read the csv
-    #print(df.head()) #Prints First 5 rows to test it out to make sure it imported correct
-
-    lift_name = input("\nEnter the name of the exercise to get a graph for: ").strip().replace(" ", "")
-    lift_data = df[df["Exercise"] == lift_name]
-
-    plt.plot(lift_data["Date"], lift_data["Weight"], marker="o")
-    plt.title(f"{lift_name} Weight Over Time")
-    plt.xlabel("Date")
-    plt.ylabel("Weight")
-    plt.grid(True)
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    #plt.show()
-    #Needed for script to continue after plotting
-    plt.show(block=False)
-    plt.pause(0.001)
-    
-    time.sleep(3)
-    os.system("clear")
-
-########## MENU FUNCTION ########
+        '''
+'''
 def display_menu():
     print("Welcome to Lee's Workout Tracker!")
     while True:
@@ -596,13 +387,4 @@ def display_menu():
             print("Exiting the program.")
             break
 
-
-# Main function to execute the program
-def main():
-    display_menu()
-
-
-# Call the main function
-if __name__ == "__main__":
-    main()
-
+'''

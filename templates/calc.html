@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lee Workout Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Welcome to Lee's Calculator</h1>
+
+<form action="{{ url_for('calc') }}" method="POST">
+    <label for="choice">Choose Option:</label>
+    <select name="choice" id="choice">
+        <option value="1" {% if request.form.get('choice') == '1' %}selected{% endif %}>Average</option>
+        <option value="2" {% if request.form.get('choice') == '2' %}selected{% endif %}>WILKS</option>
+        <option value="3" {% if request.form.get('choice') == '3' %}selected{% endif %}>DOTS</option>
+        <option value="4" {% if request.form.get('choice') == '4' %}selected{% endif %}>1RM</option>
+        <option value="5" {% if request.form.get('choice') == '5' %}selected{% endif %}>Plate Calculator</option>
+    </select>
+    <!-- Below is for Average or Choice 1 -->
+{% if request.form.get('choice') == '1' %} 
+<!-- Prints out a div to the screen asking for an exercise name and passes that to app.py -->
+    <div style="margin-top:10px;">
+        <label for="exercise_to_avg">Exercise Name:</label>
+        <input type="text" name="exercise_to_avg" id="exercise_to_avg" placeholder="EX: Bench"
+               value="{{ request.form.get('exercise_to_avg', '') }}">
+    </div>
+
+    {% if results.average %}
+        {% if results.average.error %}
+            <p>{{ results.average.error }}</p>
+        {% else %}
+            <p>Exercise: {{ results.average.exercise }}</p>
+            <p>Average weight per rep: {{ results.average.average }} lbs</p>
+            <p>Total reps counted: {{ results.average.total_reps }}</p>
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+<!-- Below is for Wilks or Choice 2 -->
+
+{% if request.form.get('choice') == '2' %} 
+    <label>Bodyweight (lbs):</label>
+    <input type="text" name="bodyweight" value="{{ request.form.get('bodyweight', '') }}"><br>
+
+    <label>Total Lift (lbs):</label>
+    <input type="text" name="total_lift" value="{{ request.form.get('total_lift', '') }}"><br>
+{% endif %}
+{% if results.wilks %}
+        {% if results.wilks.error %}
+            <p>{{ results.wilks.error }}</p>
+        {% else %}
+            <p>{{ results.wilks }}</p>
+        {% endif %}
+    {% endif %}
+<!-- Below is for DOTS or Choice 3 -->
+{% if request.form.get('choice') == '3' %}
+    <label>Bodyweight (lbs):</label>
+    <input type="text" name="bodyweight" value="{{ request.form.get('bodyweight', '') }}"><br>
+
+    <label>Total Lifted (lbs):</label>
+    <input type="text" name="total_lift" value="{{ request.form.get('total_lift', '') }}"><br>
+{% endif %}
+{% if results.dots %}
+        {% if results.dots.error %}
+            <p>{{ results.dots.error }}</p>
+        {% else %}
+            <p>{{ results.dots }}</p>
+        {% endif %}
+    {% endif %}
+
+<!-- Below is for One Rep Max or Choice 4 -->
+{% if request.form.get('choice') == '4' %}
+    <label>Weight Lifted (lbs):</label>
+    <input type="text" name="weight" value="{{ request.form.get('weight', '') }}"><br>
+
+    <label>Reps Completed:</label>
+    <input type="text" name="reps" value="{{ request.form.get('reps', '') }}"><br>
+{% endif %}
+{% if results.rm %}
+        {% if results.rm.error %}
+            <p>{{ results.rm.error }}</p>
+        {% else %}
+            <p>{{ results.rm }}</p>
+        {% endif %}
+    {% endif %}
+
+<!-- Below is for Plate Calculator or Choice 5 -->
+{% if request.form.get('choice') == '5' %}
+    <label>Weight Needed (lbs):</label>
+    <input type="text" name="weight" value="{{ request.form.get('weight', '') }}"><br>
+{% endif %}
+{% if results.plate %}
+    <p>{{ results.plate }}</p>
+{% endif %}
+
+
+    <button type="submit">Submit</button>
+</form>
+
+<a href="{{ url_for('home') }}">Back to Main Menu</a>
+</body>
+</html>
+
