@@ -3,7 +3,7 @@
 
 # app.py
 from flask import Flask, render_template, request, redirect, url_for #Imports flask, render_template function and requests function
-from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator
+from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator, create_line_graph
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -29,33 +29,12 @@ def add():
 def graph():
     graphs = []
 
-    # First graph
-    x1, y1 = [1, 2, 3, 4, 5], [10, 20, 15, 25, 30]
-    buf1 = io.BytesIO()
-    plt.figure()
-    plt.plot(x1, y1, marker='o', color='blue')
-    plt.title("Line Graph 1")
-    plt.xlabel("X Axis")
-    plt.ylabel("Y Axis")
-    plt.savefig(buf1, format='png')
-    buf1.seek(0)
-    plt.close()
-    graphs.append(base64.b64encode(buf1.getvalue()).decode('utf-8'))
+    # Use your old simple line graph
+    x1 = [1, 2, 3, 4, 5]
+    y1 = [10, 20, 15, 25, 30]
+    graphs.append(graph.create_line_graph(x1, y1, title="Line Graph 1", xlabel="X Axis", ylabel="Y Axis", color="blue"))
 
-    # Second graph
-    x2, y2 = [1, 2, 3, 4, 5], [5, 15, 10, 20, 25]
-    buf2 = io.BytesIO()
-    plt.figure()
-    plt.bar(x2, y2, color='green')
-    plt.title("Bar Graph 2")
-    plt.xlabel("X Axis")
-    plt.ylabel("Y Axis")
-    plt.savefig(buf2, format='png')
-    buf2.seek(0)
-    plt.close()
-    graphs.append(base64.b64encode(buf2.getvalue()).decode('utf-8'))
-
-    # You can add more graphs here following the same pattern
+    # Add more graphs as needed
 
     return render_template('graph.html', graphs=graphs)
 
