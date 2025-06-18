@@ -1,5 +1,41 @@
 #These functions are not needed for flask app but I want to keep the code in case I need it for something
 
+
+def mark_pr(exercise_input):
+    try:
+        max_weight = 0.0
+        with open(file_path, mode='r') as file:
+            reader = csv.reader(file)
+            next(reader, None)  # Skip header if it exists
+
+            # Get all previous weights for this exercise to get the max weight
+            for row in reader:
+                exercise, sets, reps, weight, *_ = row
+                if exercise.strip().lower() == exercise_input.lower():
+                    try:
+                        weight = float(weight)
+                        if weight > max_weight:
+                            max_weight = weight
+                    except ValueError:
+                        continue  # Skip malformed rows
+
+        # Compare last logged lift to max_weight since you just added an entry
+        with open(file_path, mode='r') as file:
+            last_line = list(csv.reader(file))[-1]
+            last_weight = last_line[3]  # Assumes the first column is the exercise name
+            last_exercise = last_line[0]
+            if last_exercise.strip().lower() == exercise_input.lower():
+                if float(last_weight) >= max_weight:
+                    print(f"🎉 Congrats! You hit a new PR for {exercise_input} at {last_weight} lbs!")
+                else:
+                    print(f"No new PR. Current PR for {exercise_input}: {max_weight} lbs")
+
+    except FileNotFoundError:
+        print("Workout log not found.")
+    except Exception as e:
+        print(f"Error checking PR: {e}")
+
+
 '''
 
 def get_weight_total():
