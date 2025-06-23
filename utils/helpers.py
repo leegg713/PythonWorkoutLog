@@ -42,8 +42,13 @@ def get_valid_number_input(prompt, field_name, max_attempts=3, clear_screen=Fals
     ###### CONVERT TIME FUNCTION ######## 
 #### CONVERTS 2025-06-12 to 06/12/25 like how we want for CSV ########
 def convert_iso_to_mmddyy(iso_date_str):
-    date_obj = datetime.datetime.strptime(iso_date_str, "%Y/%m/%d")
-    return date_obj.strftime("%m-%d-%y")
+    try:
+        # Parse ISO format: '2025-06-19'
+        date_obj = datetime.datetime.strptime(iso_date_str, "%Y-%m-%d")
+        # Convert to MM/DD/YY
+        return date_obj.strftime("%m/%d/%y")
+    except ValueError:
+        raise ValueError("Invalid date format. Expected YYYY-MM-DD.")
 
 
 ############### Clears the last workout entry entered in case of a typo/etc ###################
@@ -132,9 +137,16 @@ def add_exercise(form_data):
             date_input = convert_iso_to_mmddyy(date_input)
         except ValueError:
             raise ValueError("Invalid date format. Please use MM/DD/YY.")
+# Write the validated data to CSV
+    new_entry = [exercise_input, sets_input, rep_input, weight_input, date_input]
+    with open(file_path, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(new_entry)
 
 
 ### NEED TO FIX THIS STILL #######
+
+'''
     if mark_pr(exercise, weight):
         print(f"🎉 Congrats! New PR for {exercise} at {weight} lbs!")
         pr_status = "Yes"
@@ -145,3 +157,4 @@ def add_exercise(form_data):
     with open(file_path, mode='a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(new_entry)
+'''
