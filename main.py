@@ -39,7 +39,7 @@ import matplotlib.pyplot as plt  #Used to plot the graph
 import datetime as datetime
 from utils.calc import wilks, dots, one_rep_max, plate_calculator, average_lift
 from utils.helpers import get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise
-from utils.visualizations import create_line_graph
+#from utils.visualizations import create_line_graph
 
 #Global variables - Not going to change
 file_path = 'WorkoutLog.csv'
@@ -67,6 +67,7 @@ def display_menu():
 
         elif choice == '3' or choice_lower == 'graph':
             #ADD GRAPH FUNCTIONS FROM VISUALIZATIONS HERE#
+            print()
             
 
         elif choice == '4' or choice_lower in ['clear', 'remove']:

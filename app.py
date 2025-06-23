@@ -3,7 +3,7 @@
 
 # app.py
 from flask import Flask, render_template, request, redirect, url_for #Imports flask, render_template function and requests function
-from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator, create_line_graph
+from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator #create_line_graph
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -30,9 +30,9 @@ def graph():
     graphs = []
 
     # Use your old simple line graph
-    x1 = [1, 2, 3, 4, 5]
-    y1 = [10, 20, 15, 25, 30]
-    graphs.append(graph.create_line_graph(x1, y1, title="Line Graph 1", xlabel="X Axis", ylabel="Y Axis", color="blue"))
+    #x1 = [1, 2, 3, 4, 5]
+    #y1 = [10, 20, 15, 25, 30]
+    #graphs.append(graph.create_line_graph(x1, y1, title="Line Graph 1", xlabel="X Axis", ylabel="Y Axis", color="blue"))
 
     # Add more graphs as needed
 
