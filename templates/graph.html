@@ -5,13 +5,14 @@
     <title>Here are some cool graphs!</title>
 </head>
 <body>
-    <h1>Check these out</h1>
-    {% for graph in graphs %}
-        <div>
-            <img src="data:image/png;base64,{{ graph }}" alt="Graph">
-        </div>
-        <hr>
-    {% endfor %}
+    <h2>Graphs</h2>
+
+{% for graph_img in graphs %}
+    <img src="{{ graph_img }}" alt="Graph {{ loop.index }}">
+    <br>
+{% else %}
+    <p>No graphs to display.</p>
+{% endfor %}
  <a href="{{ url_for('home') }}">Back to Menu</a>
 </body>
 </html>
