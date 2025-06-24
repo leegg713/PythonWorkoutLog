@@ -4,6 +4,7 @@ import time
 import os
 import io
 import base64
+from io import BytesIO
 
 file_path = 'WorkoutLog.csv'
 
@@ -35,29 +36,82 @@ X-axis: Exercise
 Y-axis: Average weight lifted (or average volume)
 Insight: Helps assess which exercises are prioritized or neglected in terms of intensity.
 '''
-def create_simple_default_graph():
-    # Create a simple dataframe with sample data
-    data = {
-        'X': [1, 2, 3, 4, 5],
-        'Y': [10, 20, 15, 25, 30]
-    }
-    df = pd.DataFrame(data)
+def create_progression_graph(file_path):
+    # Load CSV
+    df = pd.read_csv(file_path)
 
-    # Plot
-    plt.figure(figsize=(6, 4))
-    plt.plot(df['X'], df['Y'], marker='o', linestyle='-', color='green')
-    plt.title('Simple Default Graph')
-    plt.xlabel('X-axis')
-    plt.ylabel('Y-axis')
+    # Convert Date column to datetime
+    df['Date'] = pd.to_datetime(df['Date'])
+
+    # Sort by date to keep lines in order
+    df = df.sort_values(by='Date')
+
+    # Plot setup
+    plt.figure(figsize=(10, 6))
+
+    # Plot one line per exercise
+    for exercise in df['Exercise'].unique():
+        subset = df[df['Exercise'] == exercise]
+        plt.plot(subset['Date'], subset['Weight'], marker='o', label=exercise)
+
+    # Labels & legend
+    plt.xlabel("Date")
+    plt.ylabel("Weight Lifted")
+    plt.title("Progression Over Time")
+    plt.legend(title="Exercise")
     plt.grid(True)
-    plt.tight_layout()
 
-    # Convert plot to base64 string to embed in HTML
-    img = io.BytesIO()
-    plt.savefig(img, format='png')
-    img.seek(0)
-    graph_url = base64.b64encode(img.getvalue()).decode()
+    # Save to buffer for Flask embedding
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.getvalue()).decode()
     plt.close()
+    return f'data:image/png;base64,{graph_data}'
 
-    return f"data:image/png;base64,{graph_url}"
+def volume_per_workout(file_path):
+    # Load CSV
+    df = pd.read_csv(file_path)
 
+    # Convert Date column to datetime
+    df['Date'] = pd.to_datetime(df['Date'])
+
+    # OPTIONAL: Sort by date
+    df = df.sort_values(by='Date')
+
+    df['Volume'] = df['Weight'] * df['Reps'] * df['Sets']
+    # You can also group by date: volume_per_day = df.groupby('Date')['Volume'].sum()
+    # ------------------------
+    
+    # TEMPLATE PLACEHOLDER: Replace this with your actual volume logic
+   # df['Volume'] = df['Weight']  # Placeholder, change this!
+    volume_per_day = df.groupby('Date')['Volume'].sum().reset_index()
+
+    # === Bar Chart ===
+    plt.figure(figsize=(10, 6))
+    # Create an empty list to hold bar colors
+    colors = []
+
+# Loop through each volume value
+    for volume in volume_per_day['Volume']:
+        if volume > 7000:
+            colors.append('red')
+        else:
+            colors.append('green')
+    plt.bar(volume_per_day['Date'].dt.strftime('%Y-%m-%d'), volume_per_day['Volume'], color=colors)
+    
+    # Labels and layout
+    plt.xlabel("Date")
+    plt.ylabel("Total Volume")
+    plt.title("Workout Volume Per Day")
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.grid(True, axis='y')
+
+    # Save to buffer for Flask
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.getvalue()).decode()
+    plt.close()
+    return f'data:image/png;base64,{graph_data}'

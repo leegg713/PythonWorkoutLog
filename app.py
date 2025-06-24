@@ -6,12 +6,14 @@ from flask import Flask, render_template, request, redirect, url_for #Imports fl
 #from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator #create_line_graph
 from utils.calc import wilks, dots, one_rep_max, plate_calculator, average_lift
 from utils.helpers import get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise
-from utils.visualizations import create_simple_default_graph
+from utils.visualizations import create_progression_graph, volume_per_workout
 import matplotlib.pyplot as plt
 import io
 import base64
 
 app = Flask(__name__)
+
+file_path = "WorkoutLog.csv"
 
 @app.route("/")
 def home():
@@ -33,8 +35,8 @@ def graph():
     graphs = [] #List to store different graphs
 
   # Append one simple graph to the list # Add more below here
-    graphs.append(create_simple_default_graph())
-
+    graphs.append(create_progression_graph(file_path))
+    graphs.append(volume_per_workout(file_path))
     # If you want to add more graphs, just call your graph functions and append them here
 
     return render_template('graph.html', graphs=graphs)
