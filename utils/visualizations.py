@@ -2,6 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import time
 import os
+import io
+import base64
 
 file_path = 'WorkoutLog.csv'
 
@@ -33,5 +35,29 @@ X-axis: Exercise
 Y-axis: Average weight lifted (or average volume)
 Insight: Helps assess which exercises are prioritized or neglected in terms of intensity.
 '''
+def create_simple_default_graph():
+    # Create a simple dataframe with sample data
+    data = {
+        'X': [1, 2, 3, 4, 5],
+        'Y': [10, 20, 15, 25, 30]
+    }
+    df = pd.DataFrame(data)
 
+    # Plot
+    plt.figure(figsize=(6, 4))
+    plt.plot(df['X'], df['Y'], marker='o', linestyle='-', color='green')
+    plt.title('Simple Default Graph')
+    plt.xlabel('X-axis')
+    plt.ylabel('Y-axis')
+    plt.grid(True)
+    plt.tight_layout()
+
+    # Convert plot to base64 string to embed in HTML
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    graph_url = base64.b64encode(img.getvalue()).decode()
+    plt.close()
+
+    return f"data:image/png;base64,{graph_url}"
 
