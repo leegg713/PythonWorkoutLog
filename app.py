@@ -3,7 +3,10 @@
 
 # app.py
 from flask import Flask, render_template, request, redirect, url_for #Imports flask, render_template function and requests function
-from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator #create_line_graph
+#from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator #create_line_graph
+from utils.calc import wilks, dots, one_rep_max, plate_calculator, average_lift
+from utils.helpers import get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise
+from utils.visualizations import create_simple_default_graph
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -27,14 +30,12 @@ def add():
 
 @app.route('/graph')
 def graph():
-    graphs = []
+    graphs = [] #List to store different graphs
 
-    # Use your old simple line graph
-    #x1 = [1, 2, 3, 4, 5]
-    #y1 = [10, 20, 15, 25, 30]
-    #graphs.append(graph.create_line_graph(x1, y1, title="Line Graph 1", xlabel="X Axis", ylabel="Y Axis", color="blue"))
+  # Append one simple graph to the list # Add more below here
+    graphs.append(create_simple_default_graph())
 
-    # Add more graphs as needed
+    # If you want to add more graphs, just call your graph functions and append them here
 
     return render_template('graph.html', graphs=graphs)
 
