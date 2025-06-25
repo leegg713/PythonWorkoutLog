@@ -3,6 +3,8 @@ import csv
 import time
 import datetime
 
+file_path = "WorkoutLog.csv"
+
 ###### LIFT AVERAGE FLASK VERSION #########
 
 def average_lift(exercise_to_avg):
