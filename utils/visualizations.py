@@ -9,34 +9,6 @@ from utils.calc import average_lift
 
 file_path = 'WorkoutLog.csv'
 
-###NEED TO CREATE 4 DIFFERENT GRAPHS #####
-'''
-1. Progression Over Time (Line Graph)
-Purpose: Track how much weight you're lifting for a specific exercise across time.
-X-axis: Date
-Y-axis: Weight lifted
-Group: One line per exercise
-Insight: Shows whether you're gaining strength or plateauing in a lift like bench press or squat.
-
-2. Total Volume per Workout (Bar Graph)
-Purpose: Measure workout intensity using total volume: sets × reps × weight.
-X-axis: Date
-Y-axis: Total volume
-Group: Optionally grouped by exercise or entire workout
-Insight: Highlights overall workload and helps identify deload weeks or progressions.
-
-3. Rep Range Patterns (Box Plot or Histogram)
-Purpose: Visualize rep patterns to see consistency or variation.
-X-axis: Exercise name (or dates)
-Y-axis: Number of reps
-Insight: Reveals whether you're training mostly for strength (low reps) or hypertrophy/endurance (higher reps), and how consistent you are.
-
-4. Average Intensity by Exercise (Bar Graph)
-Purpose: Compare how heavy you lift on average for each exercise.
-X-axis: Exercise
-Y-axis: Average weight lifted (or average volume)
-Insight: Helps assess which exercises are prioritized or neglected in terms of intensity.
-'''
 def create_progression_graph(file_path):
     # Load CSV
     df = pd.read_csv(file_path)
@@ -81,11 +53,6 @@ def volume_per_workout(file_path):
     df = df.sort_values(by='Date')
 
     df['Volume'] = df['Weight'] * df['Reps'] * df['Sets']
-    # You can also group by date: volume_per_day = df.groupby('Date')['Volume'].sum()
-    # ------------------------
-    
-    # TEMPLATE PLACEHOLDER: Replace this with your actual volume logic
-   # df['Volume'] = df['Weight']  # Placeholder, change this!
     volume_per_day = df.groupby('Date')['Volume'].sum().reset_index()
 
     # === Bar Chart ===
@@ -125,9 +92,6 @@ import base64
 def average_intensity(file_path):
     # Load CSV
     df = pd.read_csv(file_path)
-
-    # Clean missing/invalid data (optional but safe)
-    #df = df.dropna(subset=['Exercise', 'Weight', 'Reps', 'Sets'])
 
     # Calculate total weight and total reps per row
     df['TotalWeight'] = df['Weight'] * df['Reps'] * df['Sets']

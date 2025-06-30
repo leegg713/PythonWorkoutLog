@@ -77,25 +77,14 @@ def dots(bodyweight_lbs, total_lift_lbs): #Passes these 2 parameters
 
     ########### One Rep Max Estimate Function FLASK VERSION ###################
 def one_rep_max(weight, reps):
-    #print("1 rep max calculator")
-    #weight = float(input("Enter the weight used: "))
-    #reps = float(input("Enter the reps completed: "))
     max = round(weight * reps**0.1, 2) #Rounds to 2 decimal points
-    #print(f"Your estimated 1 rep max is {max}")
-    #time.sleep(5)
-    #os.system("clear")
+
     return max
 
 
 ##### PLATE CALCULATOR FLASK VERSION LBS ONLY ########
 
 def plate_calculator(weight):
-    #print("Using a standard 20KG/45LB barbell... get the plates needed to get your desired weight")
-    #weight_type = input("LBs or Kilos? ").strip().lower()
-    #LBS SECTION
-    #if weight_type in ['lbs', 'lb', 'pounds', 'pound']:
-        #print("Do this for lbs")
-
         weight_for_plates = weight - 45      #Subtracts bar weight of 45
 
         if weight_for_plates < 0:

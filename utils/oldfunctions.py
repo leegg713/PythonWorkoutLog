@@ -1,6 +1,6 @@
 #These functions are not needed for flask app but I want to keep the code in case I need it for something
 
-
+'''
 def mark_pr(exercise_input):
     try:
         max_weight = 0.0
@@ -36,7 +36,7 @@ def mark_pr(exercise_input):
         print(f"Error checking PR: {e}")
 
 
-'''
+
 
 def get_weight_total():
     type = input("Enter lbs or kgs: ").strip().lower()
