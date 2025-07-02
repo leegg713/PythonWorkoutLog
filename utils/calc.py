@@ -9,6 +9,7 @@ file_path = "WorkoutLog.csv"
 
 def average_lift(exercise_to_avg):
     exercise_to_avg = exercise_to_avg.strip().replace(" ", "").lower()  # normalize input to lower to check the CSV
+    #Initialize variables to be 0 
     total_weight = 0
     total_reps = 0
 
@@ -17,16 +18,16 @@ def average_lift(exercise_to_avg):
         reader = csv.reader(file)
 
         # Skip the header row if there is one
-        next(reader, None)  # Skip the header row (if there is one)
+        next(reader, None)  # Skip the header row 
         #Reads the file to get the total weight done and reps done
         for row in reader:
+            #Below line Unpacks the row
             exercise, sets, reps, weight, *extra_columns = row  #Extra_columns needed otherwise it won't work due to an error saying its missing a row (Date)
             if exercise.lower() == exercise_to_avg:  #Check to see if user input matches an exercise in the CSV -- Sets to lower to match exercise_to_avg form submission
                 total_weight += float(weight) * int(reps) * int(sets)  # Gets weight in lbs
                 total_reps += int(reps) * int(sets)# Add the total number of reps (sets * reps) to total_reps
-    # Calculate and display the average
-
     
+    # Calculate and display/returns the average
     if total_reps > 0:
         avg_weight_per_rep = total_weight / total_reps
         return {
@@ -77,7 +78,7 @@ def dots(bodyweight_lbs, total_lift_lbs): #Passes these 2 parameters
 
     ########### One Rep Max Estimate Function FLASK VERSION ###################
 def one_rep_max(weight, reps):
-    max = round(weight * reps**0.1, 2) #Rounds to 2 decimal points
+    max = round(weight * reps**0.1, 2) #Rounds to 2 decimal points after multiplying weight by reps to the power of 0.1
 
     return max
 
@@ -88,7 +89,6 @@ def plate_calculator(weight):
         weight_for_plates = weight - 45      #Subtracts bar weight of 45
 
         if weight_for_plates < 0:
-            #print("Weight is less than the barbell weight!")
             return Error
 
         # Weight per side (divide by 2 since plates go on both sides)
