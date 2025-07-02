@@ -25,10 +25,12 @@
         <input type="text" name="exercise_to_avg" id="exercise_to_avg" placeholder="EX: Bench"
                value="{{ request.form.get('exercise_to_avg', '') }}">
     </div>
-
+    {# Check if 'average' results exist in the results object #}
     {% if results.average %}
+    {# If there's an error in the average results, display the error message #}
         {% if results.average.error %}
             <p>{{ results.average.error }}</p>
+            {# Otherwise, show the average stats for the exercise #}
         {% else %}
             <p>Exercise: {{ results.average.exercise }}</p>
             <p>Average weight per rep: {{ results.average.average }} lbs</p>
