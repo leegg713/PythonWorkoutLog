@@ -1,13 +1,20 @@
 # Lee's Workout Tracker
 
-A simple yet useful console workout log and tracking tool built with Python.
+This workout app will help you track workouts over time to notice trends about your workouts that are easily readable by looking at graphs.
+There are also some calculation features to help you see where you stack up against your prior self and others as well. 
 
 ## Features
-- Add new exercise entries (sets, reps, weight, date)
-- Calculate average weight lifted per rep for an exercise
-- Graph weight progression over time for any exercise
-- Clear the last entry from the workout log CSV
-- User input validation and friendly prompts
+- Workout Logging
+Add exercises and log workout data via a simple form.
+
+- Data Visualization
+View multiple interactive graphs tracking workout progress, volume, and intensity.
+
+- Fitness Calculators
+Calculate average lifts, WILKS score, DOTS score, estimated one-rep max, and plate loading based on user inputs.
+
+- Timer Page
+Built-in timer tool for workout sessions.
 
 ## CSV FILE FORMAT
 Exercise, Sets, Reps, Weight, Date
@@ -19,12 +26,13 @@ Exercise, Sets, Reps, Weight, Date
 
 ## Installation
 
-1. Clone this repository or download the script files.
+1. Clone this repository to your own GitHub or download the script files.
 2. Install dependencies:
-   ```bash
+   ```bash (While in terminal)
    pip install -r requirements.txt
 ## RUN
-To run the script: python Main.py
+To run the script via console only(Does not contain all features): python main.py
+To run the script with all features and have a flask app load: python app.py
 
 ## Contributing
 
@@ -34,20 +42,15 @@ Contributions are welcome! Please follow these steps:
 2. Create a new branch for your feature or fix  
 3. Commit your changes with clear messages  
 4. Push your branch and open a Pull Request  
-5. Make sure to test your changes
+5. I will review and see if I want to add the feature
 
 If you have suggestions or questions, feel free to open an issue.
 
-Thank you for helping improve this project!
+Thank you for helping me improve this project!
 
 
 ## IMPROVEMENTS
 
-Future Plans
-Add editing functionality for existing entries
-
-Improve date input validation
-
-Enable remote entry (mobile, Google Sheets integration)
-
-Add more detailed graphs and analytics
+Adding more detailed graphs
+Loading data to a database and not a CSV
+Multi User support following database integration
