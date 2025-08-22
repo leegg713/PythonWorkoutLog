@@ -1,4 +1,26 @@
-### ALL FUNCTIONS FROM CALC.PY ###
+### NEXT STEPS FOR PROJECT ### 
+
+''' 
+Why move to a database before graphing
+Clean data source:
+Graphing libraries (matplotlib, Plotly, etc.) will need to read your workout data. Pulling from CSV works, but querying a DB is cleaner and faster, especially if you filter by date, exercise, or user.
+Easier calculations:
+You can compute averages, 1RM, PRs directly from SQL queries instead of reading the entire CSV every time.
+Future-proof:
+If you later add multiple users or more fields, the DB will handle it; CSV will get messy.
+Suggested workflow
+1. Convert CSV → SQLite (or start using SQLite from now on).
+2. Update add_exercise() to write to the DB.
+3. Update your “list exercises” / home route to read from DB.
+4. Update average functions to use SQL queries and not reading the CSV
+
+### NEXT BRANCH WILL BE GRAPHING STUFF ###
+Then add graphing:
+Query data from DB.
+Feed it to matplotlib / Plotly / Recharts.
+Render graphs in templates.
+'''
+####################### ALL FUNCTIONS FROM CALC.PY #######################
 
 import os
 import csv
@@ -126,7 +148,7 @@ def plate_calculator(weight):
     }
     #Returns a dictionary
 
-### ALL FUNCTIONS FROM HELPERS.PY ###
+####################### ALL FUNCTIONS FROM HELPERS.PY #######################
 
 '''
 import os
@@ -282,7 +304,7 @@ def add_exercise(form_data):
 
 
 
-### ALL FUNCTIONS FROM VISUALIZATIONS.PY ###
+####################### ALL FUNCTIONS FROM VISUALIZATIONS.PY #######################
 
 '''
 import pandas as pd
@@ -297,6 +319,7 @@ from utils.calc import average_lift
 file_path = 'WorkoutLog.csv'
 '''
 
+#### PROGRESSION GRAPH ####
 def create_progression_graph(file_path):
     # Load CSV
     df = pd.read_csv(file_path)
