@@ -5,8 +5,7 @@ Simple function tester - Just import and call any function from Main.py
 """
 
 #from main import * #Imports all functions in main
-from helpers import * #Imports all functions in helpers
-
+from webApp import * #Imports all functions in webapp.py
 # Example usage:
 # test_function.py
 
