@@ -6,13 +6,6 @@
 </head>
 <body>
     <h2>Graphs</h2>
-
-{% for graph_img in graphs %}
-    <img src="{{ graph_img }}" alt="Graph {{ loop.index }}">
-    <br>
-{% else %}
-    <p>No graphs to display.</p>
-{% endfor %}
  <a href="{{ url_for('home') }}">Back to Main Menu</a>
 </body>
 </html>
