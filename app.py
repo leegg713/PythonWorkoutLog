@@ -4,12 +4,12 @@
 # app.py
 from flask import Flask, render_template, request, redirect, url_for #Imports flask, render_template function and requests function
 #from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator #create_line_graph
-from utils.calc import wilks, dots, one_rep_max, plate_calculator, average_lift
-from utils.helpers import get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise
-from utils.visualizations import create_progression_graph, volume_per_workout, average_intensity
-import matplotlib.pyplot as plt
-import io
-import base64
+from utils.webApp import wilks, dots, one_rep_max, plate_calculator, average_lift, get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise, create_progression_graph, volume_per_workout, average_intensity 
+#from utils.helpers import get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise
+#from utils.visualizations import create_progression_graph, volume_per_workout, average_intensity
+#import matplotlib.pyplot as plt
+#import io
+#import base64
 
 app = Flask(__name__)
 
