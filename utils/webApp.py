@@ -1,5 +1,7 @@
 ### NEXT STEPS FOR PROJECT ### 
 
+#Check AirBNB-Data-Analysis for example of SQLite
+
 ''' 
 Why move to a database before graphing
 Clean data source:
