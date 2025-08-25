@@ -11,10 +11,9 @@ You can compute averages, 1RM, PRs directly from SQL queries instead of reading 
 Future-proof:
 If you later add multiple users or more fields, the DB will handle it; CSV will get messy.
 Suggested workflow
-1. Convert CSV → SQLite (or start using SQLite from now on).
-2. Update add_exercise() to write to the DB.
-3. Update your “list exercises” / home route to read from DB.
-4. Update average functions to use SQL queries and not reading the CSV
+1. Convert CSV → SQLite (or start using SQLite from now on). -- Completed
+2. Update add_exercise() to write to the DB. -- Completed (Uploads to CSV and DB)
+3. Update average functions to use SQL queries and not reading the CSV
 
 ### NEXT BRANCH WILL BE GRAPHING STUFF ###
 Then add graphing:
@@ -40,7 +39,7 @@ import sqlite3
 ### GLOBAL VARIABLES ###
 csv_file = 'WorkoutLog.csv' #Global Variable
 db_file = "WorkoutLog.db"
-table_name = "Workout Tracking"
+table_name = "Workout"
 
 #### CONVERT CSV TO SQLITE DB #####
 ### ONE TIME RUN ####
@@ -49,7 +48,7 @@ def convertCSVToDB():
     # ---- Settings ----
     csv_file = "/workspaces/PythonWorkoutLog/WorkoutLog.csv"       # your CSV file
     db_file = "WorkoutLog.db"    # SQLite database file
-    table_name = "Workout Tracking"       # name of the table to create
+    table_name = "Workout"       # name of the table to create
 
 # ---- Load CSV into pandas ----
     df = pd.read_csv(csv_file)
@@ -70,7 +69,7 @@ def convertCSVToDB():
 
 def get_db_connection():
     conn = sqlite3.connect(db_file)
-    #conn.row_factory = sqlite3.Row  # optional
+    conn.row_factory = sqlite3.Row  # optional
     return conn
 
 
@@ -82,6 +81,8 @@ def average_lift(exercise_to_avg):
     total_weight = 0
     total_reps = 0
 
+    #### CSV AVERAGE SECTION ####
+    '''
     # Read the CSV file and calculate the total weight for the selected exercise
     with open(csv_file, mode='r') as file:
         reader = csv.reader(file)
@@ -106,9 +107,69 @@ def average_lift(exercise_to_avg):
         }
     else:
         return {"error": f"No entries found for {exercise_to_avg}"}
+        '''
+    ##### DB READ AVERAGE SECTION ######
+    conn = get_db_connection()
+    cur = conn.cursor()   # Creates a "cursor" object used to execute SQL commands
+    # --- SQL Query to Get Relevant Rows ---
+    cur.execute(f"""
+    SELECT sets, reps, weight
+    FROM {table_name}
+    WHERE LOWER(REPLACE(exercise, ' ', '')) = ?
+""", (exercise_to_avg,))
+# Explanation:
+# 1. SELECT sets, reps, weight: We only need these columns to calculate total weight lifted and total reps.
+# 2. FROM {table_name}: This is the SQLite table where all your workout logs are stored.
+# 3. WHERE LOWER(REPLACE(exercise, ' ', '')) = ?:
+#    - This filters rows to only include the exercise the user specified.
+#    - REPLACE(exercise, ' ', '') removes spaces in case the DB has different spacing.
+#    - LOWER(...) makes it case-insensitive so "squat", "Squat", "SQUAT" all match.
+# 4. The ? is a placeholder for parameterized queries, which protects against SQL injection.
+# 5. (exercise_to_avg,) provides the actual value for the placeholder.
 
+# --- Fetch All Matching Rows ---
+    rows = cur.fetchall()
+# Explanation:
+# - fetchall() retrieves all rows returned by the query as a list of sqlite3.Row objects.
+# - Each row contains 'sets', 'reps', and 'weight' for a single logged workout.
 
+# --- Close the Database Connection ---
+    conn.close()
+# Explanation:
+# - Always close the DB connection after fetching data to free resources.
 
+# --- Sum Total Weight and Reps ---
+    for row in rows:
+        sets = int(row["sets"])        # Convert 'sets' from string to integer
+        reps = int(row["reps"])        # Convert 'reps' from string to integer
+        weight = float(row["weight"])  # Convert 'weight' from string to float
+
+    # Total weight lifted in this entry = weight * reps * sets
+        total_weight += weight * reps * sets
+
+    # Total reps performed in this entry = reps * sets
+        total_reps += reps * sets
+
+# Explanation:
+# - This loop accumulates total_weight and total_reps across all rows for the selected exercise.
+# - These totals will later be used to compute the average weight lifted per rep.
+
+# --- Calculate Average Weight per Rep ---
+    if total_reps > 0:
+        avg_weight_per_rep = total_weight / total_reps
+        return {
+            "exercise": exercise_to_avg,                 # The exercise name
+            "average": round(avg_weight_per_rep, 2),     # Average weight per rep, rounded to 2 decimals
+            "total_reps": total_reps                     # Total reps performed
+        }
+    else:
+        return {"error": f"No entries found for {exercise_to_avg}"}
+# Explanation:
+# - If total_reps is zero, it means there are no entries for this exercise in the DB.
+# - Otherwise, we compute average weight per rep: total_weight / total_reps.
+# - Return a dictionary containing the exercise, average weight per rep, and total reps.
+# - This dictionary can then be used in your Flask app or API response.
+    
 ##### WILKS CALCULATOR FLASK VERSION ########
 
 def wilks(bodyweight_lbs, total_lift_lbs):
@@ -263,77 +324,7 @@ def clear_last_entry():
 
 #### ADD EXERCISE WITH ADDING TO SQLITE AND CSV #####
 
-def add_exercise(form_data):
-    # Predefined exercise list
-    valid_exercises = [
-        "Squat", "PauseSquat", "GobletSquat", "PauseBench",
-        "TouchNGoBench", "InclineDBBench", "Deadlift", "DeficitDeadlift",
-        "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench"
-    ]
-
-    # Extract form data
-    exercise_input = form_data.get('exercise', '').strip().replace(" ", "")
-    sets_input = form_data.get('sets', '')
-    rep_input = form_data.get('reps', '')
-    weight_input = form_data.get('weight', '')
-    date_input = form_data.get('date', '')
-
-    # Validate and resolve exercise input
-    if exercise_input == "":
-        try:
-            with open(csv_file, "r") as file:
-                last_line = list(csv.reader(file))[-1]
-                exercise_input = last_line[0]
-        except Exception:
-            raise ValueError("No previous exercise found.")
-    else:
-        match_found = False
-        for exercise in valid_exercises:
-            if exercise.lower().replace(" ", "") == exercise_input.lower():
-                exercise_input = exercise
-                match_found = True
-                break
-        if not match_found:
-            raise ValueError("Invalid exercise name.")
-
-    # Use last date if none entered
-    if date_input.strip() == "":
-        try:
-            with open(csv_file, "r") as file:
-                last_line = list(csv.reader(file))[-1]
-                date_input = last_line[-1]
-        except Exception:
-            raise ValueError("No previous date found.")
-    else:
-    # Validate date format
-        try:
-            date_input = convert_iso_to_mmddyy(date_input)
-        except ValueError:
-            raise ValueError("Invalid date format. Please use MM/DD/YY.")
-# Write the validated data to CSV
-    new_entry = [exercise_input, sets_input, rep_input, weight_input, date_input]
-    with open(csv_file, mode='a', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(new_entry)
-
-
-
-#### ADD EXERCISE TO ADD IT TO DB AND NOT CSV FILE ####
-
 #### ADD EXERCISE FLASK VERSION ######
-
-import csv
-import sqlite3
-import os
-
-csv_file = "WorkoutLog.csv"
-db_file = "WorkoutLog.db"
-table_name = "WorkoutLog"
-
-def get_db_connection():
-    conn = sqlite3.connect(db_file)
-    conn.row_factory = sqlite3.Row
-    return conn
 
 def add_exercise(form_data):
     # Predefined exercise list
@@ -417,8 +408,6 @@ def add_exercise(form_data):
     # - This ensures the data we validated from the form is safely stored in the database.
     conn.commit() #Commits the change
     conn.close() # Closes the connection
-
-    
 
 
 ####################### ALL FUNCTIONS FROM VISUALIZATIONS.PY #######################
