@@ -1,4 +1,45 @@
-### ALL FUNCTIONS FROM CALC.PY ###
+### NEXT STEPS FOR PROJECT ### 
+
+''' 
+NEXT TO DO LIST
+
+Step 1 — Clean up DB column types
+Time: 30–60 min
+Reason: Check column types, update table if needed, test reading data.
+
+Step 2 — Add date filters to graphs
+Time: 1–2 hours
+Reason: Add date inputs, update query to filter by dates, test plots.
+
+Step 4 — Additional visualizations
+Time: 2–4 hours
+Reason: Volume, intensity, PR charts, testing plots, small tweaks for readability.
+
+Step 5 — Edit / Delete entries
+Time: 2–3 hours
+Reason: Create table view of workouts, add buttons, implement UPDATE and DELETE.
+
+Step 6 — Multi-user support
+Time: 1–2 days
+Reason: Add users table, Flask-Login setup, link workouts to users, test authentication.
+
+Step 7 — Dashboard page
+Time: 3–5 hours
+Reason: Combine multiple graphs and stats neatly on one page, layout work with CSS.
+
+Step 8 — Export / Share
+Time: 1–2 hours
+Reason: Export CSV/PDF and optionally email graphs.
+
+Step 9 — Interactive graphs (Plotly)
+Time: 4–6 hours
+Reason: Replace matplotlib with Plotly, adjust callbacks, test interactivity.
+
+Step 10 — Deployment
+Time: 1–2 hours for Render/Heroku simple deploy
+Reason: Small Flask app with SQLite; longer if multi-user and HTTPS setup.
+'''
+####################### ALL FUNCTIONS FROM CALC.PY #######################
 
 import os
 import csv
@@ -10,9 +51,45 @@ import matplotlib.pyplot as plt
 import io
 import base64
 from io import BytesIO
+import sqlite3
 #from utils.calc import average_lift
 
-file_path = 'WorkoutLog.csv' #Global Variable
+### GLOBAL VARIABLES ###
+csv_file = 'WorkoutLog.csv' #Global Variable
+db_file = "WorkoutLog.db"
+table_name = "Workout"
+
+#### CONVERT CSV TO SQLITE DB #####
+### ONE TIME RUN ####
+
+def convertCSVToDB():
+    # ---- Settings ----
+    csv_file = "/workspaces/PythonWorkoutLog/WorkoutLog.csv"       # your CSV file
+    db_file = "WorkoutLog.db"    # SQLite database file
+    table_name = "Workout"       # name of the table to create
+
+# ---- Load CSV into pandas ----
+    df = pd.read_csv(csv_file)
+
+# ---- Connect to SQLite ----
+    conn = sqlite3.connect(db_file)
+
+# ---- Write dataframe to SQL ----
+    df.to_sql(table_name, conn, if_exists="replace", index=False)
+
+# ---- Close connection ----
+    conn.close()
+
+    print(f"CSV {csv_file} successfully imported into {db_file} as table '{table_name}'")
+
+
+####### CONNECT TO DB TO USE IN OTHER FUNCTIONS #######
+
+def get_db_connection():
+    conn = sqlite3.connect(db_file)
+    conn.row_factory = sqlite3.Row  # optional
+    return conn
+
 
 ###### LIFT AVERAGE FLASK VERSION #########
 
@@ -22,8 +99,10 @@ def average_lift(exercise_to_avg):
     total_weight = 0
     total_reps = 0
 
+    #### CSV AVERAGE SECTION ####
+    '''
     # Read the CSV file and calculate the total weight for the selected exercise
-    with open(file_path, mode='r') as file:
+    with open(csv_file, mode='r') as file:
         reader = csv.reader(file)
 
         # Skip the header row if there is one
@@ -46,9 +125,69 @@ def average_lift(exercise_to_avg):
         }
     else:
         return {"error": f"No entries found for {exercise_to_avg}"}
+        '''
+    ##### DB READ AVERAGE SECTION ######
+    conn = get_db_connection()
+    cur = conn.cursor()   # Creates a "cursor" object used to execute SQL commands
+    # --- SQL Query to Get Relevant Rows ---
+    cur.execute(f"""
+    SELECT sets, reps, weight
+    FROM {table_name}
+    WHERE LOWER(REPLACE(exercise, ' ', '')) = ?
+""", (exercise_to_avg,))
+# Explanation:
+# 1. SELECT sets, reps, weight: We only need these columns to calculate total weight lifted and total reps.
+# 2. FROM {table_name}: This is the SQLite table where all your workout logs are stored.
+# 3. WHERE LOWER(REPLACE(exercise, ' ', '')) = ?:
+#    - This filters rows to only include the exercise the user specified.
+#    - REPLACE(exercise, ' ', '') removes spaces in case the DB has different spacing.
+#    - LOWER(...) makes it case-insensitive so "squat", "Squat", "SQUAT" all match.
+# 4. The ? is a placeholder for parameterized queries, which protects against SQL injection.
+# 5. (exercise_to_avg,) provides the actual value for the placeholder.
 
+# --- Fetch All Matching Rows ---
+    rows = cur.fetchall()
+# Explanation:
+# - fetchall() retrieves all rows returned by the query as a list of sqlite3.Row objects.
+# - Each row contains 'sets', 'reps', and 'weight' for a single logged workout.
 
+# --- Close the Database Connection ---
+    conn.close()
+# Explanation:
+# - Always close the DB connection after fetching data to free resources.
 
+# --- Sum Total Weight and Reps ---
+    for row in rows:
+        sets = int(row["sets"])        # Convert 'sets' from string to integer
+        reps = int(row["reps"])        # Convert 'reps' from string to integer
+        weight = float(row["weight"])  # Convert 'weight' from string to float
+
+    # Total weight lifted in this entry = weight * reps * sets
+        total_weight += weight * reps * sets
+
+    # Total reps performed in this entry = reps * sets
+        total_reps += reps * sets
+
+# Explanation:
+# - This loop accumulates total_weight and total_reps across all rows for the selected exercise.
+# - These totals will later be used to compute the average weight lifted per rep.
+
+# --- Calculate Average Weight per Rep ---
+    if total_reps > 0:
+        avg_weight_per_rep = total_weight / total_reps
+        return {
+            "exercise": exercise_to_avg,                 # The exercise name
+            "average": round(avg_weight_per_rep, 2),     # Average weight per rep, rounded to 2 decimals
+            "total_reps": total_reps                     # Total reps performed
+        }
+    else:
+        return {"error": f"No entries found for {exercise_to_avg}"}
+# Explanation:
+# - If total_reps is zero, it means there are no entries for this exercise in the DB.
+# - Otherwise, we compute average weight per rep: total_weight / total_reps.
+# - Return a dictionary containing the exercise, average weight per rep, and total reps.
+# - This dictionary can then be used in your Flask app or API response.
+    
 ##### WILKS CALCULATOR FLASK VERSION ########
 
 def wilks(bodyweight_lbs, total_lift_lbs):
@@ -126,19 +265,10 @@ def plate_calculator(weight):
     }
     #Returns a dictionary
 
-### ALL FUNCTIONS FROM HELPERS.PY ###
-
-'''
-import os
-import csv
-import time
-import datetime
+####################### ALL FUNCTIONS FROM HELPERS.PY #######################
 
 
-file_path = 'WorkoutLog.csv'
-'''
 ###### Function to get valid inputs #########
-### Add this line to test a push### 
 def get_valid_number_input(prompt, field_name, max_attempts=3, clear_screen=False):
     """
     Prompts the user to enter a numeric value with limited attempts.
@@ -186,7 +316,7 @@ def convert_iso_to_mmddyy(iso_date_str):
 ############### Clears the last workout entry entered in case of a typo/etc ###################
 def clear_last_entry():
     #Read all lines from the file
-    with open(file_path, "r") as file:
+    with open(csv_file, "r") as file:
         lines = file.readlines()
 
     #Remove the last line
@@ -194,37 +324,14 @@ def clear_last_entry():
         lines = lines[:-1]  # All lines except the last
 
         # Step 3: Write the remaining lines back to the file -- This will overwrite the whole file with the old data minus the last line
-        with open(file_path, "w") as file:
+        with open(csv_file, "w") as file:
             file.writelines(lines)
 
         print("Last entry removed.")
     else:
         print("CSV is empty — nothing to remove.")
 
-
-#### MARK A PR FUNCTION #####
-
-#### NEED TO FIX THIS STILL ####
-
-'''
-def mark_pr(exercise, new_weight):
-    max_weight = 0 
-    # Needs to check what exercise and then see the max weight done for that exercise
-    with open(file_path, mode='r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            if row['Exercise'].lower() == exercise.lower():
-                try:
-                    weight = float(row['Weight'])
-                    if weight > max_weight:
-                        max_weight = weight
-                except ValueError:
-                    continue
-    return new_weight > max_weight
-
-'''
-
-#### ADD EXERCISE FLASK VERSION ######
+#### ADD EXERCISE WITH ADDING TO SQLITE AND CSV #####
 
 def add_exercise(form_data):
     # Predefined exercise list
@@ -234,17 +341,18 @@ def add_exercise(form_data):
         "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench"
     ]
 
-    # Extract form data
+    # Extract form data -- NEEDED FOR BOTH CSV AND DB
     exercise_input = form_data.get('exercise', '').strip().replace(" ", "")
     sets_input = form_data.get('sets', '')
     rep_input = form_data.get('reps', '')
     weight_input = form_data.get('weight', '')
     date_input = form_data.get('date', '')
 
+    #### CSV SECTION ####
     # Validate and resolve exercise input
     if exercise_input == "":
         try:
-            with open(file_path, "r") as file:
+            with open(csv_file, "r") as file:
                 last_line = list(csv.reader(file))[-1]
                 exercise_input = last_line[0]
         except Exception:
@@ -262,157 +370,125 @@ def add_exercise(form_data):
     # Use last date if none entered
     if date_input.strip() == "":
         try:
-            with open(file_path, "r") as file:
+            with open(csv_file, "r") as file:
                 last_line = list(csv.reader(file))[-1]
                 date_input = last_line[-1]
         except Exception:
             raise ValueError("No previous date found.")
     else:
-    # Validate date format
+        # Validate date format
         try:
             date_input = convert_iso_to_mmddyy(date_input)
         except ValueError:
             raise ValueError("Invalid date format. Please use MM/DD/YY.")
-# Write the validated data to CSV
-    new_entry = [exercise_input, sets_input, rep_input, weight_input, date_input]
-    with open(file_path, mode='a', newline='') as file:
+
+    # Write to CSV
+    with open(csv_file, mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(new_entry)
+        writer.writerow([exercise_input, sets_input, rep_input, weight_input, date_input])
+
+    #### DB SECTION ####
+    conn = get_db_connection() # Opens a connection to the SQLite database file defined by db_file
+    cur = conn.cursor()   # Creates a "cursor" object used to execute SQL commands
+
+    # Create table if it doesn't exist
+    cur.execute(f"""
+        CREATE TABLE IF NOT EXISTS {table_name} (
+            exercise TEXT,
+            sets TEXT,
+            reps TEXT,
+            weight TEXT,
+            date TEXT
+        )
+    """)
+
+    # Insert the new entry
+    cur.execute(f"""
+        INSERT INTO {table_name} (exercise, sets, reps, weight, date)
+        VALUES (?, ?, ?, ?, ?)
+    """, (exercise_input, sets_input, rep_input, weight_input, date_input))
+    # Explanation:
+    # - This SQL command inserts a new row into the table.
+    # - The columns in parentheses specify which columns we are inserting into.
+    # - The VALUES (?, ?, ?, ?, ?) syntax uses placeholders for security (prevents SQL injection).
+    # - The tuple (exercise_input, sets_input, rep_input, weight_input, date_input) provides the actual values to insert.
+    # - This ensures the data we validated from the form is safely stored in the database.
+    conn.commit() #Commits the change
+    conn.close() # Closes the connection
 
 
+####################### ALL FUNCTIONS FROM VISUALIZATIONS.PY #######################
 
+def create_progression_graph(exercise=None):
+    conn = get_db_connection()
+    df = pd.read_sql_query("SELECT Date, Exercise, Weight FROM Workout", conn)
+    conn.close()
 
-### ALL FUNCTIONS FROM VISUALIZATIONS.PY ###
+    # Clean data
+    df['Date'] = pd.to_datetime(df['Date'].astype(str).str.strip(), errors='coerce', infer_datetime_format=True)
+    df['Exercise'] = df['Exercise'].astype(str).str.strip()
+    df = df.dropna(subset=['Date', 'Weight'])
 
-'''
-import pandas as pd
-import matplotlib.pyplot as plt
-import time
-import os
-import io
-import base64
-from io import BytesIO
-from utils.calc import average_lift
+    if exercise:
+        # Filter for a single exercise (case-insensitive)
+        df = df[df['Exercise'].str.lower() == exercise.strip().lower()]
 
-file_path = 'WorkoutLog.csv'
-'''
+    if df.empty:
+        plt.figure(figsize=(10,6))
+        plt.text(0.5, 0.5, "No data to display", ha='center', va='center', fontsize=16)
+        plt.axis('off')
+    else:
+        df = df.sort_values(by='Date')
+        plt.figure(figsize=(10,6))
+        for ex in df['Exercise'].unique():
+            subset = df[df['Exercise'] == ex]
+            plt.plot(subset['Date'], subset['Weight'], marker='o', label=ex)
 
-def create_progression_graph(file_path):
-    # Load CSV
-    df = pd.read_csv(file_path)
+        plt.xlabel("Date")
+        plt.ylabel("Weight Lifted")
+        plt.title("Progression Over Time")
+        # Move legend outside the plot (right side)
+        plt.legend(title="Exercise", bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.grid(True)
+        plt.xticks(rotation=45)
+        plt.tight_layout(rect=[0, 0, 0.8, 1])  # Make room for legend
 
-    # Convert Date column to datetime
-    df['Date'] = pd.to_datetime(df['Date'])
-
-    # Sort by date to keep lines in order
-    df = df.sort_values(by='Date')
-
-    # Plot setup
-    plt.figure(figsize=(10, 6))
-
-    # Plot one line per exercise
-    for exercise in df['Exercise'].unique():
-        subset = df[df['Exercise'] == exercise]
-        plt.plot(subset['Date'], subset['Weight'], marker='o', label=exercise)
-
-    # Labels & legend
-    plt.xlabel("Date")
-    plt.ylabel("Weight Lifted")
-    plt.title("Progression Over Time")
-    plt.legend(title="Exercise")
-    plt.grid(True)
-
-    # Save to buffer for Flask embedding
+    # Save to buffer
     buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    graph_data = base64.b64encode(buffer.getvalue()).decode()
-    plt.close()
-    return f'data:image/png;base64,{graph_data}'
-
-def volume_per_workout(file_path):
-    # Load CSV
-    df = pd.read_csv(file_path)
-
-    # Convert Date column to datetime
-    df['Date'] = pd.to_datetime(df['Date'])
-
-    # OPTIONAL: Sort by date
-    df = df.sort_values(by='Date')
-
-    df['Volume'] = df['Weight'] * df['Reps'] * df['Sets']
-    volume_per_day = df.groupby('Date')['Volume'].sum().reset_index()
-
-    # === Bar Chart ===
-    plt.figure(figsize=(10, 6))
-    # Create an empty list to hold bar colors
-    colors = []
-
-# Loop through each volume value
-    for volume in volume_per_day['Volume']:
-        if volume > 7000:
-            colors.append('red')
-        else:
-            colors.append('green')
-    plt.bar(volume_per_day['Date'].dt.strftime('%Y-%m-%d'), volume_per_day['Volume'], color=colors)
-    
-    # Labels and layout
-    plt.xlabel("Date")
-    plt.ylabel("Total Volume")
-    plt.title("Workout Volume Per Day")
-    plt.xticks(rotation=45, ha='right')
-    plt.tight_layout()
-    plt.grid(True, axis='y')
-
-    # Save to buffer for Flask
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    graph_data = base64.b64encode(buffer.getvalue()).decode()
-    plt.close()
-    return f'data:image/png;base64,{graph_data}'
-
-import pandas as pd
-import matplotlib.pyplot as plt
-from io import BytesIO
-import base64
-
-def average_intensity(file_path):
-    # Load CSV
-    df = pd.read_csv(file_path)
-
-    # Calculate total weight and total reps per row
-    df['TotalWeight'] = df['Weight'] * df['Reps'] * df['Sets']
-    df['TotalReps'] = df['Reps'] * df['Sets']
-
-    # Group by exercise
-    grouped = df.groupby('Exercise').agg({
-        'TotalWeight': 'sum',
-        'TotalReps': 'sum'
-    }).reset_index()
-
-    # Calculate average weight per rep for each exercise
-    grouped['AvgWeightPerRep'] = grouped['TotalWeight'] / grouped['TotalReps']
-
-    # === Bar Chart ===
-    plt.figure(figsize=(10, 6))
-    plt.bar(grouped['Exercise'], grouped['AvgWeightPerRep'], color='purple')
-
-
-    # Labels and layout
-    plt.xlabel("Exercise")
-    plt.ylabel("Average Weight per Rep")
-    plt.title("Average Intensity by Exercise")
-    plt.xticks(rotation=45, ha='right')
-    plt.tight_layout()
-    plt.grid(True, axis='y')
-
-    # Save to buffer for Flask
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
+    plt.savefig(buffer, format='png', bbox_inches='tight')
     buffer.seek(0)
     graph_data = base64.b64encode(buffer.getvalue()).decode()
     plt.close()
 
-    return f'data:image/png;base64,{graph_data}'
+    return f"data:image/png;base64,{graph_data}"
+
+def create_exercise_distribution_pie_chart():
+    conn = get_db_connection()
+    df = pd.read_sql_query("SELECT Exercise FROM Workout", conn)
+    conn.close()
+
+    # Clean data
+    df['Exercise'] = df['Exercise'].astype(str).str.strip()
+    df = df[df['Exercise'] != '']  # Remove empty entries
+
+    if df.empty:
+        plt.figure(figsize=(6,6))
+        plt.text(0.5, 0.5, "No data to display", ha='center', va='center', fontsize=16)
+        plt.axis('off')
+    else:
+        exercise_counts = df['Exercise'].value_counts()
+
+        plt.figure(figsize=(8,8))
+        plt.pie(exercise_counts, labels=exercise_counts.index, autopct='%1.1f%%', startangle=140)
+        plt.title("Exercise Distribution")
+        plt.axis('equal')  # Equal aspect ratio ensures pie is circular.
+
+    # Save to buffer
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.getvalue()).decode()
+    plt.close()
+
+    return f"data:image/png;base64,{graph_data}"
 

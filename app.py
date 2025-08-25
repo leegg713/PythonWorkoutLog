@@ -4,12 +4,13 @@
 # app.py
 from flask import Flask, render_template, request, redirect, url_for #Imports flask, render_template function and requests function
 #from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator #create_line_graph
-from utils.webApp import wilks, dots, one_rep_max, plate_calculator, average_lift, get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise, create_progression_graph, volume_per_workout, average_intensity 
+from utils.webApp import wilks, dots, one_rep_max, plate_calculator, average_lift, get_db_connection, create_exercise_distribution_pie_chart, get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise, create_progression_graph 
 #from utils.helpers import get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise
 #from utils.visualizations import create_progression_graph, volume_per_workout, average_intensity
 #import matplotlib.pyplot as plt
 #import io
 #import base64
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -32,16 +33,32 @@ def add():
 
 @app.route('/graph')
 def graph():
+    # Get selected exercise from query parameters
+    selected_exercise = request.args.get('exercise')
+
+    # Fetch unique exercises from DB
+    conn = get_db_connection()
+    exercises_df = pd.read_sql_query("SELECT DISTINCT Exercise FROM Workout", conn)
+    conn.close()
+    exercises = sorted(exercises_df['Exercise'].str.strip().tolist())
+
+    graphs = [
+        create_progression_graph(selected_exercise),  # Line graph (filtered if exercise selected)
+        create_exercise_distribution_pie_chart()      # Pie chart for distribution
+    ]
+
+    return render_template('graph.html', graphs=graphs, exercises=exercises, selected_exercise=selected_exercise)
+    '''
     graphs = [] #List to store different graphs
 
   # Append one simple graph to the list # Add more below here
-    graphs.append(create_progression_graph(file_path))
-    graphs.append(volume_per_workout(file_path))
-    graphs.append(average_intensity(file_path))
+    graphs.append(create_progression_graph())
+    #graphs.append(volume_per_workout(file_path))
+    #graphs.append(average_intensity(file_path))
     # If you want to add more graphs, just call your graph functions and append them here
 
     return render_template('graph.html', graphs=graphs)
-
+'''
 @app.route('/timer', methods=['GET', 'POST']) #Timer Page
 def timer():
     return render_template('timer.html')  # This will render timer.html page
