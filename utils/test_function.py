@@ -22,6 +22,7 @@ from webApp import * #Imports all functions in webapp.py
 # plot_exercise_data()
 #plate_calculator()
 #exercise_frequency()
-mark_pr()
+#mark_pr()
 
 #print("Edit this file and uncomment the function you want to test, then run: python test_function.py")
+#convertCSVToDB()

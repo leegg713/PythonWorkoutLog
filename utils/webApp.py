@@ -34,9 +34,34 @@ import matplotlib.pyplot as plt
 import io
 import base64
 from io import BytesIO
+import sqlite3
 #from utils.calc import average_lift
 
 file_path = 'WorkoutLog.csv' #Global Variable
+
+#### CONVERT CSV TO SQLITE DB #####
+### ONE TIME RUN ####
+
+def convertCSVToDB():
+    # ---- Settings ----
+    csv_file = "/workspaces/PythonWorkoutLog/WorkoutLog.csv"       # your CSV file
+    db_file = "WorkoutLog.db"    # SQLite database file
+    table_name = "Workout Tracking"       # name of the table to create
+
+# ---- Load CSV into pandas ----
+    df = pd.read_csv(csv_file)
+
+# ---- Connect to SQLite ----
+    conn = sqlite3.connect(db_file)
+
+# ---- Write dataframe to SQL ----
+    df.to_sql(table_name, conn, if_exists="replace", index=False)
+
+# ---- Close connection ----
+    conn.close()
+
+    print(f"CSV {csv_file} successfully imported into {db_file} as table '{table_name}'")
+
 
 ###### LIFT AVERAGE FLASK VERSION #########
 
