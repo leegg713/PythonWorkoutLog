@@ -37,7 +37,10 @@ from io import BytesIO
 import sqlite3
 #from utils.calc import average_lift
 
-file_path = 'WorkoutLog.csv' #Global Variable
+### GLOBAL VARIABLES ###
+csv_file = 'WorkoutLog.csv' #Global Variable
+db_file = "WorkoutLog.db"
+table_name = "Workout Tracking"
 
 #### CONVERT CSV TO SQLITE DB #####
 ### ONE TIME RUN ####
@@ -63,6 +66,14 @@ def convertCSVToDB():
     print(f"CSV {csv_file} successfully imported into {db_file} as table '{table_name}'")
 
 
+####### CONNECT TO DB TO USE IN OTHER FUNCTIONS #######
+
+def get_db_connection():
+    conn = sqlite3.connect(db_file)
+    #conn.row_factory = sqlite3.Row  # optional
+    return conn
+
+
 ###### LIFT AVERAGE FLASK VERSION #########
 
 def average_lift(exercise_to_avg):
@@ -72,7 +83,7 @@ def average_lift(exercise_to_avg):
     total_reps = 0
 
     # Read the CSV file and calculate the total weight for the selected exercise
-    with open(file_path, mode='r') as file:
+    with open(csv_file, mode='r') as file:
         reader = csv.reader(file)
 
         # Skip the header row if there is one
@@ -184,7 +195,7 @@ import time
 import datetime
 
 
-file_path = 'WorkoutLog.csv'
+csv_file = 'WorkoutLog.csv'
 '''
 ###### Function to get valid inputs #########
 ### Add this line to test a push### 
@@ -235,7 +246,7 @@ def convert_iso_to_mmddyy(iso_date_str):
 ############### Clears the last workout entry entered in case of a typo/etc ###################
 def clear_last_entry():
     #Read all lines from the file
-    with open(file_path, "r") as file:
+    with open(csv_file, "r") as file:
         lines = file.readlines()
 
     #Remove the last line
@@ -243,37 +254,14 @@ def clear_last_entry():
         lines = lines[:-1]  # All lines except the last
 
         # Step 3: Write the remaining lines back to the file -- This will overwrite the whole file with the old data minus the last line
-        with open(file_path, "w") as file:
+        with open(csv_file, "w") as file:
             file.writelines(lines)
 
         print("Last entry removed.")
     else:
         print("CSV is empty — nothing to remove.")
 
-
-#### MARK A PR FUNCTION #####
-
-#### NEED TO FIX THIS STILL ####
-
-'''
-def mark_pr(exercise, new_weight):
-    max_weight = 0 
-    # Needs to check what exercise and then see the max weight done for that exercise
-    with open(file_path, mode='r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            if row['Exercise'].lower() == exercise.lower():
-                try:
-                    weight = float(row['Weight'])
-                    if weight > max_weight:
-                        max_weight = weight
-                except ValueError:
-                    continue
-    return new_weight > max_weight
-
-'''
-
-#### ADD EXERCISE FLASK VERSION ######
+#### ADD EXERCISE WITH ADDING TO SQLITE AND CSV #####
 
 def add_exercise(form_data):
     # Predefined exercise list
@@ -293,7 +281,7 @@ def add_exercise(form_data):
     # Validate and resolve exercise input
     if exercise_input == "":
         try:
-            with open(file_path, "r") as file:
+            with open(csv_file, "r") as file:
                 last_line = list(csv.reader(file))[-1]
                 exercise_input = last_line[0]
         except Exception:
@@ -311,7 +299,7 @@ def add_exercise(form_data):
     # Use last date if none entered
     if date_input.strip() == "":
         try:
-            with open(file_path, "r") as file:
+            with open(csv_file, "r") as file:
                 last_line = list(csv.reader(file))[-1]
                 date_input = last_line[-1]
         except Exception:
@@ -324,32 +312,122 @@ def add_exercise(form_data):
             raise ValueError("Invalid date format. Please use MM/DD/YY.")
 # Write the validated data to CSV
     new_entry = [exercise_input, sets_input, rep_input, weight_input, date_input]
-    with open(file_path, mode='a', newline='') as file:
+    with open(csv_file, mode='a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(new_entry)
 
 
 
+#### ADD EXERCISE TO ADD IT TO DB AND NOT CSV FILE ####
+
+#### ADD EXERCISE FLASK VERSION ######
+
+import csv
+import sqlite3
+import os
+
+csv_file = "WorkoutLog.csv"
+db_file = "WorkoutLog.db"
+table_name = "WorkoutLog"
+
+def get_db_connection():
+    conn = sqlite3.connect(db_file)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def add_exercise(form_data):
+    # Predefined exercise list
+    valid_exercises = [
+        "Squat", "PauseSquat", "GobletSquat", "PauseBench",
+        "TouchNGoBench", "InclineDBBench", "Deadlift", "DeficitDeadlift",
+        "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench"
+    ]
+
+    # Extract form data
+    exercise_input = form_data.get('exercise', '').strip().replace(" ", "")
+    sets_input = form_data.get('sets', '')
+    rep_input = form_data.get('reps', '')
+    weight_input = form_data.get('weight', '')
+    date_input = form_data.get('date', '')
+
+    #### CSV SECTION ####
+    # Validate and resolve exercise input
+    if exercise_input == "":
+        try:
+            with open(csv_file, "r") as file:
+                last_line = list(csv.reader(file))[-1]
+                exercise_input = last_line[0]
+        except Exception:
+            raise ValueError("No previous exercise found.")
+    else:
+        match_found = False
+        for exercise in valid_exercises:
+            if exercise.lower().replace(" ", "") == exercise_input.lower():
+                exercise_input = exercise
+                match_found = True
+                break
+        if not match_found:
+            raise ValueError("Invalid exercise name.")
+
+    # Use last date if none entered
+    if date_input.strip() == "":
+        try:
+            with open(csv_file, "r") as file:
+                last_line = list(csv.reader(file))[-1]
+                date_input = last_line[-1]
+        except Exception:
+            raise ValueError("No previous date found.")
+    else:
+        # Validate date format
+        try:
+            date_input = convert_iso_to_mmddyy(date_input)
+        except ValueError:
+            raise ValueError("Invalid date format. Please use MM/DD/YY.")
+
+    # Write to CSV
+    with open(csv_file, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([exercise_input, sets_input, rep_input, weight_input, date_input])
+
+    #### DB SECTION ####
+    conn = get_db_connection() # Opens a connection to the SQLite database file defined by db_file
+    cur = conn.cursor()   # Creates a "cursor" object used to execute SQL commands
+
+    # Create table if it doesn't exist
+    cur.execute(f"""
+        CREATE TABLE IF NOT EXISTS {table_name} (
+            exercise TEXT,
+            sets TEXT,
+            reps TEXT,
+            weight TEXT,
+            date TEXT
+        )
+    """)
+
+    # Insert the new entry
+    cur.execute(f"""
+        INSERT INTO {table_name} (exercise, sets, reps, weight, date)
+        VALUES (?, ?, ?, ?, ?)
+    """, (exercise_input, sets_input, rep_input, weight_input, date_input))
+    # Explanation:
+    # - This SQL command inserts a new row into the table.
+    # - The columns in parentheses specify which columns we are inserting into.
+    # - The VALUES (?, ?, ?, ?, ?) syntax uses placeholders for security (prevents SQL injection).
+    # - The tuple (exercise_input, sets_input, rep_input, weight_input, date_input) provides the actual values to insert.
+    # - This ensures the data we validated from the form is safely stored in the database.
+    conn.commit() #Commits the change
+    conn.close() # Closes the connection
+
+    
+
 
 ####################### ALL FUNCTIONS FROM VISUALIZATIONS.PY #######################
 
-'''
-import pandas as pd
-import matplotlib.pyplot as plt
-import time
-import os
-import io
-import base64
-from io import BytesIO
-from utils.calc import average_lift
-
-file_path = 'WorkoutLog.csv'
-'''
 
 #### PROGRESSION GRAPH ####
-def create_progression_graph(file_path):
+def create_progression_graph(csv_file):
     # Load CSV
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(csv_file)
 
     # Convert Date column to datetime
     df['Date'] = pd.to_datetime(df['Date'])
@@ -380,9 +458,9 @@ def create_progression_graph(file_path):
     plt.close()
     return f'data:image/png;base64,{graph_data}'
 
-def volume_per_workout(file_path):
+def volume_per_workout(csv_file):
     # Load CSV
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(csv_file)
 
     # Convert Date column to datetime
     df['Date'] = pd.to_datetime(df['Date'])
@@ -427,9 +505,9 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
 
-def average_intensity(file_path):
+def average_intensity(csv_file):
     # Load CSV
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(csv_file)
 
     # Calculate total weight and total reps per row
     df['TotalWeight'] = df['Weight'] * df['Reps'] * df['Sets']
@@ -466,3 +544,8 @@ def average_intensity(file_path):
 
     return f'data:image/png;base64,{graph_data}'
 
+
+
+
+
+#### CLOSE DB AT THE END?? #######
