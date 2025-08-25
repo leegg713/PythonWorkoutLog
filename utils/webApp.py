@@ -13,7 +13,7 @@ If you later add multiple users or more fields, the DB will handle it; CSV will 
 Suggested workflow
 1. Convert CSV → SQLite (or start using SQLite from now on). -- Completed
 2. Update add_exercise() to write to the DB. -- Completed (Uploads to CSV and DB)
-3. Update average functions to use SQL queries and not reading the CSV
+3. Update average functions to use SQL queries and not reading the CSV -- Completed 
 
 ### NEXT BRANCH WILL BE GRAPHING STUFF ###
 Then add graphing:
