@@ -1,25 +1,43 @@
 ### NEXT STEPS FOR PROJECT ### 
 
-#Check AirBNB-Data-Analysis for example of SQLite
-
 ''' 
-Why move to a database before graphing
-Clean data source:
-Graphing libraries (matplotlib, Plotly, etc.) will need to read your workout data. Pulling from CSV works, but querying a DB is cleaner and faster, especially if you filter by date, exercise, or user.
-Easier calculations:
-You can compute averages, 1RM, PRs directly from SQL queries instead of reading the entire CSV every time.
-Future-proof:
-If you later add multiple users or more fields, the DB will handle it; CSV will get messy.
-Suggested workflow
-1. Convert CSV → SQLite (or start using SQLite from now on). -- Completed
-2. Update add_exercise() to write to the DB. -- Completed (Uploads to CSV and DB)
-3. Update average functions to use SQL queries and not reading the CSV -- Completed 
+NEXT TO DO LIST
 
-### NEXT BRANCH WILL BE GRAPHING STUFF ###
-Then add graphing:
-Query data from DB.
-Feed it to matplotlib / Plotly / Recharts.
-Render graphs in templates.
+Step 1 — Clean up DB column types
+Time: 30–60 min
+Reason: Check column types, update table if needed, test reading data.
+
+Step 2 — Add date filters to graphs
+Time: 1–2 hours
+Reason: Add date inputs, update query to filter by dates, test plots.
+
+Step 4 — Additional visualizations
+Time: 2–4 hours
+Reason: Volume, intensity, PR charts, testing plots, small tweaks for readability.
+
+Step 5 — Edit / Delete entries
+Time: 2–3 hours
+Reason: Create table view of workouts, add buttons, implement UPDATE and DELETE.
+
+Step 6 — Multi-user support
+Time: 1–2 days
+Reason: Add users table, Flask-Login setup, link workouts to users, test authentication.
+
+Step 7 — Dashboard page
+Time: 3–5 hours
+Reason: Combine multiple graphs and stats neatly on one page, layout work with CSS.
+
+Step 8 — Export / Share
+Time: 1–2 hours
+Reason: Export CSV/PDF and optionally email graphs.
+
+Step 9 — Interactive graphs (Plotly)
+Time: 4–6 hours
+Reason: Replace matplotlib with Plotly, adjust callbacks, test interactivity.
+
+Step 10 — Deployment
+Time: 1–2 hours for Render/Heroku simple deploy
+Reason: Small Flask app with SQLite; longer if multi-user and HTTPS setup.
 '''
 ####################### ALL FUNCTIONS FROM CALC.PY #######################
 
