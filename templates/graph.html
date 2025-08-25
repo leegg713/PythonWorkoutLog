@@ -5,7 +5,25 @@
     <title>Here are some cool graphs!</title>
 </head>
 <body>
-    <h2>Graphs</h2>
- <a href="{{ url_for('home') }}">Back to Main Menu</a>
+  <h2>Graphs</h2>
+
+<form method="get" action="{{ url_for('graph') }}">
+    <label for="exercise">Select Exercise:</label>
+    <select name="exercise" id="exercise">
+        <option value="">All</option>
+        {% for ex in exercises %}
+            <option value="{{ ex }}" {% if selected_exercise == ex %}selected{% endif %}>{{ ex }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Show Graph</button>
+</form>
+
+<!-- Display all graphs -->
+{% for graph in graphs %}
+    <img src="{{ graph }}" alt="Graph" style="margin-top:20px;">
+{% endfor %}
+
+<a href="{{ url_for('home') }}">Back to Main Menu</a>
+
 </body>
 </html>

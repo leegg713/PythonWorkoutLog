@@ -249,17 +249,8 @@ def plate_calculator(weight):
 
 ####################### ALL FUNCTIONS FROM HELPERS.PY #######################
 
-'''
-import os
-import csv
-import time
-import datetime
 
-
-csv_file = 'WorkoutLog.csv'
-'''
 ###### Function to get valid inputs #########
-### Add this line to test a push### 
 def get_valid_number_input(prompt, field_name, max_attempts=3, clear_screen=False):
     """
     Prompts the user to enter a numeric value with limited attempts.
@@ -324,8 +315,6 @@ def clear_last_entry():
 
 #### ADD EXERCISE WITH ADDING TO SQLITE AND CSV #####
 
-#### ADD EXERCISE FLASK VERSION ######
-
 def add_exercise(form_data):
     # Predefined exercise list
     valid_exercises = [
@@ -334,7 +323,7 @@ def add_exercise(form_data):
         "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench"
     ]
 
-    # Extract form data
+    # Extract form data -- NEEDED FOR BOTH CSV AND DB
     exercise_input = form_data.get('exercise', '').strip().replace(" ", "")
     sets_input = form_data.get('sets', '')
     rep_input = form_data.get('reps', '')
@@ -412,129 +401,76 @@ def add_exercise(form_data):
 
 ####################### ALL FUNCTIONS FROM VISUALIZATIONS.PY #######################
 
+def create_progression_graph(exercise=None):
+    conn = get_db_connection()
+    df = pd.read_sql_query("SELECT Date, Exercise, Weight FROM Workout", conn)
+    conn.close()
 
-#### PROGRESSION GRAPH ####
-def create_progression_graph(csv_file):
-    # Load CSV
-    df = pd.read_csv(csv_file)
+    # Clean data
+    df['Date'] = pd.to_datetime(df['Date'].astype(str).str.strip(), errors='coerce', infer_datetime_format=True)
+    df['Exercise'] = df['Exercise'].astype(str).str.strip()
+    df = df.dropna(subset=['Date', 'Weight'])
 
-    # Convert Date column to datetime
-    df['Date'] = pd.to_datetime(df['Date'])
+    if exercise:
+        # Filter for a single exercise (case-insensitive)
+        df = df[df['Exercise'].str.lower() == exercise.strip().lower()]
 
-    # Sort by date to keep lines in order
-    df = df.sort_values(by='Date')
+    if df.empty:
+        plt.figure(figsize=(10,6))
+        plt.text(0.5, 0.5, "No data to display", ha='center', va='center', fontsize=16)
+        plt.axis('off')
+    else:
+        df = df.sort_values(by='Date')
+        plt.figure(figsize=(10,6))
+        for ex in df['Exercise'].unique():
+            subset = df[df['Exercise'] == ex]
+            plt.plot(subset['Date'], subset['Weight'], marker='o', label=ex)
 
-    # Plot setup
-    plt.figure(figsize=(10, 6))
+        plt.xlabel("Date")
+        plt.ylabel("Weight Lifted")
+        plt.title("Progression Over Time")
+        # Move legend outside the plot (right side)
+        plt.legend(title="Exercise", bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.grid(True)
+        plt.xticks(rotation=45)
+        plt.tight_layout(rect=[0, 0, 0.8, 1])  # Make room for legend
 
-    # Plot one line per exercise
-    for exercise in df['Exercise'].unique():
-        subset = df[df['Exercise'] == exercise]
-        plt.plot(subset['Date'], subset['Weight'], marker='o', label=exercise)
-
-    # Labels & legend
-    plt.xlabel("Date")
-    plt.ylabel("Weight Lifted")
-    plt.title("Progression Over Time")
-    plt.legend(title="Exercise")
-    plt.grid(True)
-
-    # Save to buffer for Flask embedding
+    # Save to buffer
     buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    graph_data = base64.b64encode(buffer.getvalue()).decode()
-    plt.close()
-    return f'data:image/png;base64,{graph_data}'
-
-def volume_per_workout(csv_file):
-    # Load CSV
-    df = pd.read_csv(csv_file)
-
-    # Convert Date column to datetime
-    df['Date'] = pd.to_datetime(df['Date'])
-
-    # OPTIONAL: Sort by date
-    df = df.sort_values(by='Date')
-
-    df['Volume'] = df['Weight'] * df['Reps'] * df['Sets']
-    volume_per_day = df.groupby('Date')['Volume'].sum().reset_index()
-
-    # === Bar Chart ===
-    plt.figure(figsize=(10, 6))
-    # Create an empty list to hold bar colors
-    colors = []
-
-# Loop through each volume value
-    for volume in volume_per_day['Volume']:
-        if volume > 7000:
-            colors.append('red')
-        else:
-            colors.append('green')
-    plt.bar(volume_per_day['Date'].dt.strftime('%Y-%m-%d'), volume_per_day['Volume'], color=colors)
-    
-    # Labels and layout
-    plt.xlabel("Date")
-    plt.ylabel("Total Volume")
-    plt.title("Workout Volume Per Day")
-    plt.xticks(rotation=45, ha='right')
-    plt.tight_layout()
-    plt.grid(True, axis='y')
-
-    # Save to buffer for Flask
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    graph_data = base64.b64encode(buffer.getvalue()).decode()
-    plt.close()
-    return f'data:image/png;base64,{graph_data}'
-
-import pandas as pd
-import matplotlib.pyplot as plt
-from io import BytesIO
-import base64
-
-def average_intensity(csv_file):
-    # Load CSV
-    df = pd.read_csv(csv_file)
-
-    # Calculate total weight and total reps per row
-    df['TotalWeight'] = df['Weight'] * df['Reps'] * df['Sets']
-    df['TotalReps'] = df['Reps'] * df['Sets']
-
-    # Group by exercise
-    grouped = df.groupby('Exercise').agg({
-        'TotalWeight': 'sum',
-        'TotalReps': 'sum'
-    }).reset_index()
-
-    # Calculate average weight per rep for each exercise
-    grouped['AvgWeightPerRep'] = grouped['TotalWeight'] / grouped['TotalReps']
-
-    # === Bar Chart ===
-    plt.figure(figsize=(10, 6))
-    plt.bar(grouped['Exercise'], grouped['AvgWeightPerRep'], color='purple')
-
-
-    # Labels and layout
-    plt.xlabel("Exercise")
-    plt.ylabel("Average Weight per Rep")
-    plt.title("Average Intensity by Exercise")
-    plt.xticks(rotation=45, ha='right')
-    plt.tight_layout()
-    plt.grid(True, axis='y')
-
-    # Save to buffer for Flask
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
+    plt.savefig(buffer, format='png', bbox_inches='tight')
     buffer.seek(0)
     graph_data = base64.b64encode(buffer.getvalue()).decode()
     plt.close()
 
-    return f'data:image/png;base64,{graph_data}'
+    return f"data:image/png;base64,{graph_data}"
 
+def create_exercise_distribution_pie_chart():
+    conn = get_db_connection()
+    df = pd.read_sql_query("SELECT Exercise FROM Workout", conn)
+    conn.close()
 
+    # Clean data
+    df['Exercise'] = df['Exercise'].astype(str).str.strip()
+    df = df[df['Exercise'] != '']  # Remove empty entries
 
+    if df.empty:
+        plt.figure(figsize=(6,6))
+        plt.text(0.5, 0.5, "No data to display", ha='center', va='center', fontsize=16)
+        plt.axis('off')
+    else:
+        exercise_counts = df['Exercise'].value_counts()
 
+        plt.figure(figsize=(8,8))
+        plt.pie(exercise_counts, labels=exercise_counts.index, autopct='%1.1f%%', startangle=140)
+        plt.title("Exercise Distribution")
+        plt.axis('equal')  # Equal aspect ratio ensures pie is circular.
 
-#### CLOSE DB AT THE END?? #######
+    # Save to buffer
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.getvalue()).decode()
+    plt.close()
+
+    return f"data:image/png;base64,{graph_data}"
+
