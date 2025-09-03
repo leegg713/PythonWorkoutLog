@@ -26,10 +26,26 @@ def home():
 @app.route('/add', methods=['GET', 'POST']) #Sets a new route when add button selected etc
 def add():
     if request.method == 'POST':
+        # If form is submitted → process and save the data
         form_data = request.form
-        add_exercise(form_data)  # pass form data to the function
-        return redirect(url_for('home'))
-    return render_template('add.html')
+        add_exercise(form_data)  # Save entry to CSV + DB
+        return redirect(url_for('home'))  # Redirect to homepage after adding
+
+    # === DROPDOWN OPTIONS ===
+    # Predefined list of valid exercises (prevents typos / bad input)
+    valid_exercises = [
+        "Squat", "PauseSquat", "GobletSquat", "PauseBench",
+        "TouchNGoBench", "InclineDBBench", "Deadlift", "DeficitDeadlift",
+        "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench",
+        "PowerClean", "HangClean"
+    ]
+    # Weight dropdown - from 45 lbs up to 600 lbs in 5 lb increments
+    weight_options = list(range(45, 605, 5))
+    # Reps dropdown -  1 through 20
+    rep_options = list(range(1, 21, 1))
+    # Sets dropdown -  1 through 20
+    set_options = list(range(1, 21, 1))
+    return render_template('add.html', exercises=valid_exercises, weights=weight_options, reps=rep_options, sets=set_options)
 
 @app.route('/graph')
 def graph():
