@@ -9,7 +9,7 @@ Reason: Check column types, update table if needed, test reading data. -- Comple
 
 Step 2 — Add date filters to graphs
 Time: 1–2 hours
-Reason: Add date inputs, update query to filter by dates, test plots.
+Reason: Add date inputs, update query to filter by dates, test plots. -- Completed
 
 Step 4 — Additional visualizations
 Time: 2–4 hours
@@ -418,77 +418,81 @@ def add_exercise(form_data):
 
 
 ####################### ALL FUNCTIONS FROM VISUALIZATIONS.PY #######################
+####################### GRAPH SECTION #######################
 
-def create_progression_graph(exercise=None):
+def create_progression_graph(exercise=None, start_date=None, end_date=None):
+    # Load data from DB
     conn = get_db_connection()
-    df = pd.read_sql_query("SELECT Date, Exercise, Weight FROM Workout", conn)
+    query = "SELECT * FROM Workout"
+    df = pd.read_sql_query(query, conn)
     conn.close()
 
-    # Clean data
-    df['Date'] = pd.to_datetime(df['Date'].astype(str).str.strip(), errors='coerce', infer_datetime_format=True)
-    df['Exercise'] = df['Exercise'].astype(str).str.strip()
-    df = df.dropna(subset=['Date', 'Weight'])
+    # Convert Date column to datetime
+    df['Date'] = pd.to_datetime(df['Date'])
 
+    # Optional filtering
     if exercise:
-        # Filter for a single exercise (case-insensitive)
-        df = df[df['Exercise'].str.lower() == exercise.strip().lower()]
+        df = df[df['Exercise'].str.strip() == exercise]
+    if start_date:
+        df = df[df['Date'] >= pd.to_datetime(start_date)]
+    if end_date:
+        df = df[df['Date'] <= pd.to_datetime(end_date)]
 
-    if df.empty:
-        plt.figure(figsize=(10,6))
-        plt.text(0.5, 0.5, "No data to display", ha='center', va='center', fontsize=16)
-        plt.axis('off')
-    else:
-        df = df.sort_values(by='Date')
-        plt.figure(figsize=(10,6))
-        for ex in df['Exercise'].unique():
-            subset = df[df['Exercise'] == ex]
-            plt.plot(subset['Date'], subset['Weight'], marker='o', label=ex)
+    # Sort by date
+    df = df.sort_values(by='Date')
 
-        plt.xlabel("Date")
-        plt.ylabel("Weight Lifted")
-        plt.title("Progression Over Time")
-        # Move legend outside the plot (right side)
-        plt.legend(title="Exercise", bbox_to_anchor=(1.05, 1), loc='upper left')
-        plt.grid(True)
-        plt.xticks(rotation=45)
-        plt.tight_layout(rect=[0, 0, 0.8, 1])  # Make room for legend
+    # Plot setup
+    plt.figure(figsize=(10, 6))
+    for ex in df['Exercise'].unique():
+        subset = df[df['Exercise'] == ex]
+        plt.plot(subset['Date'], subset['Weight'], marker='o', label=ex)
+
+    plt.xlabel("Date")
+    plt.ylabel("Weight Lifted")
+    plt.title("Progression Over Time")
+    plt.legend(title="Exercise")
+    plt.grid(True)
 
     # Save to buffer
     buffer = BytesIO()
-    plt.savefig(buffer, format='png', bbox_inches='tight')
+    plt.savefig(buffer, format='png')
     buffer.seek(0)
     graph_data = base64.b64encode(buffer.getvalue()).decode()
     plt.close()
+    return f'data:image/png;base64,{graph_data}'
 
-    return f"data:image/png;base64,{graph_data}"
-
-def create_exercise_distribution_pie_chart():
+def create_exercise_distribution_pie_chart(exercise=None, start_date=None, end_date=None):
     conn = get_db_connection()
-    df = pd.read_sql_query("SELECT Exercise FROM Workout", conn)
+    query = "SELECT * FROM Workout"
+    df = pd.read_sql_query(query, conn)
     conn.close()
 
-    # Clean data
-    df['Exercise'] = df['Exercise'].astype(str).str.strip()
-    df = df[df['Exercise'] != '']  # Remove empty entries
+    # Convert Date column to datetime
+    df['Date'] = pd.to_datetime(df['Date'])
 
-    if df.empty:
-        plt.figure(figsize=(6,6))
-        plt.text(0.5, 0.5, "No data to display", ha='center', va='center', fontsize=16)
-        plt.axis('off')
-    else:
-        exercise_counts = df['Exercise'].value_counts()
+    # Optional filtering
+    if exercise:
+        df = df[df['Exercise'].str.strip() == exercise]
+    if start_date:
+        df = df[df['Date'] >= pd.to_datetime(start_date)]
+    if end_date:
+        df = df[df['Date'] <= pd.to_datetime(end_date)]
 
-        plt.figure(figsize=(8,8))
-        plt.pie(exercise_counts, labels=exercise_counts.index, autopct='%1.1f%%', startangle=140)
-        plt.title("Exercise Distribution")
-        plt.axis('equal')  # Equal aspect ratio ensures pie is circular.
+    # Group by exercise to get count or volume
+    distribution = df['Exercise'].value_counts()
 
-    # Save to buffer
+    plt.figure(figsize=(8, 8))
+    #plt.pie(distribution, labels=distribution.index, autopct='%1.1f%%', startangle=90)
+    plt.pie(distribution, autopct='%1.1f%%', startangle=90)
+    plt.legend(labels=distribution.index, loc="center left", bbox_to_anchor=(0.1, 0.5))
+    plt.title("Exercise Distribution")
+    plt.axis('equal')  # Equal aspect ratio for a perfect circle
+
     buffer = BytesIO()
-    plt.savefig(buffer, format='png', bbox_inches='tight')
+    plt.savefig(buffer, format='png')
     buffer.seek(0)
     graph_data = base64.b64encode(buffer.getvalue()).decode()
     plt.close()
+    return f'data:image/png;base64,{graph_data}'
 
-    return f"data:image/png;base64,{graph_data}"
 
