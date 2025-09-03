@@ -5,7 +5,7 @@ NEXT TO DO LIST
 
 Step 1 — Clean up DB column types
 Time: 30–60 min
-Reason: Check column types, update table if needed, test reading data.
+Reason: Check column types, update table if needed, test reading data. -- Completed the DB works as expected
 
 Step 2 — Add date filters to graphs
 Time: 1–2 hours
@@ -338,7 +338,7 @@ def add_exercise(form_data):
     valid_exercises = [
         "Squat", "PauseSquat", "GobletSquat", "PauseBench",
         "TouchNGoBench", "InclineDBBench", "Deadlift", "DeficitDeadlift",
-        "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench"
+        "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench", "PowerClean", "HangClean"
     ]
 
     # Extract form data -- NEEDED FOR BOTH CSV AND DB
