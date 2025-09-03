@@ -49,22 +49,25 @@ def add():
 
 @app.route('/graph')
 def graph():
-    # Get selected exercise from query parameters
+    # Get optional query parameters
     selected_exercise = request.args.get('exercise')
+    start_date = request.args.get('start_date')  # Optional start date
+    end_date = request.args.get('end_date')      # Optional end date
 
-    # Fetch unique exercises from DB
+    # Fetch unique exercises from DB for the dropdown
     conn = get_db_connection()
     exercises_df = pd.read_sql_query("SELECT DISTINCT Exercise FROM Workout", conn)
     conn.close()
     exercises = sorted(exercises_df['Exercise'].str.strip().tolist())
 
+    # Pass parameters to your graph functions
+    # (Modify the functions later to accept optional start/end dates)
     graphs = [
-        create_progression_graph(selected_exercise),  # Line graph (filtered if exercise selected)
-        create_exercise_distribution_pie_chart()      # Pie chart for distribution
+        create_progression_graph(selected_exercise, start_date, end_date),
+        create_exercise_distribution_pie_chart(selected_exercise, start_date, end_date)
     ]
 
-    return render_template('graph.html', graphs=graphs, exercises=exercises, selected_exercise=selected_exercise)
-
+    return render_template('graph.html', graphs=graphs, exercises=exercises, selected_exercise=selected_exercise, start_date=start_date, end_date=end_date)
 
 @app.route('/timer', methods=['GET', 'POST']) #Timer Page
 def timer():
