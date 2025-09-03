@@ -8,6 +8,14 @@
   <h2>Graphs</h2>
 
 <form method="get" action="{{ url_for('graph') }}">
+
+    <label for="start_date">Start Date:</label>
+    <input type="date" name="start_date" id="start_date">
+
+    <label for="end_date">End Date:</label>
+    <input type="date" name="end_date" id="end_date">
+
+    <button type="submit">Filter</button>
     <label for="exercise">Select Exercise:</label>
     <select name="exercise" id="exercise">
         <option value="">All</option>
