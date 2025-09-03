@@ -48,17 +48,8 @@ def graph():
     ]
 
     return render_template('graph.html', graphs=graphs, exercises=exercises, selected_exercise=selected_exercise)
-    '''
-    graphs = [] #List to store different graphs
 
-  # Append one simple graph to the list # Add more below here
-    graphs.append(create_progression_graph())
-    #graphs.append(volume_per_workout(file_path))
-    #graphs.append(average_intensity(file_path))
-    # If you want to add more graphs, just call your graph functions and append them here
 
-    return render_template('graph.html', graphs=graphs)
-'''
 @app.route('/timer', methods=['GET', 'POST']) #Timer Page
 def timer():
     return render_template('timer.html')  # This will render timer.html page
