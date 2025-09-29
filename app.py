@@ -4,7 +4,7 @@
 # app.py
 from flask import Flask, render_template, request, redirect, url_for #Imports flask, render_template function and requests function
 #from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator #create_line_graph
-from utils.webApp import wilks, dots, one_rep_max, plate_calculator, average_lift, get_db_connection, create_exercise_distribution_pie_chart, get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise, create_progression_graph 
+from utils.webApp import wilks, dots, one_rep_max, plate_calculator, average_lift, get_db_connection, create_exercise_distribution_pie_chart, get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise, create_progression_graph, get_last_date
 #from utils.helpers import get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise
 #from utils.visualizations import create_progression_graph, volume_per_workout, average_intensity
 #import matplotlib.pyplot as plt
@@ -45,29 +45,12 @@ def add():
     rep_options = list(range(1, 21, 1))
     # Sets dropdown -  1 through 20
     set_options = list(range(1, 21, 1))
-    # === LAST DATE DEFAULTING ===
-    last_date = None
 
-    # Try CSV first
-    try:
-        with open(csv_file, "r") as file:
-            last_line = list(csv.reader(file))[-1]
-            last_date = last_line[-1]
-    except Exception:
-        pass
-
-    # Fallback to DB if CSV is empty/missing
-    if not last_date:
-        try:
-            conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute(f"SELECT date FROM {table_name} ORDER BY ROWID DESC LIMIT 1")
-            row = cur.fetchone()
-            if row:
-                last_date = row[0]
-            conn.close()
-        except Exception:
-            pass
+    # Get last entered date from utility function
+    #from utils.webApp import get_last_date
+    last_date = get_last_date()
+    # Optionally print for debugging
+    # print("Last date being passed to template:", last_date)
     return render_template('add.html', exercises=valid_exercises, weights=weight_options, reps=rep_options, sets=set_options, last_date=last_date)
 
 @app.route('/graph')

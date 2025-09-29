@@ -1,3 +1,30 @@
+# Utility to get the last entered date from CSV or DB
+def get_last_date():
+    # Try to get last date from CSV first
+    import os
+    import csv
+    if os.path.exists(csv_file):
+        try:
+            with open(csv_file, "r") as file:
+                lines = list(csv.reader(file))
+                if lines and len(lines[-1]) > 0:
+                    last_date = lines[-1][-1].strip()
+                    if last_date:
+                        return last_date
+        except Exception:
+            pass
+    # If not found in CSV, try DB
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(f"SELECT date FROM {table_name} ORDER BY ROWID DESC LIMIT 1")
+        row = cur.fetchone()
+        conn.close()
+        if row and row[0]:
+            return row[0]
+    except Exception:
+        pass
+    return ""
 ### NEXT STEPS FOR PROJECT ### 
 
 ''' 

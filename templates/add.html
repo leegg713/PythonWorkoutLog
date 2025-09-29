@@ -45,8 +45,8 @@
     </select>
 
     <!-- Date input: workout date (HTML5 date picker, defaults to blank if not set -->
-    <label for="date">Date:</label>
-    <input type="date" name="date" id="date">
+    <label for="date">Date: (If blank last entered date is input) </label>
+    <input type="date" name="date" id="date" value="{{ last_date if last_date else '' }}">
 
     <!-- Submit button: saves the new exercise entry to both CSV and DB -->
     <button type="submit">Add Exercise</button>
