@@ -45,7 +45,30 @@ def add():
     rep_options = list(range(1, 21, 1))
     # Sets dropdown -  1 through 20
     set_options = list(range(1, 21, 1))
-    return render_template('add.html', exercises=valid_exercises, weights=weight_options, reps=rep_options, sets=set_options)
+    # === LAST DATE DEFAULTING ===
+    last_date = None
+
+    # Try CSV first
+    try:
+        with open(csv_file, "r") as file:
+            last_line = list(csv.reader(file))[-1]
+            last_date = last_line[-1]
+    except Exception:
+        pass
+
+    # Fallback to DB if CSV is empty/missing
+    if not last_date:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute(f"SELECT date FROM {table_name} ORDER BY ROWID DESC LIMIT 1")
+            row = cur.fetchone()
+            if row:
+                last_date = row[0]
+            conn.close()
+        except Exception:
+            pass
+    return render_template('add.html', exercises=valid_exercises, weights=weight_options, reps=rep_options, sets=set_options, last_date=last_date)
 
 @app.route('/graph')
 def graph():

@@ -332,7 +332,7 @@ def clear_last_entry():
         print("CSV is empty — nothing to remove.")
 
 #### ADD EXERCISE WITH ADDING TO SQLITE AND CSV #####
-
+'''
 def add_exercise(form_data):
     # Predefined exercise list
     valid_exercises = [
@@ -415,6 +415,109 @@ def add_exercise(form_data):
     # - This ensures the data we validated from the form is safely stored in the database.
     conn.commit() #Commits the change
     conn.close() # Closes the connection
+
+'''
+def add_exercise(form_data):
+    # Predefined exercise list
+    valid_exercises = [
+        "Squat", "PauseSquat", "GobletSquat", "PauseBench",
+        "TouchNGoBench", "InclineBench", "Deadlift", "DeficitDeadlift",
+        "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench", "PowerClean", "HangClean"
+    ]
+
+    # Extract form data -- NEEDED FOR BOTH CSV AND DB
+    exercise_input = form_data.get('exercise', '').strip().replace(" ", "")
+    sets_input = form_data.get('sets', '')
+    rep_input = form_data.get('reps', '')
+    weight_input = form_data.get('weight', '')
+    date_input = form_data.get('date', '').strip()
+
+    #### CSV SECTION ####
+    # Validate and resolve exercise input
+    if exercise_input == "":
+        try:
+            with open(csv_file, "r") as file:
+                last_line = list(csv.reader(file))[-1]
+                exercise_input = last_line[0]
+        except Exception:
+            raise ValueError("No previous exercise found.")
+    else:
+        match_found = False
+        for exercise in valid_exercises:
+            if exercise.lower().replace(" ", "") == exercise_input.lower():
+                exercise_input = exercise
+                match_found = True
+                break
+        if not match_found:
+            raise ValueError("Invalid exercise name.")
+
+    # Use last date if none entered
+    # First check CSV, then DB if CSV is empty/missing
+    last_date = None
+    try:
+        with open(csv_file, "r") as file:
+            last_line = list(csv.reader(file))[-1]
+            last_date = last_line[-1]
+    except Exception:
+        pass  # CSV missing or empty, will check DB next
+
+    if not last_date:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute(f"SELECT date FROM {table_name} ORDER BY ROWID DESC LIMIT 1")
+            row = cur.fetchone()
+            if row:
+                last_date = row[0]
+            conn.close()
+        except Exception:
+            pass  # DB might be empty too
+
+    if date_input == "":
+        if last_date:
+            date_input = last_date
+        else:
+            raise ValueError("No previous date found.")
+    else:
+        # Validate date format
+        try:
+            date_input = convert_iso_to_mmddyy(date_input)
+        except ValueError:
+            raise ValueError("Invalid date format. Please use MM/DD/YY.")
+
+    # Write to CSV
+    with open(csv_file, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([exercise_input, sets_input, rep_input, weight_input, date_input])
+
+    #### DB SECTION ####
+    conn = get_db_connection() # Opens a connection to the SQLite database file defined by db_file
+    cur = conn.cursor()   # Creates a "cursor" object used to execute SQL commands
+
+    # Create table if it doesn't exist
+    cur.execute(f"""
+        CREATE TABLE IF NOT EXISTS {table_name} (
+            exercise TEXT,
+            sets TEXT,
+            reps TEXT,
+            weight TEXT,
+            date TEXT
+        )
+    """)
+
+    # Insert the new entry
+    cur.execute(f"""
+        INSERT INTO {table_name} (exercise, sets, reps, weight, date)
+        VALUES (?, ?, ?, ?, ?)
+    """, (exercise_input, sets_input, rep_input, weight_input, date_input))
+    # Explanation:
+    # - This SQL command inserts a new row into the table.
+    # - The columns in parentheses specify which columns we are inserting into.
+    # - The VALUES (?, ?, ?, ?, ?) syntax uses placeholders for security (prevents SQL injection).
+    # - The tuple (exercise_input, sets_input, rep_input, weight_input, date_input) provides the actual values to insert.
+    # - This ensures the data we validated from the form is safely stored in the database.
+    conn.commit() #Commits the change
+    conn.close() # Closes the connection Make the last date entered the date for this by default and then I can update as I please
 
 
 ####################### ALL FUNCTIONS FROM VISUALIZATIONS.PY #######################
