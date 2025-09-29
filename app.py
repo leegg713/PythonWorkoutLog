@@ -35,7 +35,7 @@ def add():
     # Predefined list of valid exercises (prevents typos / bad input)
     valid_exercises = [
         "Squat", "PauseSquat", "GobletSquat", "PauseBench",
-        "TouchNGoBench", "InclineDBBench", "Deadlift", "DeficitDeadlift",
+        "TouchNGoBench", "InclineBench", "Deadlift", "DeficitDeadlift",
         "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench",
         "PowerClean", "HangClean"
     ]

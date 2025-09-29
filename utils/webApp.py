@@ -337,7 +337,7 @@ def add_exercise(form_data):
     # Predefined exercise list
     valid_exercises = [
         "Squat", "PauseSquat", "GobletSquat", "PauseBench",
-        "TouchNGoBench", "InclineDBBench", "Deadlift", "DeficitDeadlift",
+        "TouchNGoBench", "InclineBench", "Deadlift", "DeficitDeadlift",
         "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench", "PowerClean", "HangClean"
     ]
 
