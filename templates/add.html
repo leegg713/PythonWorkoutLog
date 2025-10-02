@@ -8,7 +8,7 @@
 <body>
     <h1>Add New Exercise</h1>
     <form method="POST">
-    <!-- Exercise dropdown: lets user choose from predefined exercise list passed from Flask in app.py -->
+    <!-- Exercise dropdown: lets user choose from predefined exercise list passed from Flask valid_exercises add() route in app.py -->
     <label for="exercise">Exercise:</label>
     <select name="exercise" id="exercise" required>
         <option value="">-- Select Exercise --</option>
@@ -17,7 +17,7 @@
         {% endfor %}
     </select>
 
-    <!-- Sets dropdown: number of sets performed (1–20, provided by Flask in app.py) -->
+    <!-- Sets dropdown: number of sets performed (1–20, provided by Flask in app.py in the add() route) -->
     <label for="sets">Sets:</label>
     <select name="sets" id="sets" required>
         <option value="">-- Select Sets Completed --</option>
@@ -26,7 +26,7 @@
         {% endfor %}
     </select>
 
-    <!-- Reps dropdown: number of reps performed per set (1–20, provided by Flask in app.py) -->
+    <!-- Reps dropdown: number of reps performed per set (1–20, provided by Flask in app.py in the add() route) -->
     <label for="reps">Reps:</label>
     <select name="reps" id="reps" required>
         <option value="">-- Select Reps Completed --</option>
@@ -35,7 +35,7 @@
         {% endfor %}
     </select>
 
-    <!-- Weight dropdown: weight lifted in lbs (increments of 5, starting at 45, provided by Flask) -->
+    <!-- Weight dropdown: weight lifted in lbs (increments of 5, starting at 45, provided by Flask app.py in the add() route) -->
     <label for="weight">Weight (lbs):</label>
     <select name="weight" id="weight" required>
         <option value="">-- Select Weight --</option>
@@ -44,7 +44,8 @@
         {% endfor %}
     </select>
 
-    <!-- Date input: workout date (HTML5 date picker, defaults to blank if not set -->
+    <!-- Date input: workout date (HTML5 date picker, defaults to blank if not set but will actually use the last entered date
+    it grabs the last entered date by using get_last_date() in webApp.py -->
     <label for="date">Date: (If blank last entered date is input) </label>
     <input type="date" name="date" id="date" value="{{ last_date if last_date else '' }}">
 
