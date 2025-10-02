@@ -1,9 +1,9 @@
 
-# This page will be how the actual work is done by using the functions in Main.py
+# This is the Flask page that runs all the functions in webApp.py
+# Contains a few functions and logic in this page as well
 
-# app.py
-from flask import Flask, render_template, request, redirect, url_for #Imports flask, render_template function and requests function
-#from main import  add_exercise, average_lift, wilks, one_rep_max,  dots, plate_calculator #create_line_graph
+#Imports flask, render_template function and requests function from flask
+from flask import Flask, render_template, request, redirect, url_for
 from utils.webApp import wilks, dots, one_rep_max, plate_calculator, average_lift, get_db_connection, create_exercise_distribution_pie_chart, get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise, create_progression_graph, get_last_date
 #from utils.helpers import get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise
 #from utils.visualizations import create_progression_graph, volume_per_workout, average_intensity
@@ -29,7 +29,7 @@ def add():
         # If form is submitted → process and save the data
         form_data = request.form
         add_exercise(form_data)  # Save entry to CSV + DB
-        return redirect(url_for('home'))  # Redirect to homepage after adding
+        return redirect(url_for('add'))  # Redirect to add page after adding for multiple entries
 
     # === DROPDOWN OPTIONS ===
     # Predefined list of valid exercises (prevents typos / bad input)
@@ -47,9 +47,7 @@ def add():
     set_options = list(range(1, 21, 1))
 
     # Get last entered date from utility function
-    #from utils.webApp import get_last_date
     last_date = get_last_date()
-    # Optionally print for debugging
     # print("Last date being passed to template:", last_date)
     return render_template('add.html', exercises=valid_exercises, weights=weight_options, reps=rep_options, sets=set_options, last_date=last_date)
 
@@ -137,8 +135,6 @@ def calc():
 
     return render_template('calc.html', results=results)
     
-
-
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
