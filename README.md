@@ -5,7 +5,7 @@ There are also some calculation features to help you see where you stack up agai
 
 ## Features
 - Workout Logging
-Add exercises and log workout data via a simple form.
+Add exercises and log workout data via a simple form which uploads the information to a CSV and also a SQLite DB.
 
 - Data Visualization
 View multiple interactive graphs tracking workout progress, volume, and intensity.
@@ -49,8 +49,7 @@ If you have suggestions or questions, feel free to open an issue.
 Thank you for helping me improve this project!
 
 
-## IMPROVEMENTS
+## IMPROVEMENTS TO COME ##
+Log In Functionality for End Users
+Multi User support -- Will need to update how the DB takes data to have a key per user
 
-Adding more detailed graphs
-Loading data to a database and not a CSV
-Multi User support following database integration
