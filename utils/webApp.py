@@ -5,35 +5,28 @@ NEXT TO DO LIST
 
 Step 1 — Clean up DB column types
 Time: 30–60 min
-Reason: Check column types, update table if needed, test reading data. -- Completed the DB works as expected
+Reason: Check column types, update table if needed, test reading data. -- COMPLETED the DB works as expected
 
 Step 2 — Add date filters to graphs
 Time: 1–2 hours
-Reason: Add date inputs, update query to filter by dates, test plots. -- Completed
+Reason: Add date inputs, update query to filter by dates, test plots. -- COMPLETED
 
 Step 4 — Additional visualizations
 Time: 2–4 hours
-Reason: Volume, intensity, PR charts, testing plots, small tweaks for readability.
-
-Step 5 — Edit / Delete entries
+Reason: Volume, intensity, PR charts, testing plots, small tweaks for readability.- COMPLETED
+##############################################################################################
+Step 5 — Edit / Delete entries WORK ON THIS NEXT
 Time: 2–3 hours
 Reason: Create table view of workouts, add buttons, implement UPDATE and DELETE.
-
-Step 6 — Multi-user support
-Time: 1–2 days
-Reason: Add users table, Flask-Login setup, link workouts to users, test authentication.
-
-Step 7 — Dashboard page
-Time: 3–5 hours
-Reason: Combine multiple graphs and stats neatly on one page, layout work with CSS.
+##############################################################################################
 
 Step 8 — Export / Share
 Time: 1–2 hours
 Reason: Export CSV/PDF and optionally email graphs.
 
-Step 9 — Interactive graphs (Plotly)
-Time: 4–6 hours
-Reason: Replace matplotlib with Plotly, adjust callbacks, test interactivity.
+Step 6 — Multi-user support
+Time: 1–2 days
+Reason: Add users table, Flask-Login setup, link workouts to users, test authentication.
 
 Step 10 — Deployment
 Time: 1–2 hours for Render/Heroku simple deploy
