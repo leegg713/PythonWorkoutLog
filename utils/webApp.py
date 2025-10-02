@@ -1,30 +1,3 @@
-# Utility to get the last entered date from CSV or DB
-def get_last_date():
-    # Try to get last date from CSV first
-    import os
-    import csv
-    if os.path.exists(csv_file):
-        try:
-            with open(csv_file, "r") as file:
-                lines = list(csv.reader(file))
-                if lines and len(lines[-1]) > 0:
-                    last_date = lines[-1][-1].strip()
-                    if last_date:
-                        return last_date
-        except Exception:
-            pass
-    # If not found in CSV, try DB
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute(f"SELECT date FROM {table_name} ORDER BY ROWID DESC LIMIT 1")
-        row = cur.fetchone()
-        conn.close()
-        if row and row[0]:
-            return row[0]
-    except Exception:
-        pass
-    return ""
 ### NEXT STEPS FOR PROJECT ### 
 
 ''' 
@@ -66,28 +39,52 @@ Step 10 — Deployment
 Time: 1–2 hours for Render/Heroku simple deploy
 Reason: Small Flask app with SQLite; longer if multi-user and HTTPS setup.
 '''
-####################### ALL FUNCTIONS FROM CALC.PY #######################
+####################### IMPORT STATEMENTS #######################
 
 import os
 import csv
 import time
 import datetime
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import io
 import base64
 from io import BytesIO
 import sqlite3
-#from utils.calc import average_lift
 
 ### GLOBAL VARIABLES ###
 csv_file = 'WorkoutLog.csv' #Global Variable
 db_file = "WorkoutLog.db"
 table_name = "Workout"
 
+# Utility function to get the last entered date from CSV or DB
+def get_last_date():
+    # Try to get last date from CSV first
+    if os.path.exists(csv_file):
+        try:
+            with open(csv_file, "r") as file:
+                lines = list(csv.reader(file))
+                if lines and len(lines[-1]) > 0:
+                    last_date = lines[-1][-1].strip()
+                    if last_date:
+                        return last_date
+        except Exception:
+            pass
+    # If not found in CSV, try DB
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(f"SELECT date FROM {table_name} ORDER BY ROWID DESC LIMIT 1")
+        row = cur.fetchone()
+        conn.close()
+        if row and row[0]:
+            return row[0]
+    except Exception:
+        pass
+    return ""
 #### CONVERT CSV TO SQLITE DB #####
-### ONE TIME RUN ####
+### ONE TIME RUN ONLY IF HAVE FRESH CSV ####
+# NEED TO ADD THIS TO APP??? OR JUST LEAVE IT SINCE MULTI USERS WONT NEED IT ###
 
 def convertCSVToDB():
     # ---- Settings ----
@@ -109,13 +106,14 @@ def convertCSVToDB():
 
     print(f"CSV {csv_file} successfully imported into {db_file} as table '{table_name}'")
 
-
-####### CONNECT TO DB TO USE IN OTHER FUNCTIONS #######
+####### CONNECT TO DB FUNCTION TO USE IN OTHER FUNCTIONS #######
 
 def get_db_connection():
     conn = sqlite3.connect(db_file)
     conn.row_factory = sqlite3.Row  # optional
     return conn
+
+ ##### CALCULATOR PAGE SECTION FOR DIFFERENT CALCULATIONS #####   
 
 
 ###### LIFT AVERAGE FLASK VERSION #########
@@ -154,7 +152,7 @@ def average_lift(exercise_to_avg):
         return {"error": f"No entries found for {exercise_to_avg}"}
         '''
     ##### DB READ AVERAGE SECTION ######
-    conn = get_db_connection()
+    conn = get_db_connection() #Uses function from above to connect to DB
     cur = conn.cursor()   # Creates a "cursor" object used to execute SQL commands
     # --- SQL Query to Get Relevant Rows ---
     cur.execute(f"""
@@ -181,7 +179,7 @@ def average_lift(exercise_to_avg):
 # --- Close the Database Connection ---
     conn.close()
 # Explanation:
-# - Always close the DB connection after fetching data to free resources.
+# - Always close the DB connection after fetching data to free resources which is useful when having more users and higher data usage.
 
 # --- Sum Total Weight and Reps ---
     for row in rows:
@@ -200,7 +198,7 @@ def average_lift(exercise_to_avg):
 # - These totals will later be used to compute the average weight lifted per rep.
 
 # --- Calculate Average Weight per Rep ---
-    if total_reps > 0:
+    if total_reps > 0: #Checks to make sure the exercise exists in the DB
         avg_weight_per_rep = total_weight / total_reps
         return {
             "exercise": exercise_to_avg,                 # The exercise name
@@ -294,6 +292,7 @@ def plate_calculator(weight):
 
 ####################### ALL FUNCTIONS FROM HELPERS.PY #######################
 
+##### BASICALLY JUST HELPER FUNCTIONS FOR OTHER FILES AND FUNCTIONS ON THIS PAGE #####
 
 ###### Function to get valid inputs #########
 def get_valid_number_input(prompt, field_name, max_attempts=3, clear_screen=False):
@@ -319,7 +318,7 @@ def get_valid_number_input(prompt, field_name, max_attempts=3, clear_screen=Fals
             print(f"{field_name} entered: {num}")
             time.sleep(1)
             if clear_screen:
-                os.system("clear")  # Use "cls" on Windows
+                os.system("clear")  # Use "cls" on Windows to clear console
             return num
         else:
             attempts += 1
@@ -329,7 +328,7 @@ def get_valid_number_input(prompt, field_name, max_attempts=3, clear_screen=Fals
     return None
 
     ###### CONVERT TIME FUNCTION ######## 
-#### CONVERTS 2025-06-12 to 06/12/25 like how we want for CSV ########
+#### CONVERTS 2025-06-12 to 06/12/25 like how we want for CSV and for the DB ########
 def convert_iso_to_mmddyy(iso_date_str):
     try:
         # Parse ISO format: '2025-06-19'
@@ -341,6 +340,8 @@ def convert_iso_to_mmddyy(iso_date_str):
 
 
 ############### Clears the last workout entry entered in case of a typo/etc ###################
+#### DO NOT HAVE THIS ADDED TO FLASK ROUTE PAGE YET ####
+#### NEED IT TO WORK FOR DB AS WELL AS CSV ####
 def clear_last_entry():
     #Read all lines from the file
     with open(csv_file, "r") as file:
