@@ -16,6 +16,9 @@ Time: 2–4 hours
 Reason: Volume, intensity, PR charts, testing plots, small tweaks for readability.- COMPLETED
 ##############################################################################################
 Step 5 — Edit / Delete entries WORK ON THIS NEXT
+-- Have the delete and edit buttons working
+Now just need a table to view the workouts
+view_table function will need to be created and then loaded into the add.html
 Time: 2–3 hours
 Reason: Create table view of workouts, add buttons, implement UPDATE and DELETE.
 ##############################################################################################
