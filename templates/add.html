@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Add Exercise Entry</title>
+    <title>Add/Delete/Edit Exercise Entry</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -50,7 +50,15 @@
     <input type="date" name="date" id="date" value="{{ last_date if last_date else '' }}">
 
     <!-- Submit button: saves the new exercise entry to both CSV and DB -->
-    <button type="submit">Add Exercise</button>
+    <button type="submit" name="action" value="add">Add Exercise</button>
+    <!-- ADD SOMETHING FOR SPACING HERE -- >
+    <!-- Submit button: edits an exercise entry in both CSV and DB -->
+    <button type="submit" name="action" value="edit">Edit Exercise</button>
+
+    <!-- Submit button: deletes an exercise entry in both CSV and DB -->
+    <!-- ADD SOMETHING FOR SPACING HERE -->
+    <button type="submit" name="action" value="delete">Delete Exercise</button>
+
 </form>
 
 
