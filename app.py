@@ -4,7 +4,7 @@
 
 #Imports flask, render_template function and requests function from flask
 from flask import Flask, render_template, request, redirect, url_for
-from utils.webApp import wilks, dots, one_rep_max, plate_calculator, average_lift, get_db_connection, create_exercise_distribution_pie_chart, get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise, create_progression_graph, get_last_date
+from utils.webApp import wilks, dots, one_rep_max, plate_calculator, average_lift, get_db_connection, create_exercise_distribution_pie_chart, get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise, edit_exercise, delete_exercise, create_progression_graph, get_last_date
 #from utils.helpers import get_valid_number_input, convert_iso_to_mmddyy, clear_last_entry, add_exercise
 #from utils.visualizations import create_progression_graph, volume_per_workout, average_intensity
 #import matplotlib.pyplot as plt
@@ -23,33 +23,47 @@ def home():
     #calculator = calculator()
     return render_template("home.html")
 
-@app.route('/add', methods=['GET', 'POST']) #Sets a new route when add button selected etc
+@app.route('/add', methods=['GET', 'POST'])  # Handles Add/Edit/Delete Exercise
 def add():
     if request.method == 'POST':
-        # If form is submitted → process and save the data
+        action = request.form.get('action')  # get which button was pressed
         form_data = request.form
-        add_exercise(form_data)  # Save entry to CSV + DB
-        return redirect(url_for('add'))  # Redirect to add page after adding for multiple entries
+
+        if action == 'add':
+            add_exercise(form_data)  # Save entry to CSV + DB
+
+        elif action == 'edit':
+            edit_exercise(form_data)  # Update existing entry
+
+        elif action == 'delete':
+            delete_exercise(form_data)  # Remove entry from CSV + DB
+
+        # Redirect to the same page after processing
+        return redirect(url_for('add'))
 
     # === DROPDOWN OPTIONS ===
-    # Predefined list of valid exercises (prevents typos / bad input)
     valid_exercises = [
         "Squat", "PauseSquat", "GobletSquat", "PauseBench",
         "TouchNGoBench", "InclineBench", "Deadlift", "DeficitDeadlift",
         "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench",
         "PowerClean", "HangClean"
     ]
-    # Weight dropdown - from 45 lbs up to 600 lbs in 5 lb increments
     weight_options = list(range(45, 605, 5))
-    # Reps dropdown -  1 through 20
-    rep_options = list(range(1, 21, 1))
-    # Sets dropdown -  1 through 20
-    set_options = list(range(1, 21, 1))
+    rep_options = list(range(1, 21))
+    set_options = list(range(1, 21))
 
     # Get last entered date from utility function
     last_date = get_last_date()
-    # print("Last date being passed to template:", last_date)
-    return render_template('add.html', exercises=valid_exercises, weights=weight_options, reps=rep_options, sets=set_options, last_date=last_date)
+
+    return render_template(
+        'add.html',
+        exercises=valid_exercises,
+        weights=weight_options,
+        reps=rep_options,
+        sets=set_options,
+        last_date=last_date
+    )
+
 
 @app.route('/graph')
 def graph():
