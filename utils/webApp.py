@@ -46,16 +46,16 @@ from io import BytesIO
 import sqlite3
 
 ### GLOBAL VARIABLES ###
-csv_file = 'WorkoutLog.csv' #Global Variable
+CSV_FILE = 'WorkoutLog.csv' #Global Variable
 db_file = "WorkoutLog.db"
 table_name = "Workout"
 
 # Utility function to get the last entered date from CSV or DB
 def get_last_date():
     # Try to get last date from CSV first
-    if os.path.exists(csv_file):
+    if os.path.exists(CSV_FILE):
         try:
-            with open(csv_file, "r") as file:
+            with open(CSV_FILE, "r") as file:
                 lines = list(csv.reader(file))
                 if lines and len(lines[-1]) > 0:
                     last_date = lines[-1][-1].strip()
@@ -81,12 +81,12 @@ def get_last_date():
 
 def convertCSVToDB():
     # ---- Settings ----
-    csv_file = "/workspaces/PythonWorkoutLog/WorkoutLog.csv"       # your CSV file
+    CSV_FILE = "/workspaces/PythonWorkoutLog/WorkoutLog.csv"       # your CSV file
     db_file = "WorkoutLog.db"    # SQLite database file
     table_name = "Workout"       # name of the table to create
 
 # ---- Load CSV into pandas ----
-    df = pd.read_csv(csv_file)
+    df = pd.read_csv(CSV_FILE)
 
 # ---- Connect to SQLite ----
     conn = sqlite3.connect(db_file)
@@ -97,7 +97,7 @@ def convertCSVToDB():
 # ---- Close connection ----
     conn.close()
 
-    print(f"CSV {csv_file} successfully imported into {db_file} as table '{table_name}'")
+    print(f"CSV {CSV_FILE} successfully imported into {db_file} as table '{table_name}'")
 
 ####### CONNECT TO DB FUNCTION TO USE IN OTHER FUNCTIONS #######
 
@@ -120,7 +120,7 @@ def average_lift(exercise_to_avg):
     #### CSV AVERAGE SECTION ####
     '''
     # Read the CSV file and calculate the total weight for the selected exercise
-    with open(csv_file, mode='r') as file:
+    with open(CSV_FILE, mode='r') as file:
         reader = csv.reader(file)
 
         # Skip the header row if there is one
@@ -337,7 +337,7 @@ def convert_iso_to_mmddyy(iso_date_str):
 #### NEED IT TO WORK FOR DB AS WELL AS CSV ####
 def clear_last_entry():
     #Read all lines from the file
-    with open(csv_file, "r") as file:
+    with open(CSV_FILE, "r") as file:
         lines = file.readlines()
 
     #Remove the last line
@@ -345,12 +345,15 @@ def clear_last_entry():
         lines = lines[:-1]  # All lines except the last
 
         # Step 3: Write the remaining lines back to the file -- This will overwrite the whole file with the old data minus the last line
-        with open(csv_file, "w") as file:
+        with open(CSV_FILE, "w") as file:
             file.writelines(lines)
 
         print("Last entry removed.")
     else:
         print("CSV is empty — nothing to remove.")
+
+##### EXERCISE MANAGEMENT SECTION #######
+
 
 #### ADD EXERCISE WITH ADDING TO SQLITE AND CSV #####
 
@@ -373,7 +376,7 @@ def add_exercise(form_data):
     # Validate and resolve exercise input
     if exercise_input == "":
         try:
-            with open(csv_file, "r") as file:
+            with open(CSV_FILE, "r") as file:
                 last_line = list(csv.reader(file))[-1]
                 exercise_input = last_line[0]
         except Exception:
@@ -392,7 +395,7 @@ def add_exercise(form_data):
     # First check CSV, then DB if CSV is empty/missing
     last_date = None
     try:
-        with open(csv_file, "r") as file:
+        with open(CSV_FILE, "r") as file:
             last_line = list(csv.reader(file))[-1]
             last_date = last_line[-1]
     except Exception:
@@ -423,7 +426,7 @@ def add_exercise(form_data):
             raise ValueError("Invalid date format. Please use MM/DD/YY.")
 
     # Write to CSV
-    with open(csv_file, mode='a', newline='') as file:
+    with open(CSV_FILE, mode='a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([exercise_input, sets_input, rep_input, weight_input, date_input])
 
@@ -455,6 +458,216 @@ def add_exercise(form_data):
     # - This ensures the data we validated from the form is safely stored in the database.
     conn.commit() #Commits the change
     conn.close() # Closes the connection Make the last date entered the date for this by default and then I can update as I please
+
+
+
+
+##### EDIT EXERCISE SECTION ########
+
+def edit_exercise(form_data):
+    """
+    Updates an exercise entry (by exercise name + date) in both CSV and DB.
+    Matches validation and logic style of add_exercise().
+    """
+    valid_exercises = [
+        "Squat", "PauseSquat", "GobletSquat", "PauseBench",
+        "TouchNGoBench", "InclineBench", "Deadlift", "DeficitDeadlift",
+        "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench",
+        "PowerClean", "HangClean"
+    ]
+
+    # === Extract form data ===
+    exercise_input = form_data.get('exercise', '').strip().replace(" ", "")
+    sets_input = form_data.get('sets', '')
+    rep_input = form_data.get('reps', '')
+    weight_input = form_data.get('weight', '')
+    date_input = form_data.get('date', '').strip()
+
+    #### VALIDATE EXERCISE ####
+    if exercise_input == "":
+        try:
+            with open(CSV_FILE, "r") as file:
+                last_line = list(csv.reader(file))[-1]
+                exercise_input = last_line[0]
+        except Exception:
+            raise ValueError("No previous exercise found.")
+    else:
+        match_found = False
+        for exercise in valid_exercises:
+            if exercise.lower().replace(" ", "") == exercise_input.lower():
+                exercise_input = exercise
+                match_found = True
+                break
+        if not match_found:
+            raise ValueError("Invalid exercise name.")
+
+    #### DETERMINE DATE ####
+    last_date = None
+    try:
+        with open(CSV_FILE, "r") as file:
+            last_line = list(csv.reader(file))[-1]
+            last_date = last_line[-1]
+    except Exception:
+        pass  # CSV missing or empty, check DB next
+
+    if not last_date:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute(f"SELECT date FROM {table_name} ORDER BY ROWID DESC LIMIT 1")
+            row = cur.fetchone()
+            if row:
+                last_date = row[0]
+            conn.close()
+        except Exception:
+            pass
+
+    if date_input == "":
+        if last_date:
+            date_input = last_date
+        else:
+            raise ValueError("No previous date found.")
+    else:
+        try:
+            date_input = convert_iso_to_mmddyy(date_input)
+        except ValueError:
+            raise ValueError("Invalid date format. Please use MM/DD/YY.")
+
+    #### === UPDATE IN DATABASE === ####
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute(f"""
+        UPDATE {table_name}
+        SET sets=?, reps=?, weight=?
+        WHERE exercise=? AND date=?
+    """, (sets_input, rep_input, weight_input, exercise_input, date_input))
+    conn.commit()
+    conn.close()
+
+    #### === UPDATE IN CSV === ####
+    if not os.path.exists(CSV_FILE):
+        return  # no CSV to update, skip
+
+    updated_rows = []
+    found = False
+    with open(CSV_FILE, "r", newline="") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if len(row) >= 5 and row[0] == exercise_input and row[-1] == date_input:
+                updated_rows.append([exercise_input, sets_input, rep_input, weight_input, date_input])
+                found = True
+            else:
+                updated_rows.append(row)
+
+    # If not found in CSV, optionally add it as new
+    if not found:
+        updated_rows.append([exercise_input, sets_input, rep_input, weight_input, date_input])
+
+    with open(CSV_FILE, "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerows(updated_rows)
+
+
+###### DELETE EXERCISE SECTION ########
+
+def delete_exercise(form_data):
+    """
+    Deletes an exercise entry (by exercise name + date) from both CSV and DB.
+    Matches validation and structure of add_exercise() and edit_exercise().
+    """
+    valid_exercises = [
+        "Squat", "PauseSquat", "GobletSquat", "PauseBench",
+        "TouchNGoBench", "InclineBench", "Deadlift", "DeficitDeadlift",
+        "RomanianDeadlift", "OverheadPress", "OverheadDBPress", "Bench",
+        "PowerClean", "HangClean"
+    ]
+
+    # === Extract form data ===
+    exercise_input = form_data.get('exercise', '').strip().replace(" ", "")
+    date_input = form_data.get('date', '').strip()
+
+    #### VALIDATE EXERCISE ####
+    if exercise_input == "":
+        try:
+            with open(CSV_FILE, "r") as file:
+                last_line = list(csv.reader(file))[-1]
+                exercise_input = last_line[0]
+        except Exception:
+            raise ValueError("No previous exercise found.")
+    else:
+        match_found = False
+        for exercise in valid_exercises:
+            if exercise.lower().replace(" ", "") == exercise_input.lower():
+                exercise_input = exercise
+                match_found = True
+                break
+        if not match_found:
+            raise ValueError("Invalid exercise name.")
+
+    #### DETERMINE DATE ####
+    last_date = None
+    try:
+        with open(CSV_FILE, "r") as file:
+            last_line = list(csv.reader(file))[-1]
+            last_date = last_line[-1]
+    except Exception:
+        pass  # CSV missing or empty, will check DB next
+
+    if not last_date:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute(f"SELECT date FROM {table_name} ORDER BY ROWID DESC LIMIT 1")
+            row = cur.fetchone()
+            if row:
+                last_date = row[0]
+            conn.close()
+        except Exception:
+            pass
+
+    if date_input == "":
+        if last_date:
+            date_input = last_date
+        else:
+            raise ValueError("No previous date found.")
+    else:
+        try:
+            date_input = convert_iso_to_mmddyy(date_input)
+        except ValueError:
+            raise ValueError("Invalid date format. Please use MM/DD/YY.")
+
+    #### === DELETE FROM DATABASE === ####
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(f"""
+        DELETE FROM {table_name}
+        WHERE exercise=? AND date=?
+    """, (exercise_input, date_input))
+    conn.commit()
+    conn.close()
+
+    #### === DELETE FROM CSV === ####
+    if not os.path.exists(CSV_FILE):
+        return  # skip if CSV missing
+
+    updated_rows = []
+    deleted = False
+    with open(CSV_FILE, "r", newline="") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if len(row) >= 5 and row[0] == exercise_input and row[-1] == date_input:
+                deleted = True
+                continue  # skip the row we’re deleting
+            updated_rows.append(row)
+
+    with open(CSV_FILE, "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerows(updated_rows)
+
+    # Optional: feedback message (for Flask flash or debug)
+    if not deleted:
+        print(f"No matching record found for {exercise_input} on {date_input}.")
 
 
 ####################### ALL FUNCTIONS FROM VISUALIZATIONS.PY #######################
