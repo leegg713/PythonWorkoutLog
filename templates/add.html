@@ -2,69 +2,115 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Add/Delete/Edit Exercise Entry</title>
+    <title>Add / Edit / Delete Exercise</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Add New Exercise</h1>
+    <h1>Exercise Management</h1>
+
+    <!-- ==================== ADD EXERCISE FORM ==================== -->
+    <h2>Add New Exercise</h2>
     <form method="POST">
-    <!-- Exercise dropdown: lets user choose from predefined exercise list passed from Flask valid_exercises add() route in app.py -->
-    <label for="exercise">Exercise:</label>
-    <select name="exercise" id="exercise" required>
-        <option value="">-- Select Exercise --</option>
-        {% for exercise in exercises %}
-            <option value="{{ exercise }}">{{ exercise }}</option>
-        {% endfor %}
-    </select>
+        <label for="exercise">Exercise:</label>
+        <select name="exercise" id="exercise" required>
+            <option value="">-- Select Exercise --</option>
+            {% for exercise in exercises %}
+                <option value="{{ exercise }}">{{ exercise }}</option>
+            {% endfor %}
+        </select>
 
-    <!-- Sets dropdown: number of sets performed (1–20, provided by Flask in app.py in the add() route) -->
-    <label for="sets">Sets:</label>
-    <select name="sets" id="sets" required>
-        <option value="">-- Select Sets Completed --</option>
-        {% for s in sets %}
-            <option value="{{ s }}">{{ s }}</option>
-        {% endfor %}
-    </select>
+        <label for="sets">Sets:</label>
+        <select name="sets" id="sets" required>
+            <option value="">-- Select Sets --</option>
+            {% for s in sets %}
+                <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+        </select>
 
-    <!-- Reps dropdown: number of reps performed per set (1–20, provided by Flask in app.py in the add() route) -->
-    <label for="reps">Reps:</label>
-    <select name="reps" id="reps" required>
-        <option value="">-- Select Reps Completed --</option>
-        {% for r in reps %}
-            <option value="{{ r }}">{{ r }}</option>
-        {% endfor %}
-    </select>
+        <label for="reps">Reps:</label>
+        <select name="reps" id="reps" required>
+            <option value="">-- Select Reps --</option>
+            {% for r in reps %}
+                <option value="{{ r }}">{{ r }}</option>
+            {% endfor %}
+        </select>
 
-    <!-- Weight dropdown: weight lifted in lbs (increments of 5, starting at 45, provided by Flask app.py in the add() route) -->
-    <label for="weight">Weight (lbs):</label>
-    <select name="weight" id="weight" required>
-        <option value="">-- Select Weight --</option>
-        {% for w in weights %}
-            <option value="{{ w }}">{{ w }}</option>
-        {% endfor %}
-    </select>
+        <label for="weight">Weight (lbs):</label>
+        <select name="weight" id="weight" required>
+            <option value="">-- Select Weight --</option>
+            {% for w in weights %}
+                <option value="{{ w }}">{{ w }}</option>
+            {% endfor %}
+        </select>
 
-    <!-- Date input: workout date (HTML5 date picker, defaults to blank if not set but will actually use the last entered date
-    it grabs the last entered date by using get_last_date() in webApp.py -->
-    <label for="date">Date: (If blank last entered date is input) </label>
-    <input type="date" name="date" id="date" value="{{ last_date if last_date else '' }}">
+        <label for="date">Date:</label>
+        <input type="date" name="date" id="date" value="{{ last_date if last_date else '' }}">
 
-    <!-- Submit button: saves the new exercise entry to both CSV and DB -->
-    <button type="submit" name="action" value="add">Add Exercise</button>
-    <!-- ADD SOMETHING FOR SPACING HERE -- >
-    <!-- Submit button: edits an exercise entry in both CSV and DB -->
-    <button type="submit" name="action" value="edit">Edit Exercise</button>
+        <button type="submit" name="action" value="add">Add Exercise</button>
+    </form>
 
-    <!-- Submit button: deletes an exercise entry in both CSV and DB -->
-    <!-- ADD SOMETHING FOR SPACING HERE -->
-    <button type="submit" name="action" value="delete">Delete Exercise</button>
+    <hr>
 
-</form>
+    <!-- ==================== EDIT EXERCISE FORM ==================== -->
+    <h2>Edit Existing Exercise</h2>
+    <form method="POST">
+        <label for="exercise">Exercise:</label>
+        <select name="exercise" id="exercise" required>
+            <option value="">-- Select Exercise --</option>
+            {% for exercise in exercises %}
+                <option value="{{ exercise }}">{{ exercise }}</option>
+            {% endfor %}
+        </select>
 
+        <label for="date">Date of Entry to Edit:</label>
+        <input type="date" name="date" id="date" required value="{{ last_date if last_date else '' }}">
 
+        <label for="sets">New Sets:</label>
+        <select name="sets" id="sets">
+            <option value="">-- Optional --</option>
+            {% for s in sets %}
+                <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+        </select>
 
-    <br>
-    <a href="{{ url_for('home') }}">Back to Menu</a>
+        <label for="reps">New Reps:</label>
+        <select name="reps" id="reps">
+            <option value="">-- Optional --</option>
+            {% for r in reps %}
+                <option value="{{ r }}">{{ r }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="weight">New Weight (lbs):</label>
+        <select name="weight" id="weight">
+            <option value="">-- Optional --</option>
+            {% for w in weights %}
+                <option value="{{ w }}">{{ w }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" name="action" value="edit">Edit Exercise</button>
+    </form>
+
+    <hr>
+
+    <!-- ==================== DELETE EXERCISE FORM ==================== -->
+    <h2>Delete Exercise Entry</h2>
+    <form method="POST">
+        <label for="exercise">Exercise:</label>
+        <select name="exercise" id="exercise" required>
+            <option value="">-- Select Exercise --</option>
+            {% for exercise in exercises %}
+                <option value="{{ exercise }}">{{ exercise }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="date">Date of Entry to Delete:</label>
+        <input type="date" name="date" id="date" required value="{{ last_date if last_date else '' }}">
+
+        <button type="submit" name="action" value="delete">Delete Exercise</button>
+    </form>
+
 </body>
 </html>
 
