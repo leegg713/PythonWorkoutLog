@@ -63,7 +63,17 @@ def get_last_date():
                 if lines and len(lines[-1]) > 0:
                     last_date = lines[-1][-1].strip()
                     if last_date:
-                        return last_date
+                        # Normalize to ISO (YYYY-MM-DD) for HTML <input type="date">
+                        try:
+                            # Try common formats: MM/DD/YY, MM/DD/YYYY, YYYY-MM-DD
+                            for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"):
+                                try:
+                                    dt = datetime.datetime.strptime(last_date, fmt)
+                                    return dt.strftime("%Y-%m-%d")
+                                except Exception:
+                                    continue
+                        except Exception:
+                            return ""
         except Exception:
             pass
     # If not found in CSV, try DB
@@ -74,7 +84,16 @@ def get_last_date():
         row = cur.fetchone()
         conn.close()
         if row and row[0]:
-            return row[0]
+            last_date = row[0]
+            try:
+                for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"):
+                    try:
+                        dt = datetime.datetime.strptime(last_date, fmt)
+                        return dt.strftime("%Y-%m-%d")
+                    except Exception:
+                        continue
+            except Exception:
+                return ""
     except Exception:
         pass
     return ""
