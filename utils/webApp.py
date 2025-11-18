@@ -456,12 +456,9 @@ def add_exercise(form_data):
 
     # Write to CSV (ID last)
     # Write to CSV
-    with open(CSV_FILE, "r", newline="") as infile:
-        rows = list(csv.reader(infile))
-
-    with open(CSV_FILE, "w", newline="") as outfile:
-        writer = csv.writer(outfile)
-        writer.writerows(rows)
+    with open(CSV_FILE, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([exercise_input, sets_input, rep_input, weight_input, date_input, next_id])
 
 
     #### DB SECTION ####
