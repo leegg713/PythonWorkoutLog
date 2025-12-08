@@ -15,36 +15,36 @@
         <select name="exercise" id="exercise" required>
             <option value="">-- Select Exercise --</option>
             {% for exercise in exercises %}
-                <option value="{{ exercise }}">{{ exercise }}</option>
+                <option value="{{ exercise }}" {% if exercise == prefill_exercise %}selected{% endif %}>{{ exercise }}</option>
             {% endfor %}
         </select>
 
         <label for="sets">Sets:</label>
         <select name="sets" id="sets" required>
             <option value="">-- Select Sets --</option>
-            {% for s in sets %}
-                <option value="{{ s }}">{{ s }}</option>
+            {% for set in sets %}
+                <option value="{{ set }}" {% if set|string == prefill_sets %}selected{% endif %}>{{ set }}</option>
             {% endfor %}
         </select>
 
         <label for="reps">Reps:</label>
         <select name="reps" id="reps" required>
             <option value="">-- Select Reps --</option>
-            {% for r in reps %}
-                <option value="{{ r }}">{{ r }}</option>
+            {% for rep in reps %}
+                <option value="{{ rep }}" {% if rep|string == prefill_reps %}selected{% endif %}>{{ rep }}</option>
             {% endfor %}
         </select>
 
         <label for="weight">Weight (lbs):</label>
         <select name="weight" id="weight" required>
             <option value="">-- Select Weight --</option>
-            {% for w in weights %}
-                <option value="{{ w }}">{{ w }}</option>
+            {% for weight in weights %}
+                <option value="{{ weight }}" {% if weight|string == prefill_weight %}selected{% endif %}>{{ weight }}</option>
             {% endfor %}
         </select>
 
         <label for="date">Date:</label>
-        <input type="date" name="date" id="date" value="{{ last_date if last_date else '' }}">
+        <input type="date" name="date" id="date" value="{{ prefill_date if prefill_date else (last_date if last_date else '') }}">
 
         <button type="submit" name="action" value="add">Add Exercise</button>
     </form>
@@ -58,34 +58,34 @@
         <select name="exercise" id="exercise" required>
             <option value="">-- Select Exercise --</option>
             {% for exercise in exercises %}
-                <option value="{{ exercise }}">{{ exercise }}</option>
+                <option value="{{ exercise }}" {% if exercise == prefill_exercise %}selected{% endif %}>{{ exercise }}</option>
             {% endfor %}
         </select>
 
         <label for="date">Date of Entry to Edit:</label>
-        <input type="date" name="date" id="date" required value="{{ last_date if last_date else '' }}">
+        <input type="date" name="date" id="date" required value="{{ prefill_date if prefill_date else (last_date if last_date else '') }}">
 
         <label for="sets">New Sets:</label>
         <select name="sets" id="sets">
             <option value="">-- Optional --</option>
-            {% for s in sets %}
-                <option value="{{ s }}">{{ s }}</option>
+            {% for set in sets %}
+                <option value="{{ set }}" {% if set|string == prefill_sets %}selected{% endif %}>{{ set }}</option>
             {% endfor %}
         </select>
 
         <label for="reps">New Reps:</label>
         <select name="reps" id="reps">
             <option value="">-- Optional --</option>
-            {% for r in reps %}
-                <option value="{{ r }}">{{ r }}</option>
+            {% for rep in reps %}
+                <option value="{{ rep }}" {% if rep|string == prefill_reps %}selected{% endif %}>{{ rep }}</option>
             {% endfor %}
         </select>
 
         <label for="weight">New Weight (lbs):</label>
         <select name="weight" id="weight">
             <option value="">-- Optional --</option>
-            {% for w in weights %}
-                <option value="{{ w }}">{{ w }}</option>
+            {% for weight in weights %}
+                <option value="{{ weight }}" {% if weight|string == prefill_weight %}selected{% endif %}>{{ weight }}</option>
             {% endfor %}
         </select>
 
@@ -101,12 +101,12 @@
         <select name="exercise" id="exercise" required>
             <option value="">-- Select Exercise --</option>
             {% for exercise in exercises %}
-                <option value="{{ exercise }}">{{ exercise }}</option>
+                <option value="{{ exercise }}" {% if exercise == prefill_exercise %}selected{% endif %}>{{ exercise }}</option>
             {% endfor %}
         </select>
 
         <label for="date">Date of Entry to Delete:</label>
-        <input type="date" name="date" id="date" required value="{{ last_date if last_date else '' }}">
+        <input type="date" name="date" id="date" required value="{{ prefill_date if prefill_date else (last_date if last_date else '') }}">
 
         <button type="submit" name="action" value="delete">Delete Exercise</button>
     </form>

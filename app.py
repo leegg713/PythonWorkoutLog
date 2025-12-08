@@ -31,6 +31,15 @@ def add():
 
         if action == 'add':
             add_exercise(form_data)  # Save entry to CSV + DB
+            # Keep the submitted values to prefill the form for the next entry
+            params = {
+                'exercise': form_data.get('exercise', ''),
+                'sets': form_data.get('sets', ''),
+                'reps': form_data.get('reps', ''),
+                'weight': form_data.get('weight', ''),
+                'date': form_data.get('date', '')
+            }
+            return redirect(url_for('add', **params))
 
         elif action == 'edit':
             edit_exercise(form_data)  # Update existing entry
@@ -38,7 +47,7 @@ def add():
         elif action == 'delete':
             delete_exercise(form_data)  # Remove entry from CSV + DB
 
-        # Redirect to the same page after processing
+        # Redirect to the same page after processing (default)
         return redirect(url_for('add'))
 
     # === DROPDOWN OPTIONS ===
@@ -55,13 +64,26 @@ def add():
     # Get last entered date from utility function
     last_date = get_last_date()
 
+    # Prefill values (if provided via query params after a redirect)
+    prefill_exercise = request.args.get('exercise', '')
+    prefill_sets = request.args.get('sets', '')
+    prefill_reps = request.args.get('reps', '')
+    prefill_weight = request.args.get('weight', '')
+    # If no date specified, fall back to last_date
+    prefill_date = request.args.get('date') or last_date
+
     return render_template(
         'add.html',
         exercises=valid_exercises,
         weights=weight_options,
         reps=rep_options,
         sets=set_options,
-        last_date=last_date
+        last_date=last_date,
+        prefill_exercise=prefill_exercise,
+        prefill_sets=prefill_sets,
+        prefill_reps=prefill_reps,
+        prefill_weight=prefill_weight,
+        prefill_date=prefill_date
     )
 
 
