@@ -86,28 +86,80 @@ def add():
         prefill_date=prefill_date
     )
 
-
 @app.route('/graph')
 def graph():
-    # Get optional query parameters
-    selected_exercise = request.args.get('exercise')
-    start_date = request.args.get('start_date')  # Optional start date
-    end_date = request.args.get('end_date')      # Optional end date
+    # Read query params
+    selected_exercise = request.args.get('exercise', '').strip()
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
 
-    # Fetch unique exercises from DB for the dropdown
+    # ---------------------------
+    # Fetch exercises for dropdown
+    # ---------------------------
     conn = get_db_connection()
-    exercises_df = pd.read_sql_query("SELECT DISTINCT Exercise FROM Workout", conn)
+    exercises_df = pd.read_sql_query(
+        """
+        SELECT DISTINCT Exercise AS exercise
+        FROM Workout
+        WHERE Exercise IS NOT NULL
+        """,
+        conn
+    )
     conn.close()
-    exercises = sorted(exercises_df['Exercise'].str.strip().tolist())
 
-    # Pass parameters to your graph functions
-    # (Modify the functions later to accept optional start/end dates)
-    graphs = [
-        create_progression_graph(selected_exercise, start_date, end_date),
-        create_exercise_distribution_pie_chart(selected_exercise, start_date, end_date)
-    ]
+    # Normalize column names and values
+    exercises_df.columns = exercises_df.columns.str.strip().str.lower()
 
-    return render_template('graph.html', graphs=graphs, exercises=exercises, selected_exercise=selected_exercise, start_date=start_date, end_date=end_date)
+    if 'exercise' in exercises_df.columns:
+        exercises = (
+            exercises_df['exercise']
+            .astype(str)
+            .str.strip()
+            .sort_values()
+            .tolist()
+        )
+    else:
+        exercises = []
+
+    # ---------------------------
+    # Generate graphs safely
+    # ---------------------------
+    graphs = []
+
+    try:
+        graphs.append(
+            create_progression_graph(
+                exercise=selected_exercise if selected_exercise else None,
+                start_date=start_date,
+                end_date=end_date
+            )
+        )
+    except Exception as e:
+        print(f"Progression graph error: {e}")
+
+    try:
+        graphs.append(
+            create_exercise_distribution_pie_chart(
+                exercise=selected_exercise if selected_exercise else None,
+                start_date=start_date,
+                end_date=end_date
+            )
+        )
+    except Exception as e:
+        print(f"Distribution graph error: {e}")
+
+    # ---------------------------
+    # Render template
+    # ---------------------------
+    return render_template(
+        'graph.html',
+        graphs=graphs,
+        exercises=exercises,
+        selected_exercise=selected_exercise,
+        start_date=start_date,
+        end_date=end_date
+    )
+
 
 @app.route('/timer', methods=['GET', 'POST']) #Timer Page
 def timer():
