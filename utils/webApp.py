@@ -602,6 +602,8 @@ def delete_exercise(form_data):
 ####################### ALL FUNCTIONS FROM VISUALIZATIONS.PY #######################
 ####################### GRAPH SECTION #######################
 
+'''
+
 def create_progression_graph(exercise=None, start_date=None, end_date=None):
     # Load data from DB
     conn = get_db_connection()
@@ -677,4 +679,88 @@ def create_exercise_distribution_pie_chart(exercise=None, start_date=None, end_d
     plt.close()
     return f'data:image/png;base64,{graph_data}'
 
+'''
+
+def create_progression_graph(exercise=None, start_date=None, end_date=None):
+    conn = get_db_connection()
+    df = pd.read_sql_query("SELECT * FROM Workout", conn)
+    conn.close()
+
+    # Normalize columns and values
+    df.columns = df.columns.str.strip().str.lower()
+    df['exercise'] = df['exercise'].astype(str).str.strip().str.lower()
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+    df['weight'] = pd.to_numeric(df['weight'], errors='coerce')
+
+    # Apply filters
+    if exercise:
+        df = df[df['exercise'] == exercise.strip().lower()]
+    if start_date:
+        df = df[df['date'] >= pd.to_datetime(start_date)]
+    if end_date:
+        df = df[df['date'] <= pd.to_datetime(end_date)]
+
+    if df.empty:
+        return None
+
+    df = df.sort_values(by='date')
+
+    plt.figure(figsize=(10, 6))
+    for ex in df['exercise'].unique():
+        subset = df[df['exercise'] == ex]
+        plt.plot(subset['date'], subset['weight'], marker='o', label=ex.title())
+
+    plt.xlabel("Date")
+    plt.ylabel("Weight Lifted")
+    plt.title("Progression Over Time")
+    plt.legend()
+    plt.grid(True)
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.getvalue()).decode()
+    plt.close()
+
+    return f'data:image/png;base64,{graph_data}'
+
+
+def create_exercise_distribution_pie_chart(exercise=None, start_date=None, end_date=None):
+    conn = get_db_connection()
+    df = pd.read_sql_query("SELECT * FROM Workout", conn)
+    conn.close()
+
+    df.columns = df.columns.str.strip().str.lower()
+    df['exercise'] = df['exercise'].astype(str).str.strip().str.lower()
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+
+    if exercise:
+        df = df[df['exercise'] == exercise.strip().lower()]
+    if start_date:
+        df = df[df['date'] >= pd.to_datetime(start_date)]
+    if end_date:
+        df = df[df['date'] <= pd.to_datetime(end_date)]
+
+    if df.empty:
+        return None
+
+    distribution = df['exercise'].value_counts()
+
+    plt.figure(figsize=(8, 8))
+    plt.pie(distribution, autopct='%1.1f%%', startangle=90)
+    plt.legend(
+        labels=[ex.title() for ex in distribution.index],
+        loc="center left",
+        bbox_to_anchor=(0.1, 0.5)
+    )
+    plt.title("Exercise Distribution")
+    plt.axis('equal')
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.getvalue()).decode()
+    plt.close()
+
+    return f'data:image/png;base64,{graph_data}'
 
