@@ -131,7 +131,7 @@ def parse_dates(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.copy()
     # Parse dates (coerce invalid values to NaT), pandas infers common formats
-    df["date"] = pd.to_datetime(df["date"], errors="coerce", infer_datetime_format=True)
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
     # Drop rows where parsing failed
     df = df.dropna(subset=["date"]).reset_index(drop=True)
 
@@ -153,7 +153,7 @@ def filter_last_n_days(df: pd.DataFrame, days: int = 7) -> Tuple[pd.DataFrame, d
     Returns a tuple (filtered_df, start_date, end_date).
     """
     # Use UTC today as the reference. `start` is the inclusive lower bound.
-    today = datetime.datetime.utcnow().date()
+    today = datetime.datetime.now(datetime.UTC).date()
     start = today - datetime.timedelta(days=days)
 
     # Work with the date portion only (drop time) to make comparisons simple
