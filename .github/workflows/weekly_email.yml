@@ -2,7 +2,7 @@ name: Weekly Workout Email
 
 on:
   schedule:
-    - cron: cron: '0 8 * * 2' # Every Tuesday at 1 or 2 AM
+    - cron: '0 8 * * 2' # Every Tuesday at 1 or 2 AM
   workflow_dispatch:
 
 jobs:
