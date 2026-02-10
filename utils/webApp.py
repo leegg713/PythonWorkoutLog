@@ -567,18 +567,27 @@ def delete_exercise(form_data):
     if not id_input.isdigit():
         raise ValueError("ID must be provided and numeric.")
 
+    # Convert ID to integer for database query (DB stores ID as INTEGER)
+    id_int = int(id_input)
+
     #### === DELETE FROM DATABASE === ####
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(f"""
-        DELETE FROM {table_name}
-        WHERE id=?
-    """, (id_input,))
-    conn.commit()
-    conn.close()
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(f"""
+            DELETE FROM {table_name}
+            WHERE id=?
+        """, (id_int,))
+        rows_deleted = cur.rowcount  # Check how many rows were deleted
+        conn.commit()
+        conn.close()
+        print(f"Database: Deleted {rows_deleted} row(s) with ID {id_int}")
+    except Exception as e:
+        print(f"Database deletion error: {e}")
 
     #### === DELETE FROM CSV === ####
     if not os.path.exists(CSV_FILE):
+        print(f"CSV file not found: {CSV_FILE}")
         return  # skip if CSV missing
 
     updated_rows = []
@@ -588,7 +597,8 @@ def delete_exercise(form_data):
         for row in reader:
             if len(row) >= 6 and row[-1] == id_input:
                 deleted = True
-                continue  # skip the row we’re deleting
+                print(f"CSV: Found and deleting row with ID {id_input}")
+                continue  # skip the row we're deleting
             updated_rows.append(row)
 
     with open(CSV_FILE, "w", newline="") as file:
@@ -596,7 +606,7 @@ def delete_exercise(form_data):
         writer.writerows(updated_rows)
 
     if not deleted:
-        print(f"No matching record found with ID {id_input}.")
+        print(f"CSV: No matching record found with ID {id_input}.")
 
 
 ####################### ALL FUNCTIONS FROM VISUALIZATIONS.PY #######################
