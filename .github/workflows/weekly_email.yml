@@ -2,7 +2,7 @@ name: Weekly Workout Email
 
 on:
   schedule:
-    - cron: '0 08 * * 1' # Every Monday at 08:00 UTC
+    - cron: cron: '0 8 * * 2' # Every Tuesday at 1 or 2 AM
   workflow_dispatch:
 
 jobs:
@@ -27,4 +27,4 @@ jobs:
 
       - name: Run weekly graph script
         run: |
-          python scripts/send_weekly_graph.py
+          python send_weekly_graph.py
