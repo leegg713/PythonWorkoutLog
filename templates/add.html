@@ -97,16 +97,8 @@
     <!-- ==================== DELETE EXERCISE FORM ==================== -->
     <h2>Delete Exercise Entry</h2>
     <form method="POST">
-        <label for="exercise">Exercise:</label>
-        <select name="exercise" id="exercise" required>
-            <option value="">-- Select Exercise --</option>
-            {% for exercise in exercises %}
-                <option value="{{ exercise }}" {% if exercise == prefill_exercise %}selected{% endif %}>{{ exercise }}</option>
-            {% endfor %}
-        </select>
-
-        <label for="date">Date of Entry to Delete:</label>
-        <input type="date" name="date" id="date" required value="{{ prefill_date if prefill_date else (last_date if last_date else '') }}">
+        <label for="delete_id">Entry ID:</label>
+        <input type="number" name="id" id="delete_id" placeholder="Enter the ID number" required>
 
         <button type="submit" name="action" value="delete">Delete Exercise</button>
     </form>
