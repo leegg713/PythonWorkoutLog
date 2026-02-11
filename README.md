@@ -50,7 +50,8 @@ Thank you for helping me improve this project!
 
 
 ## IMPROVEMENTS TO COME ##
-Remove entry from flask web page using clear_last_entry()
+Remove entry from flask web page using clear_last_entry() - COMPLETED
+Sends a weekly workout update - COMPLETED
 Log In Functionality for End Users
 Multi User support -- Will need to update how the DB takes data to have a key per user
 
