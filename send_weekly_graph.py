@@ -35,6 +35,8 @@ import smtplib
 from email.message import EmailMessage
 from typing import Tuple
 import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.dates as mdates
 import pathlib
 
 
@@ -234,13 +236,39 @@ def main():
         else:
             # Plot max weight per date for each exercise for readability
             plt.figure(figsize=(10, 6))
+            ax = plt.gca()
             for ex in week_df["exercise"].unique():
-                sub = week_df[week_df["exercise"] == ex]
+                sub = week_df[week_df["exercise"] == ex].copy()
                 if sub.empty:
                     continue
+                sub = sub.sort_values(by="date")
+                xs = []
+                ys = []
+                # For dates with multiple entries, add small horizontal numeric-date offsets so points are visible
+                for d, group in sub.groupby(sub["date"].dt.date):
+                    date_dt = pd.to_datetime(d)
+                    date_num = mdates.date2num(date_dt)
+                    n = len(group)
+                    if n == 1:
+                        offsets = [0.0]
+                    else:
+                        offsets = np.linspace(-0.2, 0.2, n)
+                    for off, val in zip(offsets, group["weight"].values):
+                        xs.append(date_num + float(off))
+                        ys.append(val)
+
+                # Scatter actual recorded weights (with slight x-offsets to expose overlaps)
+                ax.scatter(xs, ys, marker="o", label=ex)
+                # Also draw a line through the maximum weight per date to show trend (no offsets)
                 agg = sub.groupby(sub["date"].dt.date)["weight"].max()
                 dates = [pd.to_datetime(d) for d in agg.index]
-                plt.plot(dates, agg.values, marker="o", label=ex)
+                date_nums = mdates.date2num(dates)
+                ax.plot(date_nums, agg.values, linestyle="-", alpha=0.6)
+
+            # Format x-axis to show one tick/label per day and hide time component
+            ax.xaxis.set_major_locator(mdates.DayLocator())
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            plt.gcf().autofmt_xdate()
             plt.xlabel("Date")
             plt.ylabel("Weight")
             plt.title("Weekly Workout Progression")
